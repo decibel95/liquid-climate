@@ -113,7 +113,7 @@ export class LiquidClimateSheet extends LitElement {
 
   protected override render() {
     const cfg = this._config;
-    const glass = cfg && this.hass ? resolveGlass(cfg.look.glass, this.hass) : 'dark';
+    const glass = cfg && this.hass ? resolveGlass(cfg.look.glass, this.hass, this) : 'dark';
     const name = cfg?.name || (cfg && this.hass?.states[cfg.entity]?.attributes.friendly_name) || cfg?.entity || '';
     return html`<dialog
       class="g-${glass} m-${cfg?.look.motion ?? 'rich'}"

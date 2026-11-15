@@ -134,7 +134,7 @@ export class LiquidClimateBadge extends LitElement {
     const st = badgeState(this.hass, cfg, r.detection);
     this._watched = st.watched;
     const name = cfg.name || this.hass.states[cfg.entity]?.attributes.friendly_name || cfg.entity;
-    const glassKind = resolveGlass(cfg.look.glass, this.hass);
+    const glassKind = resolveGlass(cfg.look.glass, this.hass, this);
     const glass = `g-${glassKind}`;
     const color = tone(st.color, glassKind);
     const tint = rgba(color, TINT.badge);

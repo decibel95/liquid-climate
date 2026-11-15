@@ -227,6 +227,14 @@ describe('glass follows the HA theme by default', () => {
     expect(await cls(undefined)).toContain('g-light');
   });
 
+  it('picks dark glass for a dark single-mode theme background', async () => {
+    const { card, hass } = setup(K, {});
+    card.style.setProperty('--primary-background-color', '#111111');
+    card.hass = { ...hass, themes: { darkMode: false } };
+    await card.updateComplete;
+    expect(card.shadowRoot!.querySelector('section.lc')!.className).toContain('g-dark');
+  });
+
   it('keeps an explicit choice', async () => {
     expect(await cls({ darkMode: false }, 'dark')).toContain('g-dark');
     expect(await cls({ darkMode: true }, 'light')).toContain('g-light');

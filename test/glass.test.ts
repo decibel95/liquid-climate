@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { DOT_RING, GLASS, MENU_GLASS, ROOM_FILL, composite, contrast, parseColor, resolveGlass, type Rgb } from '../src/ui/glass';
+// @vitest-environment happy-dom
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DOT_RING, GLASS, MENU_GLASS, ROOM_FILL, composite, contrast, cssColorIsDark, parseColor, resolveGlass, type Rgb } from '../src/ui/glass';
 import { MODES, STATUS_COLORS, TINT, rgba, tone } from '../src/ui/modes';
 
 describe('glass resolution', () => {
@@ -13,6 +14,108 @@ describe('glass resolution', () => {
   it('dark and light stay explicit whatever the theme says', () => {
     expect(resolveGlass('dark', { themes: { darkMode: false } })).toBe('dark');
     expect(resolveGlass('light', { themes: { darkMode: true } })).toBe('light');
+  });
+
+  describe('theme background detection', () => {
+    const hostWith = (props: Record<string, string>) => {
+      const el = document.createElement('div');
+      for (const [k, v] of Object.entries(props)) el.style.setProperty(k, v);
+      document.body.appendChild(el);
+      return el;
+    };
+    const off = { themes: { darkMode: false } };
+    afterEach(() => {
+      document.body.innerHTML = '';
+    });
+
+    it('darkMode true wins without a host', () => {
+      expect(resolveGlass('theme', { themes: { darkMode: true } }, hostWith({ '--primary-background-color': '#fafafa' }))).toBe('dark');
+    });
+
+    it('a dark single-mode theme background gives dark glass', () => {
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': '#111111' }))).toBe('dark');
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': '#111' }))).toBe('dark');
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': 'rgb(20, 22, 30)' }))).toBe('dark');
+      expect(resolveGlass('theme', off, hostWith({ '--card-background-color': 'rgba(10, 10, 10, 1)' }))).toBe('dark');
+    });
+
+    it('light and mid backgrounds give light glass', () => {
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': '#fafafa' }))).toBe('light');
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': '#808080' }))).toBe('light');
+    });
+
+    it('no host, no property or an unusable value gives light glass', () => {
+      expect(resolveGlass('theme', off)).toBe('light');
+      expect(resolveGlass('theme', off, null)).toBe('light');
+      expect(resolveGlass('theme', off, hostWith({}))).toBe('light');
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': 'var(--x)' }))).toBe('light');
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': 'transparent' }))).toBe('light');
+      expect(resolveGlass('theme', off, hostWith({ '--primary-background-color': 'rgba(0, 0, 0, 0)' }))).toBe('light');
+    });
+
+    it('darkMode true gives dark even over a light background', () => {
+      expect(resolveGlass('theme', { themes: { darkMode: true } }, hostWith({ '--primary-background-color': '#ffffff' }))).toBe('dark');
+    });
+
+    it('understands modern colour syntax', () => {
+      expect(cssColorIsDark('rgb(0 0 0)')).toBe(true);
+      expect(cssColorIsDark('rgb(17 17 17 / 100%)')).toBe(true);
+      expect(cssColorIsDark('#000000ff')).toBe(true);
+      expect(cssColorIsDark('#000f')).toBe(true);
+      expect(cssColorIsDark('#00000000')).toBeNull();
+      expect(cssColorIsDark('linear-gradient(#000, #111)')).toBeNull();
+      expect(cssColorIsDark('var(--x)')).toBeNull();
+      expect(cssColorIsDark('')).toBeNull();
+    });
+
+    it('resolves named colours through the browser probe (happy-dom does not, so computed colour is stubbed)', () => {
+      const real = window.getComputedStyle.bind(window);
+      const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element) => {
+        const st = real(el);
+        const named: Record<string, string> = { black: 'rgb(0, 0, 0)', white: 'rgb(255, 255, 255)' };
+        return new Proxy(st, { get: (t, k) => (k === 'color' ? named[(el as HTMLElement).style.color] ?? '' : Reflect.get(t, k)) });
+      });
+      try {
+        expect(cssColorIsDark('black')).toBe(true);
+        expect(cssColorIsDark('white')).toBe(false);
+      } finally {
+        spy.mockRestore();
+      }
+    });
+
+    it('skips an unknown primary background and uses the card background', () => {
+      const host = hostWith({
+        '--primary-background-color': 'linear-gradient(#fff, #eee)',
+        '--card-background-color': '#111111',
+      });
+      expect(resolveGlass('theme', off, host)).toBe('dark');
+    });
+
+    it('inherits the theme variable from a parent element', () => {
+      const parent = hostWith({ '--primary-background-color': '#111111' });
+      const child = document.createElement('div');
+      parent.appendChild(child);
+      // happy-dom does not inherit custom properties; a browser does, so mimic that here.
+      const real = window.getComputedStyle.bind(window);
+      const spy = vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element) => (el === child ? real(parent) : real(el)));
+      try {
+        expect(resolveGlass('theme', off, child)).toBe('dark');
+      } finally {
+        spy.mockRestore();
+      }
+    });
+
+    it('parseColor reads 3, 4, 6 and 8 digit hex', () => {
+      expect(parseColor('#fff')).toEqual([255, 255, 255, 1]);
+      expect(parseColor('#000f')).toEqual([0, 0, 0, 1]);
+      expect(parseColor('#ff000080')[3]).toBeCloseTo(0.502, 2);
+      expect(() => parseColor('#12')).toThrow();
+    });
+
+    it('explicit choices ignore the host', () => {
+      expect(resolveGlass('light', off, hostWith({ '--primary-background-color': '#000000' }))).toBe('light');
+      expect(resolveGlass('dark', off, hostWith({ '--primary-background-color': '#ffffff' }))).toBe('dark');
+    });
   });
 });
 

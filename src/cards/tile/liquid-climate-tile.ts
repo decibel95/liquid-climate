@@ -144,7 +144,7 @@ export class LiquidClimateTile extends LitElement {
     if (!cfg || !this.hass) return html`<article class="tile g-dark"><span class="sub">${t(this.hass, 'common.loading')}</span></article>`;
     const stateObj = this.hass.states[cfg.entity];
     const name = cfg.name || stateObj?.attributes.friendly_name || cfg.entity;
-    const glassKind = resolveGlass(cfg.look.glass, this.hass);
+    const glassKind = resolveGlass(cfg.look.glass, this.hass, this);
     const glass = `g-${glassKind}`;
     const ctx = this._context();
     const view = ctx?.view;

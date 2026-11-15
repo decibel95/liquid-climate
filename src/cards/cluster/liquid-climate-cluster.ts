@@ -386,7 +386,7 @@ export class LiquidClimateCluster extends LitElement {
   protected override render(): TemplateResult {
     const cfg = this._config;
     if (!cfg || !this.hass) return html`<section class="cluster g-dark"><span class="sum">${t(this.hass, 'common.loading')}</span></section>`;
-    const glass = resolveGlass(cfg.look.glass, this.hass);
+    const glass = resolveGlass(cfg.look.glass, this.hass, this);
     const motion = cfg.look.motion;
     const { groups, rooms } = this._rooms(cfg);
     // Pin the selection: the first room at first, and the first room again when the selected one left.

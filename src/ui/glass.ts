@@ -100,27 +100,104 @@ export const MENU_GLASS: Record<'dark' | 'light', MenuPalette> = {
 /** Ring around the badge's attention dot, close to each glass base. */
 export const DOT_RING: Record<'dark' | 'light', string> = { dark: '#15171d', light: '#f3f4f7' };
 
-/** "theme" follows the HA light or dark mode; dark and light are explicit. */
+/** Below this relative luminance a theme background counts as dark (HA's own dark default is #111111, mid greys stay light). */
+const DARK_BACKGROUND_LUMINANCE = 0.2;
+
+let probe: HTMLElement | null = null;
+
+/** Resolve any CSS colour (names, hsl(), color-mix()) to rgb() text through the browser. Empty when unknown. */
+function browserColor(value: string): string {
+  try {
+    if (typeof document === 'undefined') return '';
+    if (!probe || !probe.isConnected) {
+      probe = document.createElement('span');
+      probe.style.display = 'none';
+      document.body.appendChild(probe);
+    }
+    probe.style.color = '';
+    probe.style.color = value;
+    if (!probe.style.color) return '';
+    return getComputedStyle(probe).color;
+  } catch {
+    return '';
+  }
+}
+
+/** Is a CSS colour string dark? null when it is unknown (var(), gradient, url(), unparseable) or mostly transparent. */
+export function cssColorIsDark(value: string): boolean | null {
+  const v = value.trim();
+  if (!v || /gradient\(|url\(|var\(/i.test(v)) return null;
+  let rgba: Rgba | null = null;
+  try {
+    rgba = parseColor(v);
+  } catch {
+    rgba = null;
+  }
+  if (!rgba || !rgba.every(Number.isFinite)) {
+    try {
+      rgba = parseColor(browserColor(v));
+    } catch {
+      return null;
+    }
+    if (!rgba.every(Number.isFinite)) return null;
+  }
+  const [r, g, b, a] = rgba;
+  if (a < 0.5) return null;
+  return luminance([r, g, b]) < DARK_BACKGROUND_LUMINANCE;
+}
+
+/** Does the theme in effect at `host` have a dark page background? Reads the theme's own custom properties. */
+export function themeIsDark(host: Element | null | undefined): boolean {
+  if (!host) return false;
+  try {
+    const style = getComputedStyle(host);
+    for (const name of ['--primary-background-color', '--card-background-color']) {
+      const value = style.getPropertyValue(name).trim();
+      if (!value) continue;
+      const dark = cssColorIsDark(value);
+      if (dark !== null) return dark;
+    }
+  } catch {
+    // no computed style (detached host, odd environment): fall back to light
+  }
+  return false;
+}
+
+/**
+ * "theme" follows the HA dark mode, or else a dark theme background (a single-mode dark theme
+ * leaves darkMode false); dark and light are explicit.
+ */
 export function resolveGlass(
   glass: 'dark' | 'light' | 'theme',
   hass: { themes?: { darkMode?: boolean } | unknown },
+  host?: Element | null,
 ): 'dark' | 'light' {
   if (glass !== 'theme') return glass;
-  return (hass.themes as { darkMode?: boolean } | undefined)?.darkMode === true ? 'dark' : 'light';
+  // On purpose: darkMode true wins even over a light background, keeping the earlier behaviour.
+  if ((hass.themes as { darkMode?: boolean } | undefined)?.darkMode === true) return 'dark';
+  return themeIsDark(host) ? 'dark' : 'light';
 }
 
 export type Rgb = [number, number, number];
 export type Rgba = [number, number, number, number];
 
 export function parseColor(c: string): Rgba {
-  if (c.startsWith('#')) {
-    const n = parseInt(c.slice(1), 16);
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255, 1];
+  const t = c.trim();
+  if (t.startsWith('#')) {
+    let h = t.slice(1);
+    if (!/^[0-9a-f]+$/i.test(h) || ![3, 4, 6, 8].includes(h.length)) throw new Error(`Unsupported colour ${c}`);
+    if (h.length <= 4) h = h.replace(/./g, '$&$&');
+    const n = parseInt(h.slice(0, 6), 16);
+    const a = h.length === 8 ? parseInt(h.slice(6), 16) / 255 : 1;
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255, a];
   }
-  const m = c.match(/rgba?\(([^)]+)\)/);
+  const m = t.match(/^rgba?\(([^)]+)\)$/i);
   if (!m) throw new Error(`Unsupported colour ${c}`);
-  const [r, g, b, a] = m[1].split(',').map((x) => Number(x.trim()));
-  return [r, g, b, a ?? 1];
+  const parts = m[1].split(/[\s,/]+/).filter(Boolean);
+  const num = (x: string) => (x.endsWith('%') ? (Number(x.slice(0, -1)) * 255) / 100 : Number(x));
+  const [r, g, b] = parts.slice(0, 3).map(num);
+  const a = parts[3] === undefined ? 1 : parts[3].endsWith('%') ? Number(parts[3].slice(0, -1)) / 100 : Number(parts[3]);
+  return [r, g, b, a];
 }
 
 /** Composite a colour with alpha over an opaque backdrop. */

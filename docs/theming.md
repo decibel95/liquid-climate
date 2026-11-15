@@ -8,7 +8,7 @@ Set on the dial, tile, badge and cluster under `look`. `tint` only affects the d
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `glass` | `theme` | `theme` picks dark glass when HA is in dark mode and light glass otherwise. `dark` or `light` forces one |
+| `glass` | `theme` | `theme` picks dark glass when HA is in dark mode, or when the theme has a dark background colour (a dark single-mode theme), and light glass otherwise. `dark` or `light` forces one |
 | `tint` | `0.09` | Mode tint opacity of the dial, 0 to 0.3 in the editor. No effect on the tile, badge and cluster themselves |
 | `blur` | `30` | Backdrop blur in px, 8 to 60 in the editor |
 | `motion` | `rich` | `rich`, `subtle` or `minimal` |

@@ -453,7 +453,7 @@ export class LiquidClimateCard extends LitElement {
     const cfg = this._config;
     if (!cfg || !this.hass) return html`<div class="lc g-dark unavailable">${t(this.hass, 'common.loading')}</div>`;
     const name = cfg.name || this._entity()?.attributes.friendly_name || cfg.entity;
-    const glass = `g-${resolveGlass(cfg.look.glass, this.hass)}`;
+    const glass = `g-${resolveGlass(cfg.look.glass, this.hass, this)}`;
     const vars = { '--_blur': `${cfg.look.blur}px`, '--_tint': String(cfg.look.tint) };
 
     const ctx = this._context();

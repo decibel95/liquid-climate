@@ -3,9 +3,14 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.10.1
+## 0.10.2
 
 The current version.
+
+### Changed
+- Cards pick dark glass when the view theme's background colour is dark, even when Home Assistant itself is in light mode (per-view forced-dark themes). The `look.glass: dark` workaround is no longer needed.
+
+## 0.10.1
 
 ### Added
 - HACS validation workflow (`hacs/action`), needed for the HACS default list.
