@@ -14,7 +14,9 @@
     "range": "{low} bis {high}",
     "stepDown": "Zieltemperatur senken",
     "stepUp": "Zieltemperatur erhöhen",
-    "target": "Ziel"
+    "target": "Ziel",
+    "batteryLow": "Batterie schwach",
+    "batteryLowValue": "Batterie schwach, {value}%"
   },
   "mode": {
     "off": "Aus",
@@ -101,13 +103,16 @@
     "ariaHorizontal": "Horizontaler Luftstrom: {value}",
     "ariaPreset": "Voreinstellung: {value}",
     "problem": "{source} meldet ein Problem",
-    "problemDetail": "{source} meldet ein Problem ({detail})"
+    "problemDetail": "{source} meldet ein Problem ({detail})",
+    "subTargetState": "{state}, Ziel {target}"
   },
   "detect": {
     "humidity": "Feuchte",
     "outdoor": "Außen",
     "energy": "Heute",
-    "cloud": "Aufrufe übrig"
+    "cloud": "Aufrufe übrig",
+    "valve": "Ventil",
+    "battery": "Batterie"
   },
   "tile": {
     "ariaTile": "{name} Klima",
@@ -142,7 +147,9 @@
     "controls": "Steuerung für {name}",
     "openDial": "{name}, {verb}, Regler öffnen",
     "modeGroup": "Modus, {name}",
-    "rangeAria": "Zielbereich {range} {unit}, Steuerung öffnen"
+    "rangeAria": "Zielbereich {range} {unit}, Steuerung öffnen",
+    "valve": "Ventil {value}%",
+    "batteryLow": "Batterie schwach: {n}"
   },
   "menu": {
     "details": "Details",
@@ -272,6 +279,10 @@
     "editRoom": "{name} bearbeiten",
     "showRoom": "{name} anzeigen",
     "pauseHelp": "Zeigt den Raum als pausiert, solange diese Entität an ist, zum Beispiel ein Fensterkontakt.",
-    "yamlHint": "Sensor- und Steueroptionen werden in YAML festgelegt und gelten für jeden Raum."
+    "yamlHint": "Sensor- und Steueroptionen werden in YAML festgelegt und gelten für jeden Raum.",
+    "sensorBattery": "Batterie",
+    "sensorValve": "Ventilstellung",
+    "sensorWindow": "Fensterkontakt",
+    "writeHold": "Gesendeten Wert anzeigen"
   }
 }

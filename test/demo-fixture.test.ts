@@ -160,7 +160,7 @@ describe('sensor detection finds nothing Daikin-specific on the demo entities', 
 
   it.each(ALL)('%s: runtime detection is empty', (id) => {
     expect(detectSensors(hass(), id)).toEqual({
-      humidity: null, outdoor: null, unitTemperature: null, energy: [], cloudLimit: null, health: [], deviceCount: 1, usedRegistry: false,
+      humidity: null, outdoor: null, unitTemperature: null, energy: [], cloudLimit: null, health: [], battery: null, batteryLow: null, valve: null, window: null, opening: null, deviceCount: 1, usedRegistry: false,
     });
   });
 

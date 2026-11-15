@@ -1,8 +1,9 @@
 import '../src/index';
-import { CLIMATE_IDS } from '../src/demo/fixtures';
+import { CLIMATE_IDS, allFixtures } from '../src/demo/fixtures';
 import { createDemo } from '../src/demo/service';
 import type { LiquidClimateCardEditor } from '../src/editor/liquid-climate-card-editor';
 import type { HomeAssistant } from '../src/types';
+import { TRV, trvFixtures } from '../test/fixtures/trv';
 
 const log = document.getElementById('log')!;
 const grid = document.getElementById('grid')!;
@@ -28,6 +29,14 @@ const demo = createDemo({
   },
 });
 const states = demo.states;
+// Radiator valves are not part of the shared demo: add them to this harness only. The registries are shared by reference
+// with every published hass object, and the editor reads their unique ids from the fixture registry.
+Object.assign(states, structuredClone(trvFixtures.states));
+Object.assign(demo.hass.entities, trvFixtures.entities);
+Object.assign(demo.hass.devices, trvFixtures.devices);
+Object.assign(allFixtures.registry, trvFixtures.registry);
+demo.publish();
+const TRV_IDS = Object.values(TRV);
 let hass: HomeAssistant = demo.hass;
 const cards: (HTMLElement & { hass: HomeAssistant; setConfig(c: Record<string, unknown>): void })[] = [];
 let editor: LiquidClimateCardEditor;
@@ -84,6 +93,27 @@ for (const id of CLIMATE_IDS) {
   grid.append(fig);
 }
 
+// Radiator valves. Flip the window contact or drain the battery from the browser console: setTrv({ window: true, battery: 12 }).
+for (const id of TRV_IDS) {
+  const fig = document.createElement('figure');
+  const cap = document.createElement('figcaption');
+  cap.textContent = id;
+  const card = document.createElement('liquid-climate-card');
+  card.setConfig({ entity: id });
+  card.hass = hass;
+  cards.push(card);
+  fig.append(cap, card);
+  grid.append(fig);
+}
+(window as unknown as { setTrv: (o: { window?: boolean; battery?: number; action?: string }) => void }).setTrv = (o) => {
+  const set = (id: string, patch: Record<string, unknown>, attrs?: Record<string, unknown>) =>
+    (states[id] = { ...states[id], ...patch, attributes: { ...states[id].attributes, ...(attrs ?? {}) } });
+  if (o.window !== undefined) set('binary_sensor.trv_sonoff_window_open', { state: o.window ? 'on' : 'off' });
+  if (o.battery !== undefined) set('sensor.trv_sonoff_battery', { state: String(o.battery) });
+  if (o.action !== undefined) set(TRV.sonoff, {}, { hvac_action: o.action });
+  demo.publish();
+};
+
 // A pause switch for the badges: flip it from the browser console with togglePause().
 (window as unknown as { togglePause: () => void }).togglePause = () => {
   const s = states['input_boolean.window'];
@@ -100,9 +130,11 @@ function mount(tag: string, cfg: Record<string, unknown>, parent: HTMLElement) {
 }
 
 for (const id of CLIMATE_IDS) mount('liquid-climate-tile', { entity: id }, tiles);
+for (const id of TRV_IDS) mount('liquid-climate-tile', { entity: id }, tiles);
 mount('liquid-climate-tile', { entity: 'climate.keuken_airco', name: 'More info on tap', tap_action: 'more-info', look: { glass: 'light' } }, tiles);
 
 for (const id of CLIMATE_IDS) mount('liquid-climate-badge', { entity: id, pause_entity: 'input_boolean.window', tap_action: 'sheet' }, badges);
+for (const id of TRV_IDS) mount('liquid-climate-badge', { entity: id, tap_action: 'sheet' }, badges);
 for (const id of CLIMATE_IDS.slice(0, 3)) mount('liquid-climate-badge', { entity: id, icon_only: true, pause_entity: 'input_boolean.window' }, badges);
 
 // Cluster: auto (grouped by floor) at full width, then the three Daikin units at the widths of a
@@ -118,7 +150,9 @@ const daikin = (slug: string, name?: string) => ({
   },
 });
 const house = [daikin('keuken', 'Living Room'), daikin('slaapkamer'), daikin('nagelsalon')];
+const trvRooms = TRV_IDS.map((entity) => ({ entity }));
 for (const [width, cfg] of [
+  ['480px', { type: 'custom:liquid-climate-cluster', entities: trvRooms }],
   ['min(100%, 900px)', { type: 'custom:liquid-climate-cluster' }],
   ['480px', { type: 'custom:liquid-climate-cluster', entities: house }],
   ['240px', { type: 'custom:liquid-climate-cluster', entities: house, look: { glass: 'light' } }],

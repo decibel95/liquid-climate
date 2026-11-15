@@ -2,17 +2,19 @@
  * Staging page for the README and docs media. No harness chrome: just the cards on a calm
  * background, in Home Assistant's light or dark theme. Driven by scripts/media (Playwright).
  *
- *   ?scene=hero|dial|tile|badge|cluster|editor|cluster-editor|status-menu|sheet
+ *   ?scene=hero|dial|tile|badge|cluster|editor|cluster-editor|status-menu|sheet|trv
  *   ?theme=light|dark|split   ?lang=en|nl|de|fr|es|it   ?cursor=1 (visible pointer for recordings)
  *
  * Window API for the scripts: __mediaReady (true once fonts and all cards have rendered) and
- * __media.setLang(lang), __media.pointer(visible), __media.settle() (pause ambient motion).
+ * __media.setLang(lang), __media.pointer(visible), __media.settle() (pause ambient motion) and
+ * __media.trv(room, patch) (change a radiator valve of the trv scene: action, current, target, valve, battery).
  */
 import './media-focus';
 import '../src/index';
 import { englishFixture } from '../src/demo/english';
 import { addHelperEntities } from '../src/demo/service';
 import { makeHass } from '../src/demo/fixtures';
+import { trvSonoff } from '../test/fixtures/trv';
 import type { HassEntity, HomeAssistant } from '../src/types';
 
 const params = new URLSearchParams(location.search);
@@ -35,6 +37,45 @@ attrs('climate.bedroom').fan_mode = 'auto';
 addHelperEntities(states);
 // Pauses the Studio badge only (a window contact that reads open).
 states['input_boolean.studio_window'] = { entity_id: 'input_boolean.studio_window', state: 'on', attributes: { friendly_name: 'Studio window' } };
+
+// Two radiator valves (Zigbee2MQTT style: climate, battery, valve opening, window contact) with fake ids and English names.
+const TRV_ROOMS = {
+  hallway: { id: 'climate.hallway_radiator', name: 'Hallway radiator', hex: '0x00124b00aa000001' },
+  bedroom: { id: 'climate.bedroom_radiator', name: 'Bedroom radiator', hex: '0x00124b00aa000002' },
+} as const;
+type TrvRoom = keyof typeof TRV_ROOMS;
+for (const [slug, room] of Object.entries(TRV_ROOMS)) {
+  const copy = JSON.parse(
+    JSON.stringify(trvSonoff)
+      .replaceAll('trv_sonoff', `${slug}_radiator`)
+      .replaceAll('0x00124b001234abcd', room.hex)
+      .replaceAll('Radiator valve', room.name)
+      .replaceAll('SONOFF', 'Acme')
+      .replaceAll('TRVZB', 'TRV-1')
+      .replaceAll('"area_id":"lab"', '"area_id":null'),
+  ) as typeof trvSonoff;
+  Object.assign(states, copy.states);
+  Object.assign(fixture.entities, copy.entities);
+  Object.assign(fixture.devices, copy.devices);
+  Object.assign(fixture.registry, copy.registry);
+}
+/** Change one reading of a radiator valve. */
+function setTrv(slug: TrvRoom, patch: { action?: string; current?: number; target?: number; valve?: number; battery?: number }) {
+  const id = TRV_ROOMS[slug].id;
+  const a = { ...states[id].attributes };
+  if (patch.action !== undefined) a.hvac_action = patch.action;
+  if (patch.current !== undefined) a.current_temperature = patch.current;
+  if (patch.target !== undefined) a.temperature = patch.target;
+  states[id] = { ...states[id], attributes: a };
+  const setSensor = (suffix: string, value?: number) => {
+    const sid = `sensor.${slug}_radiator_${suffix}`;
+    if (value !== undefined) states[sid] = { ...states[sid], state: String(value) };
+  };
+  setSensor('pi_heating_demand', patch.valve);
+  setSensor('battery', patch.battery);
+}
+setTrv('hallway', { action: 'idle', current: 20.6, target: 20, valve: 0, battery: 78 });
+setTrv('bedroom', { action: 'heating', current: 17.8, target: 20.5, valve: 65, battery: 78 });
 
 // ---- What the card reads as a state: HA's formatEntityState ------------------------------------
 const WORDS: Record<string, Record<string, string>> = {
@@ -217,6 +258,11 @@ function build(r: Root, parent: HTMLElement) {
       card(r, 'liquid-climate-card', dialConfig(), d);
       break;
     }
+    case 'trv': {
+      const w = el('div', 'trv-scene', parent);
+      for (const room of Object.values(TRV_ROOMS)) card(r, 'liquid-climate-card', { entity: room.id, name: room.name, look, sensors: { valve: room.id.replace('climate.', 'sensor.') + '_pi_heating_demand' } }, el('div', 'w-dial', w));
+      break;
+    }
     case 'tile': {
       const w = el('div', 'pad', parent);
       const c = el('div', 'col w-tile', w);
@@ -320,6 +366,10 @@ const allElements = (root: ParentNode = document): Element[] => {
       r.hass = { ...r.hass, language: next, locale: { language: next, number_format: 'language' } };
       for (const e of r.els) e.hass = r.hass;
     }
+  },
+  trv(slug: TrvRoom, patch: Parameters<typeof setTrv>[1]) {
+    setTrv(slug, patch);
+    publish();
   },
   pointer(visible: boolean) {
     pointerEl.classList.toggle('on', visible);

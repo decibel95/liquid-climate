@@ -51,6 +51,16 @@ export interface Detection {
   energy: EnergyRef[];
   cloudLimit: SensorRef | null;
   health: HealthRef[];
+  /** Battery level in percent (sensor, device_class battery). */
+  battery: SensorRef | null;
+  /** Battery low flag (binary_sensor, device_class battery): `on` means low. */
+  batteryLow: SensorRef | null;
+  /** Valve opening or heating demand in percent (sensor), or a `valve` entity. */
+  valve: SensorRef | null;
+  /** The only window contact (binary_sensor, device_class window). */
+  window: SensorRef | null;
+  /** The only `opening` contact, when the family has no window contact. Counts as a window only with a valve (see windowOf). */
+  opening: SensorRef | null;
   /** Number of devices searched, climate device included. */
   deviceCount: number;
   /** True when unique_id and original_name were available. */
@@ -81,6 +91,10 @@ function energyPeriod(m: string[]): EnergyPeriod | null {
   if (anyMatch(m, /yearly|_year\b/i)) return 'year';
   return null;
 }
+
+/** Valve opening and heating demand names, in a translation_key, unique_id or original_name ("Pi heating demand"). */
+const VALVE_NAME = /pi[\s_-]?heating[\s_-]?demand|heating[\s_-]?demand|valve[\s_-]?(position|opening)/i;
+const NOT_VALVE = /(^|[\s_-])(battery|humidity|calibration|tilt|louver|louvre|vane|swing|cover|blind|fan|curtain|motor)($|[\s_-])/i;
 
 /** The single candidate, or null when there are none or several (never guess). */
 const only = <T>(list: T[]): T | null => (list.length === 1 ? list[0] : null);
@@ -134,6 +148,31 @@ export function detectSensors(hass: HomeAssistant, climateId: string, registry?:
     }
   }
 
+  // Battery: a percentage sensor and/or a low flag. Both are used when both exist (see resolveSensors).
+  const battery = only(sensors.filter((e) => attr(e).device_class === 'battery'));
+  const batteryLow = only(ordered.filter((e) => e.entity_id.startsWith('binary_sensor.') && attr(e).device_class === 'battery'));
+
+  // Valve: a % sensor named like a valve opening, or a valve entity. Several candidates settle nothing.
+  const valve = only(
+    ordered.filter((e) => {
+      const a = attr(e);
+      // A valve entity without a numeric position says nothing about the opening.
+      if (e.entity_id.startsWith('valve.')) return typeof a.current_position === 'number' && Number.isFinite(a.current_position);
+      if (!e.entity_id.startsWith('sensor.') || a.unit_of_measurement !== '%') return false;
+      if (a.device_class === 'humidity' || a.device_class === 'battery') return false;
+      const m = mk(e);
+      return anyMatch(m, VALVE_NAME) && !anyMatch(m, NOT_VALVE);
+    }),
+  );
+
+  // A `window` contact counts. A plain `opening` contact (doors, gates) is only a candidate when the family has
+  // no window contact at all; resolveSensors then takes it only if the valve role resolves (see windowOf).
+  const contacts = (cls: string) =>
+    ordered.filter((e) => e.entity_id.startsWith('binary_sensor.') && attr(e).device_class === cls);
+  const windows = contacts('window');
+  const windowContact = only(windows);
+  const openingContact = windows.length ? null : only(contacts('opening'));
+
   return {
     humidity: humidity ? ref(humidity) : null,
     outdoor: outdoor ? ref(outdoor) : null,
@@ -146,6 +185,11 @@ export function detectSensors(hass: HomeAssistant, climateId: string, registry?:
     energy,
     cloudLimit: cloud ? ref(cloud) : null,
     health,
+    battery: battery ? ref(battery) : null,
+    batteryLow: batteryLow ? ref(batteryLow) : null,
+    valve: valve ? ref(valve) : null,
+    window: windowContact ? ref(windowContact) : null,
+    opening: openingContact ? ref(openingContact) : null,
     deviceCount: family.deviceIds.size,
     usedRegistry: !!registry && Object.keys(registry).length > 0,
   };

@@ -108,6 +108,18 @@ export const steps = {
     if (state.join() !== 'Auto,on') throw new Error(`Status menu ended in ${state.join()}`);
   },
 
+  /** Hallway valve: idle -> heating, battery low, then back to idle with a full battery. */
+  async trvHeats(page) {
+    const set = (patch) => page.evaluate((p) => window.__media.trv('hallway', p), patch);
+    await sleep(400);
+    await set({ action: 'heating', current: 20.2, target: 21.5, valve: 55 });
+    await sleep(1300);
+    await set({ battery: 12 });
+    await sleep(1300);
+    await set({ action: 'idle', current: 20.6, target: 20, valve: 0, battery: 78 });
+    await sleep(900);
+  },
+
   /** en -> nl -> de -> en. */
   async languages(page) {
     for (const lang of ['nl', 'de', 'en']) {
@@ -119,6 +131,7 @@ export const steps = {
 
 /**
  * scene: the staging scene. first: where the pointer first appears (it fades in there).
+ * grow: extra canvas height in CSS px, for a card that gets taller during the clip (the battery alert).
  * tall: size the canvas for the open status menu, so the whole menu and the card's bottom edge stay in frame.
  */
 export const ANIMATIONS = {
@@ -146,6 +159,7 @@ export const ANIMATIONS = {
     first: (page) => centerOf(page, `${row(0)} button.row`),
     run: (page, p) => steps.statusMenu(page, p),
   },
+  trv: { scene: 'trv', grow: 48, pointer: false, run: (page) => steps.trvHeats(page) },
   language: { scene: 'dial', pointer: false, run: (page) => steps.languages(page) },
 };
 
@@ -177,6 +191,11 @@ export async function renderAnimations(browser, base, out, only = []) {
       await openScene(page, base, { scene: def.scene, theme: 'light', lang: 'en', cursor: '1' });
       await page.waitForTimeout(1200);
       if (def.tall) await sizeForOpenMenu(page);
+      if (def.grow) {
+        // Grow the stage itself, so its background (and the cards' shadows) reach the new bottom edge.
+        await page.evaluate((px) => { const s = document.getElementById('stage'); s.style.minHeight = `${s.getBoundingClientRect().height + px}px`; }, def.grow);
+        await page.setViewportSize(await stageSize(page));
+      }
       // The pointer sits hidden at its first target, fades in there, and fades out where it ends.
       const p = await pointer(page, def.first ? await def.first(page) : { x: -50, y: -50 });
       const cap = await startCapture(page, name);

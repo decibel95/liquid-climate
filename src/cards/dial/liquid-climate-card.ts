@@ -15,6 +15,7 @@ import { num, t } from '../../i18n';
 import type { HomeAssistant } from '../../types';
 import { WriterLease, type ClimateWriter } from '../shared/writer';
 import { hassNeedsRender } from '../shared/render-gate';
+import { batteryText, isResting, readsAsActivity, statusWord } from '../shared/status';
 import { RowCalls } from '../shared/service';
 import {
   CX,
@@ -40,7 +41,6 @@ import {
   fanShortLabels,
   modeInfo,
   modeLabel,
-  modeVerb,
   optionLabel,
   particleDuration,
   rgba,
@@ -94,6 +94,7 @@ export class LiquidClimateCard extends LitElement {
   private get _writer(): ClimateWriter {
     const w = this._lease.get(this._config?.entity ?? '');
     w.delay = this._config?.write_delay ?? 1.5;
+    w.hold = this._config?.write_hold ?? 10;
     if (this.hass && !w.hass) w.hass = this.hass;
     return w;
   }
@@ -473,14 +474,20 @@ export class LiquidClimateCard extends LitElement {
     const room = sensors.roomTemperature;
     const fmt = (n: number) => num(this.hass, n, caps.decimals);
     const hass = this.hass;
-    const verb = modeVerb(hass, view.mode);
+    const changing = this._writer.modeChanging;
+    const verb = statusWord(hass, ctx.stateObj, view.mode, changing);
+    // An activity reads "Heating to 20.0°"; a state ("Idle") reads "Idle, target 20.0°".
+    const activity = readsAsActivity(ctx.stateObj, view.mode, changing);
+    const resting = isResting(ctx.stateObj, view.mode, changing);
 
     const headerSub = !on
       ? t(hass, 'common.off')
       : view.dual
-        ? t(hass, 'dial.subRange', { verb, range: `${t(hass, 'common.range', { low: fmt(view.low!), high: fmt(view.high!) })}°` })
+        ? activity
+          ? t(hass, 'dial.subRange', { verb, range: `${t(hass, 'common.range', { low: fmt(view.low!), high: fmt(view.high!) })}°` })
+          : t(hass, 'dial.subTargetState', { state: verb, target: `${t(hass, 'common.range', { low: fmt(view.low!), high: fmt(view.high!) })}°` })
         : view.hasSetpoint
-          ? t(hass, 'dial.subTarget', { verb, target: `${fmt(view.target!)}°` })
+          ? t(hass, activity ? 'dial.subTarget' : 'dial.subTargetState', activity ? { verb, target: `${fmt(view.target!)}°` } : { state: verb, target: `${fmt(view.target!)}°` })
           : verb;
 
     const intensity = view.fan ? fanIntensity(view.fan, caps.fanModes) : null;
@@ -528,7 +535,7 @@ export class LiquidClimateCard extends LitElement {
           </div>
         </header>
 
-        ${this._renderDial(ctx, color, on, room, spinS, intensity)}
+        ${this._renderDial(ctx, color, on, room, spinS, intensity, resting)}
         ${this._renderModes(ctx)} ${this._renderChips(ctx)}
         ${sensors.problems.length
           ? html`<div class="alert" role="status">
@@ -537,6 +544,9 @@ export class LiquidClimateCard extends LitElement {
                 detail: [...new Set(sensors.problems.map((p) => p.detail).filter(Boolean))].join(', '),
               })}
             </div>`
+          : nothing}
+        ${sensors.battery?.low
+          ? html`<div class="alert battery" role="status">${batteryText(hass, sensors.battery)}</div>`
           : nothing}
         ${sensors.info.length
           ? html`<div class="info" style=${styleMap({ gridTemplateColumns: `repeat(${sensors.info.length}, minmax(0, 1fr))` })}>
@@ -560,7 +570,7 @@ export class LiquidClimateCard extends LitElement {
     return svg`<svg class="i ${cls}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
   }
 
-  private _renderDial(ctx: Ctx, color: string, on: boolean, room: number | null, spinS: number, intensity: number | null) {
+  private _renderDial(ctx: Ctx, color: string, on: boolean, room: number | null, spinS: number, intensity: number | null, resting: boolean) {
     const { caps, view } = ctx;
     const { min, max } = caps;
     const hasFan = caps.fanModes.length > 0;
@@ -687,14 +697,14 @@ export class LiquidClimateCard extends LitElement {
             ? svg`<circle class="spin" cx="200" cy="200" r="154" fill="none" stroke="var(--lc-tick)" stroke-width="1.2" stroke-dasharray="1.5 9" stroke-linecap="round" opacity=${on ? 1 : 0} style=${styleMap(spinStyle(spinS, on))}></circle>`
             : nothing}
           <path d=${arcPath(R_TEMP, 135, 405)} fill="none" stroke="var(--lc-track)" stroke-width="10" stroke-linecap="round"></path>
-          <path d=${progD} fill="none" stroke=${color} stroke-width="10" stroke-linecap="round" opacity=${sp ? 1 : 0} style="transition: stroke .8s"></path>
+          <path d=${progD} fill="none" stroke=${color} stroke-width="10" stroke-linecap="round" opacity=${sp ? (resting ? 0.6 : 1) : 0} style="transition: stroke .8s, opacity .8s"></path>
           <path d=${dim || 'M 0 0'} fill="none" stroke="var(--lc-tick)" stroke-width="1.2" stroke-linecap="round"></path>
           <path d=${lit || 'M 0 0'} fill="none" stroke="var(--lc-bright)" stroke-width="1.5" stroke-linecap="round" opacity="0.85"></path>
           ${roomPt ? svg`<circle cx=${roomPt[0].toFixed(1)} cy=${roomPt[1].toFixed(1)} r="3.5" fill="var(--lc-bright)" opacity="0.7"></circle>` : nothing}
           ${knobs.map((k, i) => {
             const dualKnob = view.dual ? (i === 0 ? 'low' : 'high') : null;
             const v = dualKnob === 'low' ? view.low! : dualKnob === 'high' ? view.high! : null;
-            return svg`<circle cx=${k[0].toFixed(1)} cy=${k[1].toFixed(1)} r="13" fill="var(--lc-bright)" stroke=${color} stroke-width="3.5" style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45)); transition: stroke .8s"
+            return svg`<circle cx=${k[0].toFixed(1)} cy=${k[1].toFixed(1)} r="13" fill="var(--lc-bright)" stroke=${color} stroke-opacity=${resting ? 0.6 : 1} stroke-width="3.5" style="filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45)); transition: stroke .8s, stroke-opacity .8s"
               role=${dualKnob ? 'slider' : nothing} tabindex=${dualKnob ? '0' : nothing} data-knob=${dualKnob ?? nothing}
               aria-label=${dualKnob ? t(hass, dualKnob === 'low' ? 'dial.knobLow' : 'dial.knobHigh') : nothing}
               aria-valuemin=${dualKnob ? (dualKnob === 'low' ? min : (view.low ?? min)) : nothing}

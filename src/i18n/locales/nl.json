@@ -14,7 +14,9 @@
     "range": "{low} tot {high}",
     "stepDown": "Doeltemperatuur verlagen",
     "stepUp": "Doeltemperatuur verhogen",
-    "target": "Doel"
+    "target": "Doel",
+    "batteryLow": "Batterij laag",
+    "batteryLowValue": "Batterij laag, {value}%"
   },
   "mode": {
     "off": "Uit",
@@ -101,13 +103,16 @@
     "ariaHorizontal": "Horizontale luchtstroom: {value}",
     "ariaPreset": "Voorinstelling: {value}",
     "problem": "{source} meldt een probleem",
-    "problemDetail": "{source} meldt een probleem ({detail})"
+    "problemDetail": "{source} meldt een probleem ({detail})",
+    "subTargetState": "{state}, doel {target}"
   },
   "detect": {
     "humidity": "Vochtigheid",
     "outdoor": "Buiten",
     "energy": "Vandaag",
-    "cloud": "Aanroepen over"
+    "cloud": "Aanroepen over",
+    "valve": "Klep",
+    "battery": "Batterij"
   },
   "tile": {
     "ariaTile": "{name} klimaat",
@@ -142,7 +147,9 @@
     "controls": "Bediening voor {name}",
     "openDial": "{name}, {verb}, regelaar openen",
     "modeGroup": "Modus, {name}",
-    "rangeAria": "Doelbereik {range} {unit}, bediening openen"
+    "rangeAria": "Doelbereik {range} {unit}, bediening openen",
+    "valve": "klep {value}%",
+    "batteryLow": "Batterij laag: {n}"
   },
   "menu": {
     "details": "Details",
@@ -272,6 +279,10 @@
     "editRoom": "{name} bewerken",
     "showRoom": "{name} tonen",
     "pauseHelp": "Toont de kamer als gepauzeerd zolang deze entiteit aan staat, bijvoorbeeld een raamcontact.",
-    "yamlHint": "Sensor- en bedieningsopties stel je in via YAML en gelden voor elke kamer."
+    "yamlHint": "Sensor- en bedieningsopties stel je in via YAML en gelden voor elke kamer.",
+    "sensorBattery": "Batterij",
+    "sensorValve": "Klepstand",
+    "sensorWindow": "Raamcontact",
+    "writeHold": "Verzonden waarde tonen"
   }
 }

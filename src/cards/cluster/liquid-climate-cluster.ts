@@ -125,6 +125,7 @@ export class LiquidClimateCluster extends LitElement {
   private _writeVia(entity: string): ClimateWriter {
     const w = this._writer(entity);
     w.delay = this._config?.write_delay ?? 1.5;
+    w.hold = this._config?.write_hold ?? 10;
     return w;
   }
 
@@ -206,7 +207,7 @@ export class LiquidClimateCluster extends LitElement {
   /** Colour of a room's icon: status colours first, the mode colour only while it is doing its job. */
   private _roomColor(r: RoomModel, glass: 'dark' | 'light'): string | null {
     if (r.kind === 'error') return tone(STATUS_COLORS.error, glass);
-    if (r.kind === 'paused') return tone(STATUS_COLORS.paused, glass);
+    if (r.kind === 'paused' || r.kind === 'battery') return tone(STATUS_COLORS.paused, glass);
     return r.on && r.active ? tone(modeInfo(r.mode).color, glass) : null;
   }
 
@@ -267,9 +268,9 @@ export class LiquidClimateCluster extends LitElement {
   private _roomTile(r: RoomModel, selected: boolean, glass: 'dark' | 'light', motion: string) {
     const tg = this._target(r);
     const color = this._roomColor(r, glass);
-    const icon = r.kind === 'error' ? ICONS.alert : r.kind === 'paused' ? ICONS.door : modeInfo(r.on ? r.mode : 'off').icon;
+    const icon = r.kind === 'error' || r.kind === 'battery' ? ICONS.alert : r.kind === 'paused' ? ICONS.door : modeInfo(r.on ? r.mode : 'off').icon;
     const foot = roomFooter(r, this.hass);
-    const warn = r.kind === 'error' || r.kind === 'paused';
+    const warn = r.kind === 'error' || r.kind === 'paused' || r.kind === 'battery';
     const unit = r.caps?.unit ?? '°';
     const aria = [
       r.ref.name,
@@ -311,7 +312,7 @@ export class LiquidClimateCluster extends LitElement {
     const atMin = single && r.view!.target! <= caps!.min;
     const atMax = single && r.view!.target! >= caps!.max;
     const err = this._leases.get(r.dial.entity)?.current?.error;
-    const verb = err ?? (r.kind === 'error' || r.kind === 'paused' ? roomFooter(r, this.hass) : r.verb);
+    const verb = err ?? (r.kind === 'error' || r.kind === 'paused' || r.kind === 'battery' ? roomFooter(r, this.hass) : r.verb);
     const modes = caps?.modes ?? [];
     const name = r.ref.name;
     return html`<div class="strip ${modes.length ? '' : 'nomodes'}" role="group" aria-label=${t(this.hass, 'cluster.controls', { name })}>
@@ -323,7 +324,7 @@ export class LiquidClimateCluster extends LitElement {
       >
         <span class="wtext">
           <span class="sname">${name}</span>
-          <span class="sverb ${err || r.kind === 'error' || r.kind === 'paused' ? 'warn' : ''}">${verb}</span>
+          <span class="sverb ${err || r.kind === 'error' || r.kind === 'paused' || r.kind === 'battery' ? 'warn' : ''}">${verb}</span>
         </span>
         <span class="chev">${this._icon(CHEVRON, 16, 2)}</span>
       </button>

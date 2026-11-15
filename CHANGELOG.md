@@ -3,9 +3,23 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.9.0
+## 0.10.0
 
 The current version.
+
+### Added
+- **Radiator valves** (TRVs, Zigbee2MQTT, Better Thermostat, generic thermostat) work as first-class units on all four cards.
+- **Battery**: a `sensor` or `binary_sensor` with device class battery on the device is found by itself and shown as an attention item (dial alert, tile status line, badge, cluster room) only when low: under 20 percent, or the low flag is on. `sensors.battery` takes `auto`, `false` or an entity id, and an explicit entity also adds a `Battery 45%` figure on the dial.
+- **Valve position**: the valve opening or heating demand (a percent sensor such as Pi heating demand, or a `valve` entity) shows as a `Valve 45%` figure on the dial and in the cluster room footer. `sensors.valve` takes `auto`, `false` or an entity id.
+- **Window open**: a `binary_sensor` with device class window on the device (device class opening only when there is no window contact and the valve role resolves, the same in the editor and the cards) pauses the badge and the cluster room, like `pause_entity`, which still wins when set. `sensors.window` takes `auto`, `false` or an entity id.
+- **`write_hold`** (default 10 seconds; the editor offers 10, 30 or 60, YAML takes 0 to 3600) on the dial, tile and cluster: how long a sent value stays on screen while a slow battery device has not reported it back. The editor has a Show sent value for choice.
+
+### Changed
+- **Dial header** follows `hvac_action` like the tile: an idle unit reads `Idle, target 20.0°` instead of `Heating to 20.0°`, and the target arc turns softer while idle. This applies to every climate entity that reports `hvac_action`.
+- Diagnostics list the battery, valve and window roles.
+- New strings are machine translated except Dutch.
+
+## 0.9.0
 
 ### Added
 - **Status row menu**: pick a value (`input_select`, `select`, `input_boolean`, `switch`), run scripts, toggle automations and open the entity or automation editor from a row under the dial. New row options `actions` and `menu`.

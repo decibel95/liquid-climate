@@ -8,12 +8,13 @@ import { Memo } from '../../detect/cache';
 import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import { resolveGlass } from '../../ui/glass';
 import { glassTokens } from '../../ui/glass-styles';
-import { ICONS, MODES, STATUS_COLORS, TINT, modeInfo, modeVerb, rgba, tone } from '../../ui/modes';
-import { humanize, num, optionName, t } from '../../i18n';
+import { ICONS, STATUS_COLORS, TINT, modeInfo, rgba, tone } from '../../ui/modes';
+import { num, t } from '../../i18n';
 import type { HassEntity, HomeAssistant } from '../../types';
 import { buildView, getCapabilities, steppedTarget, type Capabilities, type DialView } from '../dial/capabilities';
 import { WriterLease, powerOnMode, rememberedMode, type ClimateWriter } from '../shared/writer';
 import { hassNeedsRender } from '../shared/render-gate';
+import { activelyHeating, batteryText, statusWord } from '../shared/status';
 import '../shared/sheet';
 import type { LiquidClimateSheet } from '../shared/sheet';
 
@@ -21,23 +22,6 @@ interface Ctx {
   stateObj: HassEntity;
   caps: Capabilities;
   view: DialView;
-}
-
-/** Status word for the subline: hvac_action when the entity reports one, else the mode. */
-export function statusWord(hass: HomeAssistant, s: HassEntity, mode: string, modeChanging: boolean): string {
-  if (mode === 'off') return modeVerb(hass, 'off');
-  const action = s.attributes.hvac_action;
-  if (!modeChanging && typeof action === 'string' && action) return optionName(hass, 'hvac_action', action, s);
-  if (MODES.some((m) => m.id === mode)) return modeVerb(hass, mode);
-  return (mode === s.state && hass.formatEntityState?.(s)) || humanize(mode);
-}
-
-/** Heating right now: hvac_action says so, or the unit is in heat mode and reports no action. */
-export function activelyHeating(s: HassEntity, mode: string, modeChanging: boolean): boolean {
-  if (mode === 'off') return false;
-  const action = s.attributes.hvac_action;
-  if (!modeChanging && typeof action === 'string' && action) return action === 'heating' || action === 'preheating';
-  return mode === 'heat';
 }
 
 @customElement('liquid-climate-tile')
@@ -56,6 +40,7 @@ export class LiquidClimateTile extends LitElement {
   private get _writer(): ClimateWriter {
     const w = this._lease.get(this._config?.entity ?? '');
     w.delay = this._config?.write_delay ?? 1.5;
+    w.hold = this._config?.write_hold ?? 10;
     if (this.hass && !w.hass) w.hass = this.hass;
     return w;
   }
@@ -181,10 +166,12 @@ export class LiquidClimateTile extends LitElement {
     const problems = sensors.problems;
     const details = [...new Set(problems.map((p) => p.detail).filter(Boolean))].join(', ');
     const problem = problems.length ? (details ? t(this.hass, 'common.errorDetail', { detail: details }) : t(this.hass, 'common.error')) : null;
+    const lowBattery = sensors.battery?.low ? batteryText(this.hass, sensors.battery) : null;
 
     const room = roomTemperatureOf(this.hass, cfg);
     let sub: string;
     if (problem) sub = problem;
+    else if (lowBattery && stateObj && ctx) sub = lowBattery;
     else if (!stateObj) sub = t(this.hass, 'common.entityNotFound', { entity: cfg.entity });
     else if (!ctx) sub = t(this.hass, 'common.unavailable');
     else {
@@ -202,9 +189,9 @@ export class LiquidClimateTile extends LitElement {
     const tap = cfg.tap_action;
 
     const err = this._writer.error;
-    const titles = html`<span class="name">${name}</span><span class="sub ${err || problem ? 'err' : ''}">${err ?? sub}</span>`;
+    const titles = html`<span class="name">${name}</span><span class="sub ${err || problem || lowBattery ? 'err' : ''}">${err ?? sub}</span>`;
     // Announced outside the buttons: a failed write first, then a health problem.
-    const announce = err ? `${name}: ${err}` : problem ? `${name}: ${problem}` : '';
+    const announce = err ? `${name}: ${err}` : problem ? `${name}: ${problem}` : lowBattery ? `${name}: ${lowBattery}` : '';
     const tint = problem ? tone(STATUS_COLORS.error, glassKind) : on ? tone(info.color, glassKind) : null;
 
     return html`

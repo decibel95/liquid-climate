@@ -3,7 +3,6 @@ import { WriteQueue, type ServiceCall } from '../dial/write-queue';
 import { t } from '../../i18n';
 import type { HassEntity, HomeAssistant } from '../../types';
 
-const INFLIGHT_MS = 10_000;
 const ERROR_MS = 6000;
 
 /** Order the power button tries when it has no remembered mode to return to. */
@@ -49,6 +48,8 @@ export class ClimateWriter {
   hass?: HomeAssistant;
   /** Seconds to wait after the last interaction; the card that interacts sets it. */
   delay = 1.5;
+  /** Seconds a sent value is held as shown while the device has not reported it back; the card that interacts sets it. */
+  hold = 10;
   /** Values sent but not yet reflected by the entity. */
   inflight: Optimistic = {};
   sending = false;
@@ -72,7 +73,7 @@ export class ClimateWriter {
       this.inflightTimer = setTimeout(() => {
         this.inflight = {};
         this.changed();
-      }, INFLIGHT_MS);
+      }, this.hold * 1000);
     };
   }
 

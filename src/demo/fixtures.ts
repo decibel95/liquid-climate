@@ -33,11 +33,11 @@ export function mergeFixtures(...list: Fixture[]): Fixture {
   return out;
 }
 
-function addDevice(f: Fixture, d: HassDevice) {
+export function addDevice(f: Fixture, d: HassDevice) {
   f.devices[d.id] = d;
 }
 
-function addEntity(
+export function addEntity(
   f: Fixture,
   entity_id: string,
   state: string,

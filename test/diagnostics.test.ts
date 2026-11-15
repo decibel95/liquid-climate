@@ -10,6 +10,7 @@ import { fanShortLabels, modeLabel } from '../src/ui/modes';
 import { litFanSegments } from '../src/ui/geometry';
 import type { HomeAssistant } from '../src/types';
 import { AREAS, FLOORS, allFixtures, makeHass, mergeFixtures } from './fixtures';
+import { TRV, trvFixtures } from './fixtures/trv';
 
 const K = 'climate.keuken_airco';
 type AnyEl = HTMLElement & Record<string, any>;
@@ -170,7 +171,7 @@ describe('buildDiagnostics', () => {
     expect(c.card_type).toBe('liquid-climate-cluster');
     expect(c.rooms.map((r: any) => r.entity)).toEqual([K, 'climate.nagelsalon_airco']);
     expect(c.rooms[0].sensors.outdoor.source).toBe('auto');
-    expect(Object.keys(c.rooms[0].sensors).sort()).toEqual(['cloud_limit', 'energy', 'health', 'outdoor', 'room_temperature']);
+    expect(Object.keys(c.rooms[0].sensors).sort()).toEqual(['battery', 'cloud_limit', 'energy', 'health', 'outdoor', 'room_temperature', 'valve', 'window']);
     expect(c.rooms[0].status_rows).toBeUndefined();
     expect(c.rooms[0].climate.hvac_modes.length).toBeGreaterThan(0);
     expect(diagnosticsText(c)).not.toContain('api_key');
@@ -187,12 +188,27 @@ describe('buildDiagnostics', () => {
     expect(diagnosticsText(c)).not.toContain('Thuisadres');
   });
 
-  it('tile and badge report only health and the room temperature', () => {
-    for (const cardType of ['custom:liquid-climate-tile', 'custom:liquid-climate-badge']) {
+  it('tile and badge report only the roles they read: health, battery, the window (badge) and the room temperature', () => {
+    const roles: Record<string, string[]> = {
+      'custom:liquid-climate-tile': ['battery', 'health', 'room_temperature'],
+      'custom:liquid-climate-badge': ['battery', 'health', 'room_temperature', 'window'],
+    };
+    for (const cardType of Object.keys(roles)) {
       const x = buildDiagnostics({ cardType, config: { entity: K }, hass: hassFor() }) as Record<string, any>;
-      expect(Object.keys(x.sensors).sort()).toEqual(['health', 'room_temperature']);
+      expect(Object.keys(x.sensors).sort()).toEqual(roles[cardType]);
       expect(x.status_rows).toBeUndefined();
     }
+  });
+
+  it('a lone opening contact is the window only when the valve role resolves', () => {
+    const f = mergeFixtures(allFixtures, trvFixtures);
+    delete f.states['binary_sensor.trv_sonoff_window_open'];
+    f.states['binary_sensor.o'] = { entity_id: 'binary_sensor.o', state: 'on', attributes: { device_class: 'opening' } } as never;
+    f.entities['binary_sensor.o'] = { entity_id: 'binary_sensor.o', platform: 'mqtt', device_id: 'dev_trv_sonoff', translation_key: null };
+    const windowOf = (sensors: Record<string, unknown>) =>
+      (buildDiagnostics({ cardType: 'custom:liquid-climate-badge', config: { entity: TRV.sonoff, sensors }, hass: makeHass(f), registry: f.registry as never }) as Record<string, any>).sensors.window.entities;
+    expect(windowOf({ valve: false })).toEqual([]);
+    expect(windowOf({ valve: 'auto' })).toEqual(['binary_sensor.o']);
   });
 
   it('survives a missing entity and a bare hass', () => {
@@ -357,10 +373,10 @@ describe.each(EDITORS)('$card editor: copy diagnostics', ({ tag, type, card }) =
 });
 
 const ANCHORS: Record<string, string[]> = {
-  dial: ['entity', 'sensors', 'controls', 'look', 'status-rows', 'write-delay'],
-  tile: ['entity', 'tap-action', 'write-delay', 'look'],
+  dial: ['entity', 'sensors', 'controls', 'look', 'status-rows', 'write-delay', 'write-hold'],
+  tile: ['entity', 'tap-action', 'write-delay', 'write-hold', 'look'],
   badge: ['entity', 'pause', 'tap-action', 'look'],
-  cluster: ['source', 'rooms', 'write-delay', 'look'],
+  cluster: ['source', 'rooms', 'write-delay', 'write-hold', 'look'],
 };
 
 describe.each(EDITORS)('$card editor: help links', ({ tag, type, card }) => {

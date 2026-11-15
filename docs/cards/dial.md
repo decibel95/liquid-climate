@@ -16,6 +16,8 @@ The demo runs on fake data. Changes stay in your browser.
 - Dual setpoint entities (`target_temp_low` and `target_temp_high`) get two knobs.
 - Humidity, outdoor temperature, energy, cloud rate limit and unit health are found by themselves, see [Sensors](/sensors).
 - Changes are collected for `write_delay` seconds and sent as the minimum number of service calls.
+- The header uses `hvac_action` when the entity reports it. A radiator valve that has reached its target reads `Idle, target 20.0°` instead of `Heating to 20.0°`, and the target arc turns softer while it is idle.
+- Radiator valves: a low battery shows as an alert, the valve opening as a `Valve 45%` figure. See [Radiator valves](/sensors#sensors-valves).
 
 <img src="/media/dial-drag.webp" alt="Dragging the temperature ring on the dial" loading="lazy">
 
@@ -49,12 +51,16 @@ Only `entity` is required.
 | `sensors.energy` | `auto` | As above, or a list of them. Today's energy, heating plus cooling |
 | `sensors.cloud_limit` | `auto` | As above |
 | `sensors.health` | `auto` | As above, or a list of them |
+| `sensors.battery` | `auto` | As above. Shown as an alert only when low. An explicit entity adds a `Battery 45%` figure |
+| `sensors.valve` | `auto` | As above. Valve opening or heating demand, shown as `Valve 45%` |
+| `sensors.window` | `auto` | As above. Read by the badge and the cluster, not by the dial |
 | `controls.modes` | `[off, heat, cool, heat_cool, auto, dry, fan_only]` | Modes shown as buttons |
 | `controls.fan` | `true` | Fan ring |
 | `controls.swing` | `true` | Vertical swing |
 | `controls.swing_horizontal` | `true` | Horizontal swing |
 | `controls.presets` | `true` | Presets |
 | `write_delay` | `1.5` | Seconds to collect changes before sending, `0` sends immediately |
+| `write_hold` | `10` | Seconds a sent value stays on screen while the device has not reported it back |
 | `status_entities` | `[]` | Rows under the dial, see [Status rows](/status-rows) |
 | `look.glass` | `theme` | `theme` (dark or light by the HA mode), `dark` or `light` |
 | `look.tint` | `0.09` | Mode tint opacity |
@@ -75,6 +81,9 @@ sensors:
   energy: auto
   cloud_limit: auto
   health: auto
+  battery: auto
+  valve: auto
+  window: auto
 controls:
   modes: [off, heat, cool, heat_cool, auto, dry, fan_only]
   fan: true
@@ -82,6 +91,7 @@ controls:
   swing_horizontal: true
   presets: true
 write_delay: 1.5
+write_hold: 10
 status_entities:
   - entity: input_boolean.living_room_pause
     name: Window pause
@@ -114,7 +124,7 @@ For Daikin Onecta the Setup tab also notes that changes are sent after `write_de
 
 ### Sensors {#dial-sensors}
 
-Sensors tab. Shows what was found for humidity, outdoor temperature, energy today, cloud call limit and unit health. **Change** picks another entity and sets a display name. The switch hides a role. Option: `sensors`, see [Sensors](/sensors).
+Sensors tab. Shows what was found for humidity, outdoor temperature, energy today, cloud call limit and unit health, and battery, valve position and window contact when the device has them. **Change** picks another entity and sets a display name. The switch hides a role. Option: `sensors`, see [Sensors](/sensors).
 
 ```yaml
 sensors:
@@ -146,7 +156,13 @@ Controls tab. Four switches: Fan ring, Vertical swing, Horizontal swing and Pres
 
 Controls tab. Changes are collected for this many seconds and sent as the minimum number of service calls, so one drag is one call. Choices: Instant (`0`), 1 s, 1.5 s (default), 3 s. Option: `write_delay`.
 
+Local devices (Zigbee, Z-Wave, Thread) answer at once, so `0` or 1 s feels best for them. Keep the default or raise it for cloud integrations, where every call counts.
+
 The dial, the tile, the badge, the cluster and any other Liquid Climate card on the same entity share one write queue per entity. Their changes go out together.
+
+### Show sent value for {#dial-write-hold}
+
+Controls tab. After a change is sent, the dial keeps showing the value you set until the entity reports it back, at most this many seconds. A battery valve can take a while to report, and without the hold the dial would snap back to the old value. Choices: 10 s (default), 30 s, 60 s. Option: `write_hold`, in seconds up to 3600; `0` means no hold.
 
 ### Status rows {#dial-status-rows}
 

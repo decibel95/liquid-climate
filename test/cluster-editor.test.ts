@@ -4,6 +4,8 @@ import '../src/index';
 import { clusterSource, normalizeClusterConfig, parseClusterRoom, pruneClusterConfig } from '../src/config';
 import { migrateConfig } from '../src/migrate';
 import { AREAS, FLOORS, allFixtures, makeHass, mergeFixtures } from './fixtures';
+import { TRV, trvFixtures } from './fixtures/trv';
+import type { HassEntity } from '../src/types';
 
 const K = 'climate.keuken_airco';
 type AnyEl = HTMLElement & Record<string, any>;
@@ -96,6 +98,53 @@ describe('cluster editor detection (E2)', () => {
     const keuken = (last().rooms as { entity: string; sensors: Record<string, unknown> }[]).find((r) => r.entity === K)!;
     expect(keuken.sensors.outdoor).toBe('sensor.mine');
     expect(keuken.sensors.cloud_limit).toBe('sensor.keuken_airco_gateway_ratelimit_remaining_day');
+  });
+});
+
+describe('cluster editor writes the valve (Z2M radiator valve with only an opening contact)', () => {
+  const VALVE = 'sensor.trv_sonoff_pi_heating_demand';
+  const OPENING = 'binary_sensor.trv_sonoff_opening';
+
+  /** Edit a cluster of the Sonoff unit, then mount a cluster card on the saved config. */
+  async function run(room: Record<string, unknown>) {
+    const f = mergeFixtures(allFixtures, trvFixtures);
+    delete f.states['binary_sensor.trv_sonoff_window_open'];
+    f.states[OPENING] = { entity_id: OPENING, state: 'on', attributes: { device_class: 'opening' } } as HassEntity;
+    f.entities[OPENING] = { entity_id: OPENING, platform: 'mqtt', device_id: 'dev_trv_sonoff', translation_key: null };
+    const hass = makeHass(f, '°C');
+    (hass as any).callWS = async (m: { type: string }) =>
+      m.type === 'config/entity_registry/list' ? Object.entries(f.registry).map(([entity_id, x]) => ({ entity_id, ...(x as object) })) : [];
+    const ed = document.createElement('liquid-climate-cluster-editor') as unknown as AnyEl;
+    ed.setConfig({ type: 'custom:liquid-climate-cluster', entities: [{ entity: TRV.sonoff, ...room }] });
+    ed.hass = hass;
+    const out: Record<string, any>[] = [];
+    ed.addEventListener('config-changed', (e: Event) => out.push((e as CustomEvent).detail.config));
+    document.body.append(ed);
+    await settle(ed);
+    const saved = out[out.length - 1] ?? { type: 'custom:liquid-climate-cluster', entities: [{ entity: TRV.sonoff, ...room }] };
+    const card = document.createElement('liquid-climate-cluster') as unknown as AnyEl;
+    card.setConfig(saved);
+    card.hass = hass;
+    document.body.append(card);
+    await card.updateComplete;
+    return { saved, foot: text($(card, '.room .foot')) };
+  }
+
+  it('writes the valve found through the registry, so the opening contact pauses the room', async () => {
+    const { saved, foot } = await run({});
+    expect(saved.entities[0].sensors.valve).toBe(VALVE);
+    expect(foot).toBe('Paused');
+  });
+
+  it('valve: false is kept, and the opening contact does not pause the room', async () => {
+    const { saved, foot } = await run({ sensors: { valve: false } });
+    expect(saved.entities[0].sensors.valve).toBe(false);
+    expect(foot).not.toBe('Paused');
+  });
+
+  it('keeps a valve the room already sets', async () => {
+    const { saved } = await run({ sensors: { valve: 'sensor.mine' } });
+    expect(saved.entities[0].sensors.valve).toBe('sensor.mine');
   });
 });
 

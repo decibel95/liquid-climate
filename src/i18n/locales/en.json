@@ -14,7 +14,9 @@
     "range": "{low} to {high}",
     "stepDown": "Lower target temperature",
     "stepUp": "Raise target temperature",
-    "target": "Target"
+    "target": "Target",
+    "batteryLow": "Battery low",
+    "batteryLowValue": "Battery low, {value}%"
   },
   "mode": {
     "off": "Off",
@@ -101,13 +103,16 @@
     "ariaHorizontal": "Horizontal airflow: {value}",
     "ariaPreset": "Preset: {value}",
     "problem": "{source} reports a problem",
-    "problemDetail": "{source} reports a problem ({detail})"
+    "problemDetail": "{source} reports a problem ({detail})",
+    "subTargetState": "{state}, target {target}"
   },
   "detect": {
     "humidity": "Humidity",
     "outdoor": "Outside",
     "energy": "Today",
-    "cloud": "Cloud calls left"
+    "cloud": "Cloud calls left",
+    "valve": "Valve",
+    "battery": "Battery"
   },
   "tile": {
     "ariaTile": "{name} climate",
@@ -142,7 +147,9 @@
     "controls": "Controls for {name}",
     "openDial": "{name}, {verb}, open dial",
     "modeGroup": "Mode, {name}",
-    "rangeAria": "Target range {range} {unit}, open controls"
+    "rangeAria": "Target range {range} {unit}, open controls",
+    "valve": "valve {value}%",
+    "batteryLow": "Battery low: {n}"
   },
   "menu": {
     "details": "Details",
@@ -272,6 +279,10 @@
     "editRoom": "Edit {name}",
     "showRoom": "Show {name}",
     "pauseHelp": "Shows the room as Paused while this entity is on, for example a window contact.",
-    "yamlHint": "Sensor and control options are set in YAML and apply to every room."
+    "yamlHint": "Sensor and control options are set in YAML and apply to every room.",
+    "sensorBattery": "Battery",
+    "sensorValve": "Valve position",
+    "sensorWindow": "Window contact",
+    "writeHold": "Show sent value for"
   }
 }

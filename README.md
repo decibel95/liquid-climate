@@ -62,6 +62,17 @@ Every unit in one card, grouped by floor or area. A header with a summary and sh
   </picture>
 </div>
 
+### Radiator valves
+
+Radiator valves (Zigbee2MQTT, Better Thermostat, generic thermostat) work on all four cards. An idle valve reads Idle, the valve opening shows as a figure, a low battery raises an alert and an open window pauses the badge and the cluster room.
+
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/public/media/trv-dark.png">
+    <img src="docs/public/media/trv-light.png" alt="Two radiator valve dials: one idle at its target, one heating, both with the valve opening shown" width="520">
+  </picture>
+</div>
+
 ### Also included
 
 - **Status rows and menu.** Add rows under the dial for helpers, scripts and automations. Rows for `input_select`, `select`, `input_boolean` and `switch` open an inline menu to change the value.

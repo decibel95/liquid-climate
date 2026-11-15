@@ -2,10 +2,10 @@ import { parseSensor, type LiquidClimateConfig, type ParsedSensor, type SensorSe
 import { num, numAuto, t } from '../i18n';
 import type { HomeAssistant } from '../types';
 import { deviceName } from './family';
-import { NO_ERROR_CODES, type Detection } from './roles';
+import { NO_ERROR_CODES, type Detection, type SensorRef } from './roles';
 
 export interface InfoItem {
-  key: 'humidity' | 'outdoor' | 'energy' | 'cloud_limit';
+  key: 'humidity' | 'outdoor' | 'energy' | 'cloud_limit' | 'valve' | 'battery';
   label: string;
   value: string;
   unit: string;
@@ -19,8 +19,22 @@ export interface HealthProblem {
   detail?: string;
 }
 
+/** Battery below this many percent counts as low. */
+export const BATTERY_LOW = 20;
+
+export interface BatteryState {
+  /** Level below the limit, or the low flag is on. Unavailable and unknown never count. */
+  low: boolean;
+  /** The level, when a percentage sensor reports a number. */
+  percent: number | null;
+}
+
 export interface ResolvedSensors {
   roomTemperature: number | null;
+  /** Null when no battery sensor is configured or detected. */
+  battery: BatteryState | null;
+  /** The window contact reports open (`on`). */
+  windowOpen: boolean;
   info: InfoItem[];
   problems: HealthProblem[];
   /** Every entity id this resolution reads, for change detection. */
@@ -36,6 +50,17 @@ export function numericState(hass: HomeAssistant, id?: string | null): number | 
   if (st === undefined || st === null || st.trim() === '') return null;
   const n = Number(st);
   return Number.isFinite(n) ? n : null;
+}
+
+/** Valve opening in percent: a sensor's state, or the current_position of a `valve` entity. */
+function valvePercent(hass: HomeAssistant, id?: string): number | null {
+  if (!id) return null;
+  return id.startsWith('valve.') ? numOrNull(hass.states[id]?.attributes.current_position) : numericState(hass, id);
+}
+
+/** Whether the room is paused: the explicit pause entity decides when set, else the window contact. */
+export function isPaused(hass: HomeAssistant, pauseEntity: string | undefined, windowOpen: boolean): boolean {
+  return pauseEntity ? hass.states[pauseEntity]?.state === 'on' : windowOpen;
 }
 
 /** Room temperature: the temperature_sensor override when it has a number, else the entity's current_temperature. */
@@ -59,6 +84,16 @@ function pick(setting: SensorSetting | undefined, detected: string[]): { ids: st
   return { ids: p.mode === 'off' ? [] : p.mode === 'auto' ? detected : p.ids, p };
 }
 
+/**
+ * The window contact the cards use for an auto setting. A window-class contact is authoritative; an `opening`
+ * contact (could be a door) only counts when the valve resolves to an entity: auto-detected, explicit or
+ * written out by the editor. `valve: false` therefore disables it too.
+ */
+export function windowOf(detection: Detection, valve: SensorSetting | undefined): SensorRef | null {
+  if (detection.window) return detection.window;
+  if (!detection.opening) return null;
+  return pick(valve, detection.valve ? [detection.valve.entity_id] : []).ids.length ? detection.opening : null;
+}
 
 export function resolveSensors(
   hass: HomeAssistant,
@@ -103,6 +138,27 @@ export function resolveSensors(
     info.push({ key: 'cloud_limit', label: cloudPick.p.name ?? t(hass, 'detect.cloud'), value: num(hass, Math.round(cloud), 0), unit: '', warn: cloud < 30 });
   }
 
+  const valvePick = pick(s.valve, detection.valve ? [detection.valve.entity_id] : []);
+  const valveId = seen(valvePick.ids)[0];
+  const valve = valvePercent(hass, valveId);
+  if (valve != null) info.push({ key: 'valve', label: valvePick.p.name ?? t(hass, 'detect.valve'), value: num(hass, Math.round(valve), 0), unit: '%' });
+
+  // Battery: the percentage sensor and the low flag both count. The figure is opt-in (an explicit entity).
+  const batPick = pick(s.battery, [detection.battery, detection.batteryLow].filter((r) => !!r).map((r) => r!.entity_id));
+  const batIds = seen(batPick.ids);
+  const level = numericState(hass, batIds.find((id) => !id.startsWith('binary_sensor.')));
+  const flag = batIds.find((id) => id.startsWith('binary_sensor.'));
+  const battery: BatteryState | null = batIds.length
+    ? { low: (level != null && level < BATTERY_LOW) || (!!flag && hass.states[flag]?.state === 'on'), percent: level }
+    : null;
+  if (batPick.p.mode === 'set' && level != null) {
+    info.push({ key: 'battery', label: batPick.p.name ?? t(hass, 'detect.battery'), value: num(hass, Math.round(level), 0), unit: '%', warn: battery!.low });
+  }
+
+  const winPick = pick(s.window, [windowOf(detection, s.valve)].filter((r) => !!r).map((r) => r!.entity_id));
+  const winId = seen(winPick.ids)[0];
+  const windowOpen = !!winId && hass.states[winId]?.state === 'on';
+
   // Problem flags decide. Error codes are only the trigger when the family has no flags,
   // because some units report a non-zero code (U0-00) while healthy.
   const healthPick = pick(s.health, detection.health.map((h) => h.entity_id));
@@ -132,7 +188,7 @@ export function resolveSensors(
     }
   }
 
-  return { roomTemperature, info, problems, watched, figures: { outdoor: outId, energy: energyPick.ids, cloud_limit: cloudId } };
+  return { roomTemperature, battery, windowOpen, info, problems, watched, figures: { outdoor: outId, energy: energyPick.ids, cloud_limit: cloudId } };
 }
 
 function numOrNull(v: unknown): number | null {

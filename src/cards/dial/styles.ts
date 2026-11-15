@@ -488,6 +488,12 @@ export const dialStyles = css`
     font-size: 13px;
   }
 
+  .alert.battery {
+    background: color-mix(in srgb, var(--lc-warn) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lc-warn) 45%, transparent);
+    color: var(--lc-warn);
+  }
+
   .status {
     position: relative;
     display: flex;

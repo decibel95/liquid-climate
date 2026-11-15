@@ -14,7 +14,9 @@
     "range": "de {low} à {high}",
     "stepDown": "Baisser la température cible",
     "stepUp": "Augmenter la température cible",
-    "target": "Cible"
+    "target": "Cible",
+    "batteryLow": "Batterie faible",
+    "batteryLowValue": "Batterie faible, {value}%"
   },
   "mode": {
     "off": "Arrêt",
@@ -101,13 +103,16 @@
     "ariaHorizontal": "Flux d'air horizontal : {value}",
     "ariaPreset": "Préréglage : {value}",
     "problem": "{source} signale un problème",
-    "problemDetail": "{source} signale un problème ({detail})"
+    "problemDetail": "{source} signale un problème ({detail})",
+    "subTargetState": "{state}, cible {target}"
   },
   "detect": {
     "humidity": "Humidité",
     "outdoor": "Extérieur",
     "energy": "Aujourd'hui",
-    "cloud": "Appels cloud restants"
+    "cloud": "Appels cloud restants",
+    "valve": "Vanne",
+    "battery": "Batterie"
   },
   "tile": {
     "ariaTile": "Climat {name}",
@@ -142,7 +147,9 @@
     "controls": "Commandes pour {name}",
     "openDial": "{name}, {verb}, ouvrir le cadran",
     "modeGroup": "Mode, {name}",
-    "rangeAria": "Plage cible {range} {unit}, ouvrir les commandes"
+    "rangeAria": "Plage cible {range} {unit}, ouvrir les commandes",
+    "valve": "vanne {value}%",
+    "batteryLow": "Batterie faible : {n}"
   },
   "menu": {
     "details": "Détails",
@@ -272,6 +279,10 @@
     "editRoom": "Modifier {name}",
     "showRoom": "Afficher {name}",
     "pauseHelp": "Affiche la pièce comme en pause tant que cette entité est active, par exemple un contact de fenêtre.",
-    "yamlHint": "Les options de capteurs et de commandes se règlent en YAML et valent pour chaque pièce."
+    "yamlHint": "Les options de capteurs et de commandes se règlent en YAML et valent pour chaque pièce.",
+    "sensorBattery": "Batterie",
+    "sensorValve": "Ouverture de la vanne",
+    "sensorWindow": "Contact de fenêtre",
+    "writeHold": "Valeur envoyée affichée"
   }
 }

@@ -61,7 +61,7 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
   }
 
   /**
-   * Whatever the registry resolves for outdoor, energy and cloud limit becomes a per-room
+   * Whatever the registry resolves for outdoor, energy, cloud limit and the valve becomes a per-room
    * override, only where it differs from what the card finds by itself. The card never reads
    * the registry at runtime. A room's own setting is never replaced.
    */
@@ -75,7 +75,7 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
       const withReg = materializeConfig(dial, detectSensors(this.hass, id, info)).sensors;
       const without = materializeConfig(dial, detectSensors(this.hass, id)).sensors;
       const diff: NonNullable<ClusterRoom['sensors']> = {};
-      for (const key of ['outdoor', 'energy', 'cloud_limit'] as const) {
+      for (const key of ['outdoor', 'energy', 'cloud_limit', 'valve'] as const) {
         if (JSON.stringify(withReg[key]) !== JSON.stringify(without[key])) (diff as Record<string, unknown>)[key] = withReg[key];
       }
       if (Object.keys(diff).length) found.set(id, diff);

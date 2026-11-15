@@ -18,13 +18,14 @@ badges:
 
 ## The value {#badge-value}
 
-The value is the first that applies:
+The value is the first that applies. Unavailable wins over a low battery:
 
 | Value | When | Colour |
 |-------|------|--------|
 | Error | A health problem flag is on (error codes are only detail, as on the dial) | red |
-| Paused | `pause_entity` is `on` | amber |
+| Paused | `pause_entity` is `on`, or without `pause_entity` the window contact of the device is open | amber |
 | `--` | The climate entity is unavailable, unknown or missing | grey |
+| Battery low | The battery is under 20 percent or its low flag is on. It ranks below Paused and replaces the room temperature | amber |
 | Off | The unit is off | grey |
 | `21.0°` | Otherwise: the room temperature (`temperature_sensor` wins) | mode colour |
 
@@ -37,10 +38,12 @@ On light glass the amber, red and fan colours are drawn darker so they stay read
 | `entity` | required | Climate entity |
 | `name` | entity name | Name on the badge |
 | `temperature_sensor` | | Room temperature shown instead of the entity's own reading |
-| `pause_entity` | | Entity that shows the badge as Paused while `on`, for example a window contact |
+| `pause_entity` | | Entity that shows the badge as Paused while `on`, for example a window contact. Wins over `sensors.window` |
 | `icon_only` | `false` | Round icon badge |
 | `tap_action` | `more-info` | `more-info`, `sheet` (dial) or `none` |
 | `sensors.health` | `auto` | As on the dial: `auto`, `false` or entity ids |
+| `sensors.window` | `auto` | `auto`, `false` or an entity id. The device's window contact pauses the badge when `pause_entity` is not set |
+| `sensors.battery` | `auto` | `auto`, `false` or an entity id. A low battery shows as Battery low |
 | `look` | | `glass`, `blur` and `motion`. `motion: minimal` stops the dot pulsing |
 | `config_version` | `1` | Written by the editor |
 
@@ -67,7 +70,7 @@ A temperature sensor shown instead of the unit's own reading. Option: `temperatu
 
 ### Pause entity {#badge-pause}
 
-While this entity is `on`, the badge shows Paused. Use a window contact, for example. The editor lists `binary_sensor`, `input_boolean` and `switch` entities. Option: `pause_entity`.
+While this entity is `on`, the badge shows Paused. Use a window contact, for example. Radiator valves with their own window detection (Zigbee2MQTT `window_open`) need no pause entity, the badge uses that contact by itself, see [Radiator valves](/sensors#sensors-valves). The editor lists `binary_sensor`, `input_boolean` and `switch` entities. Option: `pause_entity`.
 
 <LiveCard type="badge" :config="{ entity: 'climate.living_room', pause_entity: 'input_boolean.window' }" />
 

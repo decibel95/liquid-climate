@@ -4,7 +4,7 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { normalizeBadgeConfig, sheetConfig, type BadgeConfig } from '../../config';
 import { migrateConfig } from '../../migrate';
 import { Memo } from '../../detect/cache';
-import { resolveSensors } from '../../detect/resolve';
+import { isPaused, resolveSensors } from '../../detect/resolve';
 import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import type { Detection } from '../../detect/roles';
 import { DOT_RING, resolveGlass } from '../../ui/glass';
@@ -16,14 +16,14 @@ import { hassNeedsRender } from '../shared/render-gate';
 import '../shared/sheet';
 import type { LiquidClimateSheet } from '../shared/sheet';
 
-export type BadgeKind = 'error' | 'paused' | 'unavailable' | 'off' | 'on';
+export type BadgeKind = 'error' | 'paused' | 'battery' | 'unavailable' | 'off' | 'on';
 
 export interface BadgeState {
   kind: BadgeKind;
   value: string;
   color: string;
   icon: string;
-  /** Error and paused ask for attention: the icon-only badge shows a pulsing dot. */
+  /** Error, paused and a low battery ask for attention: the icon-only badge shows a pulsing dot. */
   attention: boolean;
   /** Every entity id the state reads, for change detection. */
   watched: string[];
@@ -31,7 +31,8 @@ export interface BadgeState {
 
 /**
  * What the badge shows, by priority: a health problem (problem flags decide, error codes
- * are detail only), then the pause entity, then off, then the room temperature.
+ * are detail only), then paused (the pause entity, else a window contact of the device),
+ * then unavailable, then a low battery (it replaces the room temperature), then off, then the room temperature.
  */
 export function badgeState(hass: HomeAssistant, cfg: BadgeConfig, detection: Detection): BadgeState {
   const s = hass.states[cfg.entity];
@@ -41,11 +42,14 @@ export function badgeState(hass: HomeAssistant, cfg: BadgeConfig, detection: Det
   if (sensors.problems.length) {
     return { ...base, kind: 'error', value: t(hass, 'common.error'), color: STATUS_COLORS.error, icon: ICONS.alert, attention: true };
   }
-  if (cfg.pause_entity && hass.states[cfg.pause_entity]?.state === 'on') {
+  if (isPaused(hass, cfg.pause_entity, sensors.windowOpen)) {
     return { ...base, kind: 'paused', value: t(hass, 'common.paused'), color: STATUS_COLORS.paused, icon: ICONS.door, attention: true };
   }
   if (!s || s.state === 'unavailable' || s.state === 'unknown') {
     return { ...base, kind: 'unavailable', value: '--', color: STATUS_COLORS.off, icon: ICONS.power, attention: false };
+  }
+  if (sensors.battery?.low) {
+    return { ...base, kind: 'battery', value: t(hass, 'common.batteryLow'), color: STATUS_COLORS.paused, icon: ICONS.alert, attention: true };
   }
   if (s.state === 'off') {
     return { ...base, kind: 'off', value: t(hass, 'common.off'), color: STATUS_COLORS.off, icon: ICONS.power, attention: false };

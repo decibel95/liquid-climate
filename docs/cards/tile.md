@@ -20,6 +20,7 @@ entity: climate.living_room
 - The status line uses `hvac_action` when the entity reports one (Heating, Idle) and the mode otherwise, followed by the room temperature, for example `Heating, 17.3° inside`.
 - The steppers move the target by `target_temp_step` within `min_temp` and `max_temp`. They are disabled while off, unavailable or in a mode without a setpoint. Presses are collected for `write_delay` seconds and sent as one call, the same as the dial.
 - A dual setpoint shows the range, for example 19.0 to 24.0°, without steppers. Tapping it opens the sheet.
+- The status line also follows `hvac_action` for radiator valves, so a valve at its target reads `Idle, 19.4° inside`. A low battery replaces it with `Battery low, 12%` in the warning colour, see [Radiator valves](/sensors#sensors-valves).
 - When a health problem flag is on, the power button turns red with an alert icon and the status line reads `Error`, plus the error code when there is one. Screen readers hear it through a live region.
 - `unavailable` and `unknown` both show `Unavailable` with every control disabled.
 
@@ -33,7 +34,9 @@ entity: climate.living_room
 | `name` | entity name | Name on the tile |
 | `temperature_sensor` | | Room temperature shown instead of the entity's own reading |
 | `tap_action` | `sheet` | Tap on the name: `sheet` (dial), `more-info` or `none` |
-| `write_delay` | `1.5` | Seconds to collect presses before sending, `0` sends immediately |
+| `write_delay` | `1.5` | Seconds to collect presses before sending, `0` sends immediately. Use `0` or `1` for local devices |
+| `write_hold` | `10` | Seconds a sent value stays on screen while the device has not reported it back |
+| `sensors.battery` | `auto` | `auto`, `false` or an entity id. A low battery shows on the status line |
 | `sensors.health` | `auto` | As on the dial: `auto`, `false` or entity ids. Decides the error state of the power button and status line |
 | `look` | | `glass`, `blur` and `motion` as for the dial. `motion: minimal` stops the flame. `look.tint` has no effect on the tile, it is passed to the dial sheet |
 | `config_version` | `1` | Written by the editor |
@@ -75,6 +78,10 @@ Tapping the name with `sheet` opens the dial in a sheet, a modal dialog above th
 ### Write delay {#tile-write-delay}
 
 Seconds to collect presses before sending. Choices: Instant (`0`), 1 s, 1.5 s, 3 s. Option: `write_delay`.
+
+### Show sent value for {#tile-write-hold}
+
+Seconds a sent value stays on screen while the entity has not reported it back, for slow battery devices. Choices: 10 s, 30 s, 60 s. Option: `write_hold`, in seconds up to 3600; `0` means no hold.
 
 ### Look {#tile-look}
 

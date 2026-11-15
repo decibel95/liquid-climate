@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { newPage, openScene } from './browser.mjs';
 
-const SCENES = ['hero', 'dial', 'tile', 'badge', 'cluster', 'editor', 'cluster-editor', 'status-menu'];
+export const SCENES = ['hero', 'dial', 'tile', 'badge', 'cluster', 'editor', 'cluster-editor', 'status-menu', 'trv'];
 
 const stageSize = (page) =>
   page.evaluate(() => {
@@ -45,13 +45,16 @@ async function poster(browser, base, out) {
   }
 }
 
-export async function renderStills(browser, base, out) {
+/** Without names: every still plus the split hero and the poster. With names: only the stills of those scenes. */
+export async function renderStills(browser, base, out, only = []) {
   console.log('Stills');
   for (const scene of SCENES) {
+    if (only.length && !only.includes(scene)) continue;
     for (const theme of ['light', 'dark']) {
       await still(browser, base, out, { scene, theme, name: `${scene}-${theme}` });
     }
   }
+  if (only.length) return;
   await still(browser, base, out, { scene: 'hero', theme: 'split', name: 'hero-split' });
   await poster(browser, base, out);
 }

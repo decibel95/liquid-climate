@@ -14,7 +14,9 @@
     "range": "da {low} a {high}",
     "stepDown": "Abbassa la temperatura target",
     "stepUp": "Alza la temperatura target",
-    "target": "Target"
+    "target": "Target",
+    "batteryLow": "Batteria scarica",
+    "batteryLowValue": "Batteria scarica, {value}%"
   },
   "mode": {
     "off": "Spento",
@@ -101,13 +103,16 @@
     "ariaHorizontal": "Flusso d'aria orizzontale: {value}",
     "ariaPreset": "Preset: {value}",
     "problem": "{source} segnala un problema",
-    "problemDetail": "{source} segnala un problema ({detail})"
+    "problemDetail": "{source} segnala un problema ({detail})",
+    "subTargetState": "{state}, target {target}"
   },
   "detect": {
     "humidity": "Umidità",
     "outdoor": "Esterno",
     "energy": "Oggi",
-    "cloud": "Chiamate rimaste"
+    "cloud": "Chiamate rimaste",
+    "valve": "Valvola",
+    "battery": "Batteria"
   },
   "tile": {
     "ariaTile": "Clima {name}",
@@ -142,7 +147,9 @@
     "controls": "Controlli per {name}",
     "openDial": "{name}, {verb}, apri il selettore",
     "modeGroup": "Modalità, {name}",
-    "rangeAria": "Intervallo target {range} {unit}, apri i controlli"
+    "rangeAria": "Intervallo target {range} {unit}, apri i controlli",
+    "valve": "valvola {value}%",
+    "batteryLow": "Batteria scarica: {n}"
   },
   "menu": {
     "details": "Dettagli",
@@ -272,6 +279,10 @@
     "editRoom": "Modifica {name}",
     "showRoom": "Mostra {name}",
     "pauseHelp": "Mostra la stanza in pausa finché questa entità è attiva, per esempio un contatto finestra.",
-    "yamlHint": "Le opzioni di sensori e controlli si impostano in YAML e valgono per ogni stanza."
+    "yamlHint": "Le opzioni di sensori e controlli si impostano in YAML e valgono per ogni stanza.",
+    "sensorBattery": "Batteria",
+    "sensorValve": "Apertura valvola",
+    "sensorWindow": "Contatto finestra",
+    "writeHold": "Mostra il valore inviato"
   }
 }

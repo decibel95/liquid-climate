@@ -7,7 +7,7 @@ Symptoms: the card shows "Custom element doesn't exist: liquid-climate-card", or
 1. Check the resource. Settings, Dashboards, three dots, Resources. There must be an entry for `/local/liquid-climate.js` (or the HACS path) of type **JavaScript module**.
 2. Check the file. It must be at `/config/www/liquid-climate.js` for the `/local/liquid-climate.js` URL.
 3. Hard refresh the browser (Ctrl+F5, or Cmd+Shift+R). The Home Assistant app on a phone: clear the app cache in the app settings.
-4. Beat the cache. Home Assistant caches `/local/` files for a long time. Add a version to the resource URL and save, for example `/local/liquid-climate.js?v=0.9.0`. Change the number each time you replace the file.
+4. Beat the cache. Home Assistant caches `/local/` files for a long time. Add a version to the resource URL and save, for example `/local/liquid-climate.js?v=0.10.0`. Change the number each time you replace the file.
 5. Check the card type. The four types are `custom:liquid-climate-card`, `custom:liquid-climate-tile`, `custom:liquid-climate-badge` and `custom:liquid-climate-cluster`.
 6. Open the browser console. A load error there names the cause.
 
@@ -27,6 +27,15 @@ sensors:
 ```
 
 See [Sensors](/sensors) for the rules per role.
+
+## Radiator valves {#radiator-valves}
+
+- **The valve opening, battery or window contact does not show.** The card uses a role only when exactly one entity on the climate device qualifies. A battery shows only when it is low. For the others, open the editor, Sensors tab, and check what was found, or set `sensors.valve`, `sensors.battery` or `sensors.window` to an entity id. Without administrator rights the editor cannot read `unique_id`, so a Zigbee2MQTT `Pi heating demand` sensor must be set by hand.
+- **A generic thermostat or Better Thermostat has no sensors.** They have no device of their own with extra entities (or none that qualify). Set the roles in YAML, or leave them out. Everything else works.
+- **The target jumps back after a change.** A battery valve can take a minute to report the new target. Raise `write_hold` to 30 or 60 seconds, see [show sent value for](/cards/dial#dial-write-hold).
+- **Every change is slow to apply.** The card waits `write_delay` seconds (default 1.5) after the last change. For local devices (Zigbee, Z-Wave, Thread) set it to `0` or `1`, see [write delay](/cards/dial#dial-write-delay). Keep it higher for cloud integrations, which limit the calls.
+- **The dial says Idle, not Heating.** The header follows `hvac_action`, which is what the valve reports: idle means the valve is not heating, usually because it reached its target.
+- **The window contact does not pause the dial or the tile.** Only the badge and the cluster have a Paused state.
 
 ## Cloud limit reached {#cloud-limit}
 

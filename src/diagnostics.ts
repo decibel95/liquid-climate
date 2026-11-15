@@ -9,7 +9,8 @@ import {
 import { VERSION } from './const';
 import { clusterGroups } from './cards/cluster/grouping';
 import { materializeConfig } from './detect/materialize';
-import { detectSensors, type RegistryInfo } from './detect/roles';
+import { windowOf } from './detect/resolve';
+import { detectSensors, type RegistryInfo, type SensorRef } from './detect/roles';
 import type { HomeAssistant } from './types';
 
 /** Config keys whose name contains one of these (or the whole word pin) are dropped, in any case and at any depth. */
@@ -40,21 +41,25 @@ interface RoleInfo {
   via?: string;
 }
 
-type Role = 'humidity' | 'outdoor' | 'energy' | 'cloud_limit' | 'health';
+type Role = keyof LiquidClimateConfig['sensors'];
 
-/** The sensor roles each card type actually reads at runtime (the tile and badge only use health and the room temperature). */
+/** The sensor roles each card type actually reads at runtime (the tile and badge only use health, the battery, the window and the room temperature). */
 const ROLES_BY_CARD: Record<string, readonly Role[]> = {
-  'liquid-climate-card': ['humidity', 'outdoor', 'energy', 'cloud_limit', 'health'],
-  'liquid-climate-cluster': ['outdoor', 'energy', 'cloud_limit', 'health'],
-  'liquid-climate-tile': ['health'],
-  'liquid-climate-badge': ['health'],
+  'liquid-climate-card': ['humidity', 'outdoor', 'energy', 'cloud_limit', 'health', 'battery', 'valve'],
+  'liquid-climate-cluster': ['outdoor', 'energy', 'cloud_limit', 'health', 'battery', 'valve', 'window'],
+  'liquid-climate-tile': ['health', 'battery'],
+  'liquid-climate-badge': ['health', 'battery', 'window'],
 };
 
 const strings = (v: unknown): string[] => (Array.isArray(v) ? v.map(String) : []);
 
 /** Sensor roles of one dial config: which entities, and whether detection, the user or a switch decided. */
 function rolesOf(hass: HomeAssistant, config: LiquidClimateConfig, roles: readonly Role[], registry?: RegistryInfo): Record<string, RoleInfo> {
-  const found = hass.states[config.entity] ? materializeConfig(config, detectSensors(hass, config.entity, registry)).sensors : config.sensors;
+  const det = hass.states[config.entity] ? detectSensors(hass, config.entity, registry) : null;
+  // Battery and window are settled by device_class at runtime, so the editor does not write them out: read them from detection.
+  const ids = (...refs: (SensorRef | null)[]) => refs.filter((r): r is SensorRef => !!r).map((r) => r.entity_id);
+  const made = det ? materializeConfig(config, det).sensors : null;
+  const found = det && made ? { ...made, battery: ids(det.battery, det.batteryLow), window: ids(windowOf(det, made.valve)) } : config.sensors;
   const out: Record<string, RoleInfo> = {};
   for (const role of roles) {
     const set = parseSensor(config.sensors[role]);

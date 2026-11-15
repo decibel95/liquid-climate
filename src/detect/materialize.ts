@@ -15,6 +15,11 @@ export function materializeConfig(cfg: LiquidClimateConfig, d: Detection): Liqui
     cloud_limit: d.cloudLimit?.entity_id ?? null,
     energy: one(d.energy.filter((e) => e.period === 'day' && e.kind).map((e) => e.entity_id)),
     health: one(d.health.map((h) => h.entity_id)),
+    // Battery and window are settled by device_class at runtime. Writing them out would turn the
+    // battery into an explicit entity, which shows its figure; the valve needs the registry's names.
+    battery: null,
+    valve: d.valve?.entity_id ?? null,
+    window: null,
   };
   const sensors = { ...cfg.sensors };
   for (const key of Object.keys(found) as (keyof typeof found)[]) {

@@ -23,7 +23,7 @@ With no options it shows every climate entity, grouped under the floors set in H
 - Outside temperature, energy today and cloud calls left follow, each only when a room resolves it. Energy is summed over every distinct sensor of every room in kWh (Wh and MWh are converted, a sensor shared by two rooms counts once). Cloud calls left is the lowest count, since units on one account share the budget.
 - Each room shows the target arc in the mode colour, a dot for the room temperature, the fan ring, a slow spinning ring while the fan runs (not with `motion: minimal` or reduced motion), the target, `Inside 21.0°` and a footer such as `Heating, fan 2, 2.9 kWh`. Its icon carries the mode colour only while the unit is doing its job, so an idle unit in heat mode stays neutral.
 - Tapping a room selects it. The strip below shows its name and status, the modes that entity supports and the target steppers. Tapping the name opens the full dial in a sheet, for fan, swing and presets. A dual setpoint shows the range, for example 19.0 to 24.0°, instead of steppers, and tapping it opens the dial too.
-- Rooms show `Error` (health flags decide, codes are detail, as on the tile), `Paused` while their `pause_entity` is on, `Unavailable`, or `Off`.
+- Rooms show `Error` (health flags decide, codes are detail, as on the tile), `Paused` while their `pause_entity` is on (or, without one, the window contact of the unit is open), `Unavailable`, `Battery low` or `Off`. A radiator valve adds its opening to the footer, for example `Heating, valve 45%`. See [Radiator valves](/sensors#sensors-valves).
 - Every write goes through the same per-entity queue as the dial, tile and badge, so a press on the cluster and one on a tile for the same unit are sent as one call after `write_delay`.
 
 ## Options {#cluster-options}
@@ -40,7 +40,8 @@ With no options it shows every climate entity, grouped under the floors set in H
 | `rooms` | | Per-room overrides in the automatic modes, the same objects as in `entities` |
 | `sensors` | `auto` | As on the dial, for every room. A room's own `sensors` win per role |
 | `controls` | `modes`: all seven; `fan`, `swing`, `swing_horizontal`, `presets`: `true` | As on the dial: `modes` limits the strip, the rest applies to the dial a room opens |
-| `write_delay` | `1.5` | Seconds to collect presses before sending, `0` sends immediately |
+| `write_delay` | `1.5` | Seconds to collect presses before sending, `0` sends immediately. Use `0` or `1` for local devices |
+| `write_hold` | `10` | Seconds a sent value stays on screen while the device has not reported it back |
 | `look` | `glass: theme`, `tint: 0.09`, `blur: 30`, `motion: rich` | `glass`, `blur` and `motion` as for the dial. `tint` has no effect on the cluster, it is passed to the dial sheet of a room |
 | `config_version` | `1` | Written by the editor |
 
@@ -136,6 +137,10 @@ The editor does not have fields for sensors and controls of the cluster. It says
 ### Write delay {#cluster-write-delay}
 
 Seconds to collect presses before sending. Choices: Instant (`0`), 1 s, 1.5 s, 3 s. Option: `write_delay`.
+
+### Show sent value for {#cluster-write-hold}
+
+Seconds a sent value stays on screen while the entity has not reported it back, for slow battery devices. Choices: 10 s, 30 s, 60 s. Option: `write_hold`, in seconds up to 3600; `0` means no hold.
 
 ### Look {#cluster-look}
 

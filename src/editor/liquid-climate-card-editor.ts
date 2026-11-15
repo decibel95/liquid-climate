@@ -15,7 +15,8 @@ import {
   type SensorSetting,
 } from '../config';
 import { migrateConfig } from '../migrate';
-import { detectSensors, suggestRoomSensors, type Detection, type RegistryInfo } from '../detect/roles';
+import { windowOf } from '../detect/resolve';
+import { detectSensors, suggestRoomSensors, type Detection, type RegistryInfo, type SensorRef } from '../detect/roles';
 import { fetchRegistry } from '../detect/registry';
 import { getDeviceFamily } from '../detect/family';
 import { materializeConfig } from '../detect/materialize';
@@ -35,6 +36,18 @@ const TABS: [Tab, string][] = [
   ['controls', 'editor.tabControls'],
   ['look', 'editor.tabLook'],
 ];
+
+/** Entity domains each role can point at. */
+const SENSOR_DOMAINS: Record<keyof LiquidClimateConfig['sensors'], string[]> = {
+  humidity: ['sensor.'],
+  outdoor: ['sensor.'],
+  energy: ['sensor.'],
+  cloud_limit: ['sensor.'],
+  health: ['binary_sensor.'],
+  battery: ['sensor.', 'binary_sensor.'],
+  valve: ['sensor.', 'valve.'],
+  window: ['binary_sensor.'],
+};
 
 interface SensorRow {
   key: keyof LiquidClimateConfig['sensors'];
@@ -284,6 +297,9 @@ export class LiquidClimateCardEditor extends LitElement {
         value: today.length ? `${num(this.hass, today.reduce((a, e) => a + (Number(st(e.entity_id)) || 0), 0), 1)} kWh` : '',
       },
       { key: 'cloud_limit', label: this._t('editor.sensorCloud'), source: d.cloudLimit?.source ?? '', found: !!d.cloudLimit, ids: d.cloudLimit ? [d.cloudLimit.entity_id] : [], value: val(d.cloudLimit?.entity_id) },
+      this._row('battery', 'editor.sensorBattery', d.battery ?? d.batteryLow, [d.battery, d.batteryLow]),
+      this._row('valve', 'editor.sensorValve', d.valve, [d.valve]),
+      this._row('window', 'editor.sensorWindow', windowOf(d, cfg.sensors.valve), [windowOf(d, cfg.sensors.valve)]),
       {
         key: 'health',
         label: this._t('editor.sensorHealth'),
@@ -295,10 +311,23 @@ export class LiquidClimateCardEditor extends LitElement {
     ];
   }
 
+  /** A single-sensor row; `all` are the detected ids (battery has a level and a low flag). */
+  private _row(key: SensorRow['key'], label: string, shown: SensorRef | null, all: (SensorRef | null)[]): SensorRow {
+    const ids = all.filter((r): r is SensorRef => !!r).map((r) => r.entity_id);
+    const id = shown?.entity_id;
+    return { key, label: this._t(label), source: shown?.source ?? '', found: !!shown, ids, value: id && this.hass.states[id] ? formatState(this.hass, this.hass.states[id]).trim() : '' };
+  }
+
   private _sensors(cfg: LiquidClimateConfig) {
     const d = this._detection();
     if (!d) return html`<p class="hint">${this._t('editor.pickFirst')}</p>`;
-    const rows = this._rows(cfg, d);
+    // Battery, valve and window are for devices that have them: hidden until found or set.
+    const optional = ['battery', 'valve', 'window'];
+    // Only the badge and the cluster read the window contact; the dial and tile editors leave it out.
+    const readsWindow = this._card === 'badge' || this._card === 'cluster';
+    const rows = this._rows(cfg, d)
+      .filter((r) => r.key !== 'window' || readsWindow)
+      .filter((r) => !optional.includes(r.key) || r.found || cfg.sensors[r.key] !== 'auto');
     const unit = d.unitTemperature;
     // display: contents keeps the body's spacing while every part sits inside an element.
     return html`<div class="group">
@@ -351,7 +380,7 @@ export class LiquidClimateCardEditor extends LitElement {
                 />
                 <datalist id="lc-ids-${r.key}">
                   ${Object.keys(this.hass.states)
-                    .filter((id) => id.startsWith(r.key === 'health' ? 'binary_sensor.' : 'sensor.'))
+                    .filter((id) => SENSOR_DOMAINS[r.key].some((domain) => id.startsWith(domain)))
                     .map((id) => html`<option value=${id}></option>`)}
                 </datalist>
               </div>`
@@ -499,7 +528,12 @@ export class LiquidClimateCardEditor extends LitElement {
     `;
   }
 
+  /** The write delay and the hold after sending, in one wrapper that adds no layout. */
   protected _writeDelay(cfg: LiquidClimateConfig) {
+    return html`<div class="group">${this._delaySeg(cfg)}${this._writeHold(cfg)}</div>`;
+  }
+
+  private _delaySeg(cfg: LiquidClimateConfig) {
     return this._seg<number>(
       this._t('editor.writeDelay'),
       [
@@ -511,6 +545,17 @@ export class LiquidClimateCardEditor extends LitElement {
       cfg.write_delay,
       (v) => this._fire({ write_delay: v }),
       this._help('write-delay', 'editor.writeDelay'),
+    );
+  }
+
+  /** How long a sent value is shown as is while a slow device has not reported it back. */
+  protected _writeHold(cfg: LiquidClimateConfig) {
+    return this._seg<number>(
+      this._t('editor.writeHold'),
+      [10, 30, 60].map((n): [number, string] => [n, this._t('editor.seconds', { n: num(this.hass, n, 0) })]),
+      cfg.write_hold,
+      (v) => this._fire({ write_hold: v }),
+      this._help('write-hold', 'editor.writeHold'),
     );
   }
 

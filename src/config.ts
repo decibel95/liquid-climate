@@ -120,6 +120,9 @@ export interface LiquidClimateConfig {
     energy: SensorSetting;
     cloud_limit: SensorSetting;
     health: SensorSetting;
+    battery: SensorSetting;
+    valve: SensorSetting;
+    window: SensorSetting;
   };
   controls: {
     modes: string[];
@@ -129,6 +132,8 @@ export interface LiquidClimateConfig {
     presets: boolean;
   };
   write_delay: number;
+  /** Seconds a sent value is shown as is while the device has not reported it back. */
+  write_hold: number;
   status_entities: StatusItem[];
   look: {
     glass: 'dark' | 'light' | 'theme';
@@ -145,9 +150,10 @@ export function defaultConfig(entity: string): LiquidClimateConfig {
   return {
     type: 'custom:liquid-climate-card',
     entity,
-    sensors: { humidity: 'auto', outdoor: 'auto', energy: 'auto', cloud_limit: 'auto', health: 'auto' },
+    sensors: { humidity: 'auto', outdoor: 'auto', energy: 'auto', cloud_limit: 'auto', health: 'auto', battery: 'auto', valve: 'auto', window: 'auto' },
     controls: { modes: [...DEFAULT_MODES], fan: true, swing: true, swing_horizontal: true, presets: true },
     write_delay: 1.5,
+    write_hold: 10,
     status_entities: [],
     look: { glass: 'theme', tint: 0.09, blur: 30, motion: 'rich' },
     config_version: CONFIG_VERSION,
@@ -190,7 +196,8 @@ export function normalizeConfig(raw: Record<string, any>): LiquidClimateConfig {
     temperature_sensor: raw.temperature_sensor || undefined,
     sensors: { ...d.sensors, ...(raw.sensors ?? {}) },
     controls: { ...d.controls, ...(raw.controls ?? {}) },
-    write_delay: typeof raw.write_delay === 'number' && raw.write_delay >= 0 ? raw.write_delay : d.write_delay,
+    write_delay: typeof raw.write_delay === 'number' && Number.isFinite(raw.write_delay) && raw.write_delay >= 0 ? raw.write_delay : d.write_delay,
+    write_hold: typeof raw.write_hold === 'number' && Number.isFinite(raw.write_hold) && raw.write_hold >= 0 ? Math.min(raw.write_hold, 3600) : d.write_hold,
     status_entities: Array.isArray(raw.status_entities)
       ? raw.status_entities.filter((s: any) => s && typeof s.entity === 'string').map(normalizeStatus)
       : [],
@@ -278,6 +285,7 @@ export interface ClusterConfig {
   sensors: LiquidClimateConfig['sensors'];
   controls: LiquidClimateConfig['controls'];
   write_delay: number;
+  write_hold: number;
   look: LiquidClimateConfig['look'];
   config_version: number;
 }
@@ -306,6 +314,7 @@ export function defaultClusterConfig(): ClusterConfig {
     sensors: d.sensors,
     controls: d.controls,
     write_delay: d.write_delay,
+    write_hold: d.write_hold,
     look: d.look,
     config_version: CONFIG_VERSION,
   };
@@ -327,7 +336,7 @@ export function parseClusterRoom(item: unknown): ClusterRoom | null {
   return room;
 }
 
-const SENSOR_ROLES = ['humidity', 'outdoor', 'energy', 'cloud_limit', 'health'] as const;
+const SENSOR_ROLES = ['humidity', 'outdoor', 'energy', 'cloud_limit', 'health', 'battery', 'valve', 'window'] as const;
 const LIST_ROLES = ['energy', 'health'];
 
 const validItem = (v: unknown): boolean =>
@@ -368,6 +377,7 @@ export function normalizeClusterConfig(raw: Record<string, any>): ClusterConfig 
     sensors: dial.sensors,
     controls: dial.controls,
     write_delay: dial.write_delay,
+    write_hold: dial.write_hold,
     look: dial.look,
     config_version: dial.config_version,
   };
@@ -383,6 +393,7 @@ export function roomDialConfig(cfg: ClusterConfig, room: ClusterRoom, name?: str
     sensors: { ...cfg.sensors, ...(room.sensors ?? {}) },
     controls: cfg.controls,
     write_delay: cfg.write_delay,
+    write_hold: cfg.write_hold,
     look: cfg.look,
     config_version: cfg.config_version,
   });
