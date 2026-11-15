@@ -1,0 +1,6 @@
+{
+  "name": "Liquid Climate",
+  "render_readme": true,
+  "filename": "liquid-climate.js",
+  "homeassistant": "2025.1.0"
+}

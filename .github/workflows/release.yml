@@ -1,0 +1,42 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: npm
+      - name: Check tag matches package.json version
+        run: |
+          pkg="v$(node -p "require('./package.json').version")"
+          if [ "$pkg" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version ${pkg#v}" >&2
+            exit 1
+          fi
+      - name: Check the OWNER placeholder is filled in
+        run: |
+          if grep -nE 'OWNER\.github\.io|github\.com/OWNER' src/const.ts .github/ISSUE_TEMPLATE/config.yml README.md; then
+            echo "Replace the OWNER placeholder URLs in src/const.ts, .github/ISSUE_TEMPLATE/config.yml and README.md before releasing" >&2
+            exit 1
+          fi
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=""
+          case "$GITHUB_REF_NAME" in
+            *-*) flags="--prerelease" ;;
+          esac
+          gh release create "$GITHUB_REF_NAME" dist/liquid-climate.js --generate-notes $flags
