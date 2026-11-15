@@ -3,9 +3,18 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.10.0
+## 0.10.1
 
 The current version.
+
+### Added
+- HACS validation workflow (`hacs/action`), needed for the HACS default list.
+
+### Changed
+- Install docs cover the Marketplace built into Home Assistant 2026.11 and the classic HACS flow.
+- `hacs.json` drops the unused `render_readme` key.
+
+## 0.10.0
 
 ### Added
 - **Radiator valves** (TRVs, Zigbee2MQTT, Better Thermostat, generic thermostat) work as first-class units on all four cards.

@@ -7,14 +7,21 @@
 
 ## Install with HACS {#install-hacs}
 
-HACS needs a public GitHub repository with a release that has `liquid-climate.js` as an asset. HACS install works once the repository is published on GitHub with a release. Until then, use the manual install below.
+Liquid Climate is not in the default catalog yet, so add it as a custom repository by link. The resource `/local/community/liquid-climate/liquid-climate.js` is added automatically.
 
-Liquid Climate is not in the HACS default store, so add it as a custom repository:
+### Marketplace (Home Assistant 2026.11 and newer) {#install-marketplace}
+
+1. Open Settings, Marketplace and accept the one-time community warning. Custom repositories need a connected GitHub account.
+2. Use the [Open in Home Assistant](https://my.home-assistant.io/redirect/hacs_repository/?owner=decibel95&repository=liquid-climate&category=plugin) link, or the Marketplace menu, **Add from link**, with `https://github.com/decibel95/liquid-climate` and category **Dashboard**.
+3. Install Liquid Climate.
+4. Reload the browser (clear the cache if the card does not appear).
+
+### HACS (older Home Assistant) {#install-hacs-classic}
 
 1. Open HACS, then the menu (three dots), then **Custom repositories**.
-2. Enter the repository URL and pick the type **Dashboard** (HACS calls dashboard cards "Plugin" or "Dashboard", depending on the version).
+2. Enter `https://github.com/decibel95/liquid-climate` and pick the category **Dashboard**.
 3. Save, find **Liquid Climate** in HACS and download it.
-4. Reload the browser. HACS adds the resource for you.
+4. Reload the browser.
 
 ## Install manually {#install-manual}
 
@@ -23,7 +30,7 @@ Liquid Climate is not in the HACS default store, so add it as a custom repositor
 3. Add `/local/liquid-climate.js` as a **JavaScript module**.
 4. Hard refresh the browser.
 
-Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.10.0`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
+Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.10.1`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
 
 ## Add a card in the visual editor {#add-visual}
 

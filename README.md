@@ -85,11 +85,25 @@ Radiator valves (Zigbee2MQTT, Better Thermostat, generic thermostat) work on all
 
 ## Quick start
 
-1. **Add the repository in HACS.** HACS, menu (three dots), Custom repositories. Repository URL `https://github.com/decibel95/liquid-climate`, category **Dashboard**.
-2. **Download Liquid Climate** in HACS and reload the browser. HACS adds the resource for you.
-3. **Add a card.** Edit a dashboard, add a card, pick **Liquid Climate** (or the tile, badge or cluster) and choose your climate entity.
+<!-- ha-marketplace:exclude-start -->
+[![Open in Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=decibel95&repository=liquid-climate&category=plugin)
+
+**Home Assistant 2026.11 and newer (built-in Marketplace):**
+
+1. Open Settings, Marketplace and accept the one-time community warning. Custom repositories need a connected GitHub account.
+2. Use the button above, or the Marketplace menu, **Add from link**, with `https://github.com/decibel95/liquid-climate` and category **Dashboard**.
+3. Install Liquid Climate. The dashboard resource is added for you.
+4. Reload the browser (clear the cache if the card does not appear).
+
+**Older Home Assistant with HACS:**
+
+1. Open HACS, menu (three dots), Custom repositories. Repository URL `https://github.com/decibel95/liquid-climate`, category **Dashboard**.
+2. Download Liquid Climate and reload the browser. HACS adds the resource for you.
 
 **Manual install instead:** download `liquid-climate.js` from the latest release (or build it: `npm run build` writes `dist/liquid-climate.js`) and copy it to `/config/www/`. Then Settings, Dashboards, Resources: add `/local/liquid-climate.js` as a **JavaScript module** and hard refresh.
+<!-- ha-marketplace:exclude-end -->
+
+**Add a card.** Edit a dashboard, add a card, pick **Liquid Climate** (or the tile, badge or cluster) and choose your climate entity.
 
 ## YAML examples
 
