@@ -1,6 +1,6 @@
 {
   "name": "liquid-climate",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Liquid Climate: glass dial, tile, badge and cluster for Home Assistant climate entities",
   "license": "MIT",
   "type": "module",

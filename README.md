@@ -10,7 +10,7 @@
 
 Glass cards for Home Assistant climate entities: dial, tile, badge and cluster.
 
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz)
+[![HACS Default](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://hacs.xyz)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Home Assistant 2025.1+](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41BDF5.svg)](https://www.home-assistant.io)
 [![Release](https://img.shields.io/github/v/release/decibel95/liquid-climate)](https://github.com/decibel95/liquid-climate/releases)
@@ -90,15 +90,16 @@ Radiator valves (Zigbee2MQTT, Better Thermostat, generic thermostat) work on all
 
 **Home Assistant 2026.11 and newer (built-in Marketplace):**
 
-1. Open Settings, Marketplace and accept the one-time community warning. Custom repositories need a connected GitHub account.
-2. Use the button above, or the Marketplace menu, **Add from link**, with `https://github.com/decibel95/liquid-climate` and category **Dashboard**.
-3. Install Liquid Climate. The dashboard resource is added for you.
-4. Reload the browser (clear the cache if the card does not appear).
+1. Open Settings, Marketplace and search for **Liquid Climate** (or use the button above).
+2. Install it. The dashboard resource is added for you.
+3. Reload the browser (clear the cache if the card does not appear).
 
 **Older Home Assistant with HACS:**
 
-1. Open HACS, menu (three dots), Custom repositories. Repository URL `https://github.com/decibel95/liquid-climate`, category **Dashboard**.
-2. Download Liquid Climate and reload the browser. HACS adds the resource for you.
+1. Open HACS and search for **Liquid Climate**.
+2. Download it and reload the browser. HACS adds the resource for you.
+
+**Not found in the search?** Add it by link as a custom repository: `https://github.com/decibel95/liquid-climate`, category **Dashboard**. In the Marketplace use the menu, **Add from link** (needs a connected GitHub account). In HACS use the menu (three dots), **Custom repositories**.
 
 **Manual install instead:** download `liquid-climate.js` from the latest release (or build it: `npm run build` writes `dist/liquid-climate.js`) and copy it to `/config/www/`. Then Settings, Dashboards, Resources: add `/local/liquid-climate.js` as a **JavaScript module** and hard refresh.
 <!-- ha-marketplace:exclude-end -->

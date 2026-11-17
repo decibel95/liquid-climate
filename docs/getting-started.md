@@ -7,21 +7,26 @@
 
 ## Install with HACS {#install-hacs}
 
-Liquid Climate is not in the default catalog yet, so add it as a custom repository by link. The resource `/local/community/liquid-climate/liquid-climate.js` is added automatically.
+Liquid Climate is in the HACS default catalog. The resource `/local/community/liquid-climate/liquid-climate.js` is added automatically.
 
 ### Marketplace (Home Assistant 2026.11 and newer) {#install-marketplace}
 
-1. Open Settings, Marketplace and accept the one-time community warning. Custom repositories need a connected GitHub account.
-2. Use the [Open in Home Assistant](https://my.home-assistant.io/redirect/hacs_repository/?owner=decibel95&repository=liquid-climate&category=plugin) link, or the Marketplace menu, **Add from link**, with `https://github.com/decibel95/liquid-climate` and category **Dashboard**.
-3. Install Liquid Climate.
-4. Reload the browser (clear the cache if the card does not appear).
+1. Open Settings, Marketplace and search for **Liquid Climate**, or use the [Open in Home Assistant](https://my.home-assistant.io/redirect/hacs_repository/?owner=decibel95&repository=liquid-climate&category=plugin) link.
+2. Install Liquid Climate.
+3. Reload the browser (clear the cache if the card does not appear).
 
 ### HACS (older Home Assistant) {#install-hacs-classic}
 
-1. Open HACS, then the menu (three dots), then **Custom repositories**.
-2. Enter `https://github.com/decibel95/liquid-climate` and pick the category **Dashboard**.
-3. Save, find **Liquid Climate** in HACS and download it.
-4. Reload the browser.
+1. Open HACS and search for **Liquid Climate**.
+2. Download it.
+3. Reload the browser.
+
+### Add by link (fallback) {#install-by-link}
+
+If Liquid Climate does not show up in the search, add it as a custom repository.
+
+- Marketplace: open the menu, choose **Add from link**, and enter `https://github.com/decibel95/liquid-climate` with category **Dashboard**. Custom repositories need a connected GitHub account.
+- HACS: open the menu (three dots), choose **Custom repositories**, enter the same URL with category **Dashboard**, then download Liquid Climate.
 
 ## Install manually {#install-manual}
 
@@ -30,7 +35,7 @@ Liquid Climate is not in the default catalog yet, so add it as a custom reposito
 3. Add `/local/liquid-climate.js` as a **JavaScript module**.
 4. Hard refresh the browser.
 
-Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.10.2`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
+Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.10.3`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
 
 ## Add a card in the visual editor {#add-visual}
 

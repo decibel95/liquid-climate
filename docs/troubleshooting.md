@@ -7,7 +7,7 @@ Symptoms: the card shows "Custom element doesn't exist: liquid-climate-card", or
 1. Check the resource. Settings, Dashboards, three dots, Resources. There must be an entry for `/local/liquid-climate.js` (or `/local/community/liquid-climate/liquid-climate.js` when installed from the Marketplace or HACS) of type **JavaScript module**.
 2. Check the file. It must be at `/config/www/liquid-climate.js` for the `/local/liquid-climate.js` URL.
 3. Hard refresh the browser (Ctrl+F5, or Cmd+Shift+R). The Home Assistant app on a phone: clear the app cache in the app settings.
-4. Beat the cache. Home Assistant caches `/local/` files for a long time. Add a version to the resource URL and save, for example `/local/liquid-climate.js?v=0.10.2`. Change the number each time you replace the file.
+4. Beat the cache. Home Assistant caches `/local/` files for a long time. Add a version to the resource URL and save, for example `/local/liquid-climate.js?v=0.10.3`. Change the number each time you replace the file.
 5. Check the card type. The four types are `custom:liquid-climate-card`, `custom:liquid-climate-tile`, `custom:liquid-climate-badge` and `custom:liquid-climate-cluster`.
 6. Open the browser console. A load error there names the cause.
 
