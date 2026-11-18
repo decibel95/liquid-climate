@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { newPage, openScene } from './browser.mjs';
 
-export const SCENES = ['hero', 'dial', 'tile', 'badge', 'cluster', 'editor', 'cluster-editor', 'status-menu', 'trv'];
+export const SCENES = ['hero', 'dial', 'tile', 'badge', 'cluster', 'editor', 'cluster-editor', 'status-menu', 'trv', 'appliances'];
 
 const stageSize = (page) =>
   page.evaluate(() => {

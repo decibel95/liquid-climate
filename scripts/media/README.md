@@ -11,7 +11,7 @@ npm install
 npm run media              # everything, about 3 minutes
 npm run media -- stills    # only the PNG stills
 npm run media -- stills trv   # only the stills of the named scenes, nothing else is touched
-npm run media -- animations [name ...]   # only the animations (dial-drag, mode-switch, sheet-open, status-menu, language, trv)
+npm run media -- animations [name ...]   # only the animations (dial-drag, mode-switch, sheet-open, status-menu, language, trv, appliances)
 npm run media -- demo      # only demo.mp4 (the poster comes with the stills)
 ```
 
@@ -36,10 +36,11 @@ fixture ids are remapped), fixed states, HA's default light and dark theme varia
 the glass is set to 0, so the mode colour stays on the arc, the knob and the active mode.
 
 Query parameters: `scene` (`hero`, `dial`, `tile`, `badge`, `cluster`, `editor`, `cluster-editor`,
-`status-menu`, `sheet`, `trv`), `theme` (`light`, `dark`, `split`), `lang` (`en`, `nl`, `de`, `fr`, `es`, `it`),
+`status-menu`, `sheet`, `trv`, `appliances`), `theme` (`light`, `dark`, `split`), `lang` (`en`, `nl`, `de`, `fr`, `es`, `it`),
 `cursor=1` (a pointer for recordings: hidden until `__media.pointer(true)`). The page sets `window.__mediaReady` once fonts and all
 cards have rendered. Open it with `npm run dev` at `/dev/media.html?scene=hero`.
 The `trv` scene shows two radiator valves (fake ids, the shared test fixture with renamed ids) and `__media.trv('hallway' | 'bedroom', { action, current, target, valve, battery })` changes their readings, which the `trv` animation uses.
+The `appliances` scene shows a water heater (`water_heater.boiler`) and a humidifier (`humidifier.bedroom`), built from the demo fixture `appliances()`. The `appliances` animation switches the heater mode (Eco, Pump, Eco), then drags the humidity target 55 to 60 and back.
 
 ## Files
 
@@ -51,15 +52,15 @@ The `trv` scene shows two radiator valves (fake ids, the shared test fixture wit
 | `stills.mjs` | PNG stills at 2x, light and dark, plus the split hero. |
 | `input.mjs` | Human-paced pointer moves, clicks and drags, and dial ring coordinates. |
 | `capture.mjs` | Frame capture with the DevTools screencast, with timestamps. |
-| `animations.mjs` | The interaction scripts and the six animations. |
+| `animations.mjs` | The interaction scripts and the seven animations. |
 | `demo.mjs` | The longer video: the same scripts chained on the hero scene. |
 | `encode.mjs` | ffmpeg: GIF (palette per clip), animated WebP, H.264 MP4. |
 
 ## Output
 
 - `hero-{light,dark,split}.png`, `dial-*`, `tile-*`, `badge-*`, `cluster-*`, `editor-*`,
-  `cluster-editor-*`, `status-menu-*`, `trv-*` (light and dark, 2x).
-- `dial-drag`, `mode-switch`, `sheet-open`, `status-menu`, `language`, `trv`: animated `.webp` (800 px wide,
+  `cluster-editor-*`, `status-menu-*`, `trv-*`, `appliances-*` (light and dark, 2x).
+- `dial-drag`, `mode-switch`, `sheet-open`, `status-menu`, `language`, `trv`, `appliances`: animated `.webp` (800 px wide,
   encoded at 30 fps; identical neighbouring frames are merged by the encoder, so the stored frame
   count averages about 25 per second while the timing stays real) and a `.gif` fallback (scaled down
   to 400 to 480 px at 10 to 15 fps to stay near 3 MB).

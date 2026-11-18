@@ -57,6 +57,21 @@ liquid-glass-warm:
 
 HA turns each theme key into a CSS variable with the `--` prefix, so `lc-radius` becomes `--lc-radius`.
 
+## Mode colours {#theming-colours}
+
+Mode colours sit only on the setpoint arc, the knob and the active mode (and the tile, badge and cluster icons). They are fixed tokens in the cards, not theme variables:
+
+| Token | Colour | Used for |
+|-------|--------|----------|
+| `heat` | `#ff9447` | Heat |
+| `cool` | `#5ab0ff` | Cool |
+| `heat_cool`, `auto` | `#a99cff` | Auto |
+| `dry` | `#40d3c8` | Dry |
+| `fan_only` | `#d5dce6` | Fan |
+| `water_heater` | `#ff6a3d` | A water heater in any mode but off |
+| `humidifier` | `#5b8cff` | A humidifier, also one without a `device_class` |
+| `dehumidifier` | `#2fbfa0` | A humidifier with `device_class: dehumidifier` |
+
 ## HA theme variables the cards follow {#theming-ha}
 
 The cards read these Home Assistant variables, so a theme changes them too:

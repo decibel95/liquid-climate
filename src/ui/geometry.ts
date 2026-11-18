@@ -41,9 +41,13 @@ export function pointToFraction(x: number, y: number): number {
   return rel / SWEEP;
 }
 
-export function snap(v: number, step: number, min: number, max: number): number {
+/**
+ * The value on the step grid that starts at `origin` (min by default), clamped to the limits. Climate
+ * steps from min; a water heater or humidifier passes 0, so limits of 43.3 to 60 step 45, 46, 47.
+ */
+export function snap(v: number, step: number, min: number, max: number, origin = min): number {
   const s = step > 0 ? step : 1;
-  const snapped = Math.round((v - min) / s) * s + min;
+  const snapped = Math.round((v - origin) / s) * s + origin;
   // Trim float noise (e.g. 20.500000000000004).
   return clamp(Number(snapped.toFixed(4)), min, max);
 }
@@ -89,14 +93,16 @@ export interface Tick {
   label: boolean;
 }
 
-export function buildTicks(min: number, max: number): Tick[] {
+export function buildTicks(min: number, max: number, wide = false): Tick[] {
   const ticks: Tick[] = [];
-  for (let t = Math.ceil(min); t <= Math.floor(max); t++) {
+  // A wide scale (humidity 0 to 100) ticks every 2, majors every 10 and labels every 20.
+  const every = wide && max - min > 60 ? 2 : 1;
+  for (let t = Math.ceil(min / every) * every; t <= Math.floor(max); t += every) {
     ticks.push({
       value: t,
       angle: fractionToAngle(valueToFraction(t, min, max)),
-      major: t % 5 === 0,
-      label: t % 10 === 0,
+      major: t % (5 * every) === 0,
+      label: t % (10 * every) === 0,
     });
   }
   return ticks;

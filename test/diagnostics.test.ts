@@ -132,7 +132,7 @@ describe('buildDiagnostics', () => {
     const a = hassFor().states[K].attributes;
     expect(d.entity).toBe(K);
     expect(Object.keys(d.climate).sort()).toEqual([
-      'exists', 'fan_modes', 'hvac_modes', 'max_temp', 'min_temp', 'preset_modes', 'supported_features',
+      'available_modes', 'away_mode', 'exists', 'fan_modes', 'hvac_modes', 'max_temp', 'min_temp', 'mode', 'operation_list', 'preset_modes', 'supported_features',
       'swing_horizontal_modes', 'swing_modes', 'target_temp_step', 'temperature_unit',
     ]);
     expect(d.climate.hvac_modes).toEqual(a.hvac_modes);
@@ -376,7 +376,7 @@ const ANCHORS: Record<string, string[]> = {
   dial: ['entity', 'sensors', 'controls', 'look', 'status-rows', 'write-delay', 'write-hold'],
   tile: ['entity', 'tap-action', 'write-delay', 'write-hold', 'look'],
   badge: ['entity', 'pause', 'tap-action', 'look'],
-  cluster: ['source', 'rooms', 'write-delay', 'write-hold', 'look'],
+  cluster: ['source', 'domains', 'rooms', 'write-delay', 'write-hold', 'look'],
 };
 
 describe.each(EDITORS)('$card editor: help links', ({ tag, type, card }) => {

@@ -1,6 +1,7 @@
 import type { Optimistic } from '../dial/capabilities';
 import { WriteQueue, type ServiceCall } from '../dial/write-queue';
 import { t } from '../../i18n';
+import { WATER_HEATER_FEATURE, domainOf, operationList, supports } from '../../domain';
 import type { HassEntity, HomeAssistant } from '../../types';
 
 const ERROR_MS = 6000;
@@ -37,6 +38,23 @@ export function powerOnMode(hvacModes: unknown, last?: string | null): string | 
 }
 
 /**
+ * The state the power button turns any supported entity on to: a climate hvac mode, a water
+ * heater's operation mode (the last one used, else the first that is not off; `on` when it only
+ * has turn_on), or `on` for a humidifier. Undefined when it cannot be turned on.
+ */
+export function powerOnModeOf(stateObj: HassEntity | undefined, last?: string | null): string | undefined {
+  if (!stateObj) return undefined;
+  const domain = domainOf(stateObj.entity_id);
+  if (domain === 'humidifier') return 'on';
+  if (domain === 'water_heater') {
+    const ops = operationList(stateObj).filter((m) => m !== 'off');
+    if (last && ops.includes(last)) return last;
+    return ops[0] ?? (supports(stateObj, WATER_HEATER_FEATURE.ON_OFF) ? 'on' : undefined);
+  }
+  return powerOnMode(stateObj.attributes.hvac_modes, last);
+}
+
+/**
  * Debounced, optimistic climate writes for one entity: the write queue, the values already
  * sent but not yet reported back, and the last error. There is one writer per entity id,
  * shared by every card showing that entity (see acquireWriter), so a tile and the dial in
@@ -54,6 +72,8 @@ export class ClimateWriter {
   inflight: Optimistic = {};
   sending = false;
   error: string | null = null;
+  /** The entity's state when the last change was sent, so a water heater's mode can tell an answer from no change. */
+  private sentFrom?: string;
   private inflightTimer?: ReturnType<typeof setTimeout>;
   private errorTimer?: ReturnType<typeof setTimeout>;
   private listeners = new Set<() => void>();
@@ -68,6 +88,7 @@ export class ClimateWriter {
       onChange: () => this.changed(),
     });
     this.queue.onFlushed = (change) => {
+      if (change.hvac_mode !== undefined) this.sentFrom = this.entity()?.state;
       this.inflight = { ...this.inflight, ...change };
       clearTimeout(this.inflightTimer);
       this.inflightTimer = setTimeout(() => {
@@ -116,7 +137,7 @@ export class ClimateWriter {
       this.setMode('off');
       return;
     }
-    const target = powerOnMode(this.entity()?.attributes.hvac_modes, rememberedMode(this.entityId));
+    const target = powerOnModeOf(this.entity(), rememberedMode(this.entityId));
     if (target) this.setMode(target);
   }
 
@@ -132,6 +153,9 @@ export class ClimateWriter {
       const actual = key === 'hvac_mode' ? s.state : s.attributes[key];
       if (actual === next[key]) delete next[key];
     }
+    // A water heater answers turn_on and turn_off with its current operation, which need not be the
+    // mode shown while sending ("on", or "off" when it reports standby): any new state is the answer.
+    if (domainOf(this.entityId) === 'water_heater' && 'hvac_mode' in next && this.sentFrom !== undefined && s.state !== this.sentFrom) delete next.hvac_mode;
     this.inflight = next as Optimistic;
   }
 
@@ -156,7 +180,7 @@ export class ClimateWriter {
     this.sending = true;
     this.changed();
     try {
-      for (const c of calls) await hass.callService('climate', c.service, c.data);
+      for (const c of calls) await hass.callService(c.domain ?? 'climate', c.service, c.data);
     } catch (err) {
       console.error('Liquid Climate: service call failed', err);
       this.inflight = {};

@@ -206,7 +206,7 @@ describe('docs demo names', () => {
       .flatMap((md) => md.split(/\r?\n/))
       .filter((l) => l.includes('<LiveCard'))
       .join('\n');
-    const used = `${lines}\n${liveCard}`.match(/\b(?:climate|input_select|input_boolean|script|automation)\.[a-z0-9_]+/g) ?? [];
+    const used = `${lines}\n${liveCard}`.match(/\b(?:climate|water_heater|humidifier|input_select|input_boolean|script|automation)\.[a-z0-9_]+/g) ?? [];
     expect(used.length).toBeGreaterThan(5);
     for (const id of used) expect(demo.hass.states[id], `${id} is not in the docs demo`).toBeDefined();
     demo.dispose();

@@ -1,6 +1,6 @@
 import type { HassEntity, HomeAssistant } from '../types';
 import { englishFixture } from './english';
-import { AREAS, FLOORS, allFixtures, makeHass } from './fixtures';
+import { AREAS, FLOORS, allFixtures, appliances, makeHass, mergeFixtures } from './fixtures';
 
 /**
  * A fake Home Assistant for the dev harness and the docs site. Service calls wait a moment, change only
@@ -57,6 +57,43 @@ export interface Demo {
   dispose(): void;
 }
 
+/** The demo water heater: turn_on goes back to eco and turn_off to off, as Home Assistant's demo does. */
+function applyWaterHeater(states: Record<string, HassEntity>, service: string, data: Record<string, unknown>) {
+  const id = String(data.entity_id);
+  const s = states[id];
+  if (!s) return;
+  const a = { ...s.attributes };
+  let state = s.state;
+  if (service === 'set_temperature' && 'temperature' in data) a.temperature = data.temperature;
+  if (service === 'set_operation_mode') state = String(data.operation_mode);
+  if (service === 'turn_on') state = state === 'off' ? 'eco' : state;
+  if (service === 'turn_off') state = 'off';
+  if (service === 'set_away_mode') a.away_mode = data.away_mode ? 'on' : 'off';
+  a.operation_mode = state;
+  states[id] = { ...s, state, attributes: a };
+}
+
+/** The demo humidifiers: on and off, the mode and the target humidity. */
+function applyHumidifier(states: Record<string, HassEntity>, service: string, data: Record<string, unknown>) {
+  const id = String(data.entity_id);
+  const s = states[id];
+  if (!s) return;
+  const a = { ...s.attributes };
+  let state = s.state;
+  if (service === 'turn_on') state = 'on';
+  if (service === 'turn_off') state = 'off';
+  if (service === 'set_mode') a.mode = data.mode;
+  if (service === 'set_humidity') a.humidity = data.humidity;
+  if ('action' in a) a.action = state === 'off' ? 'off' : a.device_class === 'dehumidifier' ? 'drying' : 'humidifying';
+  states[id] = { ...s, state, attributes: a };
+}
+
+/** A water heater or humidifier service call on the fake states; the media page uses it too. */
+export function applyAppliance(states: Record<string, HassEntity>, domain: string, service: string, data: Record<string, unknown>): void {
+  if (domain === 'water_heater') applyWaterHeater(states, service, data);
+  else if (domain === 'humidifier') applyHumidifier(states, service, data);
+}
+
 function applyClimate(states: Record<string, HassEntity>, service: string, data: Record<string, unknown>) {
   const id = String(data.entity_id);
   const s = states[id];
@@ -78,7 +115,10 @@ function applyClimate(states: Record<string, HassEntity>, service: string, data:
 export function createDemo(options: DemoOptions = {}): Demo {
   const delay = options.delay ?? 400;
   const language = options.language ?? 'en';
-  const { fixture, areas, floors } = options.english ? englishFixture() : { fixture: allFixtures, areas: AREAS, floors: FLOORS };
+  const source = options.english ? englishFixture() : { fixture: allFixtures, areas: AREAS, floors: FLOORS };
+  // The water heaters and humidifiers of Home Assistant's demo integration, next to the climate units.
+  const fixture = mergeFixtures(source.fixture, appliances());
+  const { areas, floors } = source;
   const states = structuredClone(fixture.states);
   addHelperEntities(states);
 
@@ -104,6 +144,7 @@ export function createDemo(options: DemoOptions = {}): Demo {
       later(() => {
         pending.delete(resolve);
         if (HELPER_DOMAINS.includes(domain)) applyHelper(domain, service, data);
+        else if (domain === 'water_heater' || domain === 'humidifier') applyAppliance(states, domain, service, data);
         else applyClimate(states, service, data);
         publish();
         resolve();

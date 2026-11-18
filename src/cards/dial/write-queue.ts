@@ -1,10 +1,77 @@
 import type { Optimistic } from './capabilities';
 import { modeInfo } from '../../ui/modes';
+import { WATER_HEATER_FEATURE, domainOf, operationList, supports } from '../../domain';
 import type { HassEntity } from '../../types';
 
 export interface ServiceCall {
+  /** The service domain; climate when absent. */
+  domain?: string;
   service: string;
   data: Record<string, unknown>;
+  /** What the call sets, in Optimistic terms, when that differs from its data (set_operation_mode sets hvac_mode). */
+  sets?: Optimistic;
+}
+
+/** What the unit will report once earlier writes land: in-flight values over the entity. */
+function expected(stateObj: HassEntity, inflight: Optimistic): { a: Record<string, any>; mode: string } {
+  const a: Record<string, any> = { ...stateObj.attributes };
+  for (const [k, v] of Object.entries(inflight)) if (k !== 'hvac_mode' && v !== undefined) a[k] = v;
+  return { a, mode: inflight.hvac_mode ?? stateObj.state };
+}
+
+/**
+ * Water heater calls. Power uses turn_on and turn_off when the ON_OFF flag is set, else the
+ * operation mode off. Turning on with a mode turns on first, then sets the mode. The setpoint
+ * is dropped while the final mode is off, like a climate mode without a setpoint.
+ */
+function waterHeaterCalls(entityId: string, change: Optimistic, stateObj: HassEntity, inflight: Optimistic): ServiceCall[] {
+  const { a, mode: current } = expected(stateObj, inflight);
+  const domain = 'water_heater';
+  const base = { entity_id: entityId };
+  const calls: ServiceCall[] = [];
+  const onOff = supports(stateObj, WATER_HEATER_FEATURE.ON_OFF);
+  const ops = operationList(stateObj);
+  const target = change.hvac_mode;
+  const finalMode = target ?? current;
+  if (target !== undefined && target !== current) {
+    if (target === 'off') {
+      calls.push(
+        onOff
+          ? { domain, service: 'turn_off', data: base, sets: { hvac_mode: 'off' } }
+          : { domain, service: 'set_operation_mode', data: { ...base, operation_mode: 'off' }, sets: { hvac_mode: 'off' } },
+      );
+    } else {
+      if (current === 'off' && onOff) calls.push({ domain, service: 'turn_on', data: base, sets: { hvac_mode: target } });
+      if (ops.includes(target)) calls.push({ domain, service: 'set_operation_mode', data: { ...base, operation_mode: target }, sets: { hvac_mode: target } });
+    }
+  }
+  if (finalMode !== 'off' && change.temperature !== undefined && change.temperature !== a.temperature) {
+    calls.push({ domain, service: 'set_temperature', data: { ...base, temperature: change.temperature } });
+  }
+  if (change.away_mode !== undefined && change.away_mode !== a.away_mode) {
+    calls.push({ domain, service: 'set_away_mode', data: { ...base, away_mode: change.away_mode === 'on' }, sets: { away_mode: change.away_mode } });
+  }
+  return calls;
+}
+
+/**
+ * Humidifier calls: turn_on or turn_off, then the mode, then the target humidity. Mode and
+ * humidity are dropped when the humidifier ends up off.
+ */
+function humidifierCalls(entityId: string, change: Optimistic, stateObj: HassEntity, inflight: Optimistic): ServiceCall[] {
+  const { a, mode: current } = expected(stateObj, inflight);
+  const domain = 'humidifier';
+  const base = { entity_id: entityId };
+  const calls: ServiceCall[] = [];
+  const power = change.hvac_mode;
+  const finalPower = power ?? current;
+  if (power !== undefined && power !== current) {
+    calls.push({ domain, service: power === 'off' ? 'turn_off' : 'turn_on', data: base, sets: { hvac_mode: power } });
+  }
+  if (finalPower === 'off') return calls;
+  if (change.mode !== undefined && change.mode !== a.mode) calls.push({ domain, service: 'set_mode', data: { ...base, mode: change.mode } });
+  if (change.humidity !== undefined && change.humidity !== a.humidity) calls.push({ domain, service: 'set_humidity', data: { ...base, humidity: change.humidity } });
+  return calls;
 }
 
 /**
@@ -21,10 +88,10 @@ export function buildCalls(
   stateObj: HassEntity,
   inflight: Optimistic = {},
 ): ServiceCall[] {
-  // What the unit will report once earlier writes land: in-flight values over the entity.
-  const a: Record<string, any> = { ...stateObj.attributes };
-  for (const [k, v] of Object.entries(inflight)) if (k !== 'hvac_mode' && v !== undefined) a[k] = v;
-  const currentMode = inflight.hvac_mode ?? stateObj.state;
+  const domain = domainOf(entityId);
+  if (domain === 'water_heater') return waterHeaterCalls(entityId, change, stateObj, inflight);
+  if (domain === 'humidifier') return humidifierCalls(entityId, change, stateObj, inflight);
+  const { a, mode: currentMode } = expected(stateObj, inflight);
   const calls: ServiceCall[] = [];
   const base = { entity_id: entityId };
 
@@ -151,10 +218,10 @@ export class WriteQueue {
           const sent: Record<string, unknown> = {};
           for (const c of calls) {
             const { entity_id: _id, ...rest } = c.data;
-            Object.assign(sent, rest);
+            Object.assign(sent, c.sets ?? rest);
           }
           this.onFlushed?.(sent as Optimistic);
-          await this.o.send(calls);
+          await this.o.send(calls.map(({ sets: _sets, ...call }) => call));
         }
       }
     } finally {

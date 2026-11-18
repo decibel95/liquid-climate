@@ -1,6 +1,8 @@
 import { clusterSource, type ClusterConfig, type ClusterRoom } from '../../config';
+import { domainOf } from '../../domain';
 import { t, type I18nHass } from '../../i18n';
 import type { HomeAssistant } from '../../types';
+import { isSupportedEntity } from '../../domain';
 
 export interface RoomRef {
   /** The room with its overrides (from `entities`, or from `rooms` in an auto mode). */
@@ -40,6 +42,15 @@ export function entityName(hass: Partial<Registries>, entityId: string): string 
   return hass.states?.[entityId]?.attributes.friendly_name || hass.entities?.[entityId]?.name || entityId;
 }
 
+/**
+ * The header title when none is set: "Climate" for climate units only, a neutral "Comfort" once water
+ * heaters or humidifiers can be rooms (picked in `domains`, or listed in `entities`).
+ */
+export function defaultClusterTitle(hass: I18nHass, cfg: Pick<ClusterConfig, 'domains' | 'entities' | 'source' | 'area' | 'floor'>): string {
+  const listed = clusterSource(cfg) === 'list' ? cfg.entities.map((r) => domainOf(r.entity)) : cfg.domains;
+  return t(hass, listed.some((d) => d !== 'climate') ? 'cluster.titleMixed' : 'cluster.title');
+}
+
 const byText = (a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true });
 
 /** Floors with a level first, lowest level first, then by name, then by id. No floor at all goes last. */
@@ -63,7 +74,7 @@ function areaOrder(a: RoomRef, b: RoomRef): number {
 
 /**
  * The rooms a cluster shows, in groups. An `entities` list keeps its own order in one group.
- * Otherwise every visible climate entity (only one area or one floor when set) minus `exclude`,
+ * Otherwise every visible entity of the cluster's `domains` (climate by default; only one area or one floor when set) minus `exclude`,
  * ordered by floor level, area name and entity name. Grouping by floor gives one group per
  * floor, with headings once there is more than one.
  */
@@ -71,11 +82,11 @@ export function clusterGroups(hass: Registries & I18nHass, cfg: ClusterConfig): 
   const source = clusterSource(cfg);
   let rooms: ClusterRoom[];
   if (source === 'list') {
-    rooms = cfg.entities.filter((r) => r.entity.startsWith('climate.'));
+    rooms = cfg.entities.filter((r) => isSupportedEntity(r.entity));
   } else {
     const overrides = new Map(cfg.rooms.map((r) => [r.entity, r]));
     rooms = Object.keys(hass.states)
-      .filter((id) => id.startsWith('climate.') && !isHiddenEntity(hass, id) && !cfg.exclude.includes(id))
+      .filter((id) => cfg.domains.some((d) => id.startsWith(`${d}.`)) && !isHiddenEntity(hass, id) && !cfg.exclude.includes(id))
       .filter((id) => {
         if (source === 'area') return areaOf(hass, id) === cfg.area;
         if (source === 'floor') {

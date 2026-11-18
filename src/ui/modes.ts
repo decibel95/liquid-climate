@@ -1,4 +1,22 @@
-import { haMode, optionName, t, type I18nHass, type OptionKind } from '../i18n';
+import { haLocalize, haMode, humanize, optionName, t, type I18nHass, type OptionKind } from '../i18n';
+import { domainOf, type Domain } from '../domain';
+import {
+  mdiAccountArrowRight,
+  mdiAutorenew,
+  mdiBabyCarriage,
+  mdiFire,
+  mdiFlash,
+  mdiHeatPump,
+  mdiHome,
+  mdiLeaf,
+  mdiPowerSleep,
+  mdiRocketLaunch,
+  mdiSofa,
+  mdiSpeedometer,
+  mdiWaterBoiler,
+  mdiWaterPercent,
+} from '@mdi/js';
+import type { HassEntity } from '../types';
 
 export const ICONS = {
   power: 'M12 2v10 M18.4 6.6a9 9 0 1 1-12.77.04',
@@ -37,6 +55,17 @@ export const MODES: ModeInfo[] = [
   { id: 'dry', color: '#40d3c8', icon: ICONS.drop, setpoint: false },
   { id: 'fan_only', color: '#d5dce6', icon: ICONS.fan, setpoint: false },
 ];
+
+/**
+ * Colours of the other domains, one per kind of unit: a water heater is a warmer orange-red than heat,
+ * a humidifier blue, a dehumidifier teal. Like the mode colours, only on the setpoint arc, the knob and
+ * the active mode. A humidifier without a device_class counts as a humidifier.
+ */
+export const DOMAIN_COLORS = {
+  water_heater: '#ff6a3d',
+  humidifier: '#5b8cff',
+  dehumidifier: '#2fbfa0',
+} as const;
 
 /** Badge states that are not hvac modes. */
 export const STATUS_COLORS = {
@@ -159,4 +188,82 @@ export function spinSeconds(intensity: number | null): number {
 /** Inline style for the fan ring spinner: paused while the unit is off. */
 export function spinStyle(seconds: number, on: boolean): Record<string, string> {
   return { animationDuration: `${seconds.toFixed(1)}s`, animationPlayState: on ? 'running' : 'paused' };
+}
+
+/** The colour of a non-climate entity while it is on. */
+function domainColor(stateObj: HassEntity): string {
+  if (domainOf(stateObj.entity_id) === 'water_heater') return DOMAIN_COLORS.water_heater;
+  return stateObj.attributes.device_class === 'dehumidifier' ? DOMAIN_COLORS.dehumidifier : DOMAIN_COLORS.humidifier;
+}
+
+/**
+ * Colour, icon and setpoint of a mode of this entity. Climate: the hvac mode. A water heater or
+ * humidifier has one colour for every mode but off, and a setpoint in every mode but off.
+ */
+export function entityModeInfo(stateObj: HassEntity | undefined, mode: string): ModeInfo {
+  if (!stateObj || domainOf(stateObj.entity_id) === 'climate' || mode === 'off') return modeInfo(mode);
+  const water = domainOf(stateObj.entity_id) === 'water_heater';
+  const icon = (water ? WATER_HEATER_ICONS[mode] : HUMIDIFIER_ICONS[mode]) ?? (water ? mdiWaterBoiler : mdiWaterPercent);
+  return { id: mode, color: domainColor(stateObj), icon, setpoint: true };
+}
+
+/** Material Design Icons per water heater operation mode. */
+const WATER_HEATER_ICONS: Record<string, string> = {
+  eco: mdiLeaf,
+  electric: mdiFlash,
+  performance: mdiRocketLaunch,
+  high_demand: mdiSpeedometer,
+  heat_pump: mdiHeatPump,
+  gas: mdiFire,
+};
+
+/** Material Design Icons per humidifier mode. */
+const HUMIDIFIER_ICONS: Record<string, string> = {
+  normal: mdiWaterPercent,
+  eco: mdiLeaf,
+  away: mdiAccountArrowRight,
+  boost: mdiRocketLaunch,
+  comfort: mdiSofa,
+  home: mdiHome,
+  sleep: mdiPowerSleep,
+  auto: mdiAutorenew,
+  baby: mdiBabyCarriage,
+};
+
+const FILLED = new Set([...Object.values(WATER_HEATER_ICONS), ...Object.values(HUMIDIFIER_ICONS), mdiWaterBoiler]);
+
+/** MDI icons are filled shapes, ours are strokes: the svg of a filled one gets the class `fill`. */
+export function iconClass(path: string): string {
+  return FILLED.has(path) ? 'fill' : '';
+}
+
+/** The particle class of the dial: rising for heat and a water heater or humidifier, dripping for a dehumidifier. */
+export function particleMode(stateObj: HassEntity | undefined, mode: string): string {
+  if (!stateObj || domainOf(stateObj.entity_id) === 'climate' || mode === 'off') return mode;
+  return stateObj.attributes.device_class === 'dehumidifier' ? 'dry' : 'heat';
+}
+
+const MODE_KEYS: Record<Exclude<Domain, 'climate'>, { ha: string; own: string; short?: string }> = {
+  water_heater: { ha: 'component.water_heater.entity_component._.state', own: 'waterHeaterMode', short: 'waterHeaterModeShort' },
+  humidifier: { ha: 'component.humidifier.entity_component._.state_attributes.mode.state', own: 'humidifierMode' },
+};
+
+/**
+ * Name of a water heater operation mode or a humidifier mode. Compact (mode buttons) prefers our short
+ * name, otherwise Home Assistant's translation wins. Unknown values are made readable.
+ */
+export function domainModeLabel(hass: I18nHass, domain: Domain, id: string, compact = false, modes: string[] = []): string {
+  if (domain === 'climate') return modeLabel(hass, id, compact, modes);
+  const keys = MODE_KEYS[domain];
+  const haKey = `${keys.ha}.${id}`;
+  const ha = haLocalize(hass, haKey);
+  const haOk = !!ha && ha !== haKey && ha !== id;
+  const own = t(hass, `${keys.own}.${id}`);
+  const ownOk = own !== `${keys.own}.${id}`;
+  // Six water heater modes share one row: the buttons get a short word, the full name stays in aria-label and title.
+  const short = keys.short ? t(hass, `${keys.short}.${id}`) : '';
+  if (compact && keys.short && short !== `${keys.short}.${id}`) return short;
+  if (compact && ownOk) return own;
+  if (haOk) return ha;
+  return ownOk ? own : humanize(id);
 }

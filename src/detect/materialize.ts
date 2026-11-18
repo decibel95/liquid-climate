@@ -1,12 +1,14 @@
 import { parseSensor, type LiquidClimateConfig, type SensorSetting } from '../config';
 import type { Detection } from './roles';
+import { domainOf, roleApplies } from '../domain';
 
 const one = (list: string[]): SensorSetting | null => (list.length === 0 ? null : list.length === 1 ? list[0] : list);
 
 /**
  * Replace every `auto` sensor role that detection resolved with the concrete entity ids.
  * Roles detection could not settle stay `auto`. Used by the editor so the card never
- * has to look at the registry at runtime.
+ * has to look at the registry at runtime. A role that means nothing for the entity's domain (see
+ * roleApplies) stays `auto`, so the editor never makes it explicit.
  */
 export function materializeConfig(cfg: LiquidClimateConfig, d: Detection): LiquidClimateConfig {
   const found: Record<keyof LiquidClimateConfig['sensors'], SensorSetting | null> = {
@@ -22,9 +24,10 @@ export function materializeConfig(cfg: LiquidClimateConfig, d: Detection): Liqui
     window: null,
   };
   const sensors = { ...cfg.sensors };
+  const domain = domainOf(cfg.entity);
   for (const key of Object.keys(found) as (keyof typeof found)[]) {
     const f = found[key];
-    if (f === null || parseSensor(sensors[key]).mode !== 'auto') continue;
+    if (f === null || !roleApplies(domain, key) || parseSensor(sensors[key]).mode !== 'auto') continue;
     // A named auto keeps its name on the concrete id (the first one, for a list).
     const name = parseSensor(sensors[key]).name;
     if (!name) sensors[key] = f;

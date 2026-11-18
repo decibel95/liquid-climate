@@ -111,7 +111,8 @@ const CLIMATE = 'component.climate.entity_component._';
 /** HA's name for an hvac mode, or an empty string. */
 export const haMode = (hass: I18nHass, id: string): string => haLocalize(hass, `${CLIMATE}.state.${id}`);
 
-export type OptionKind = 'fan_mode' | 'swing_mode' | 'swing_horizontal_mode' | 'preset_mode' | 'hvac_action';
+/** `action` is a humidifier's action attribute; its values share our hvacAction strings. */
+export type OptionKind = 'fan_mode' | 'swing_mode' | 'swing_horizontal_mode' | 'preset_mode' | 'hvac_action' | 'action';
 
 /** First letter capitalised, underscores as spaces: the last resort for a value nobody translated. */
 export function humanize(v: string): string {
@@ -137,11 +138,12 @@ const translated = (text: string | undefined, value: string, key?: string): text
 export function optionName(hass: I18nHass, kind: OptionKind, value: string, stateObj?: HassEntity): string {
   const viaEntity = stateObj ? hass?.formatEntityAttributeValue?.(stateObj, kind, value) : '';
   if (translated(viaEntity, value, kind)) return viaEntity;
-  const haKey = `${CLIMATE}.state_attributes.${kind}.state.${value}`;
+  const component = kind === 'action' ? 'component.humidifier.entity_component._' : CLIMATE;
+  const haKey = `${component}.state_attributes.${kind}.state.${value}`;
   const ha = haLocalize(hass, haKey);
   if (translated(ha, value, haKey)) return ha;
   const key = bare(value);
-  const own = kind === 'hvac_action' ? `hvacAction.${key}` : `option.${key}`;
+  const own = kind === 'hvac_action' || kind === 'action' ? `hvacAction.${key}` : `option.${key}`;
   const text = LOCALES[resolveLanguage(hass)][own] ?? LOCALES.en[own];
   return text ?? humanize(value);
 }

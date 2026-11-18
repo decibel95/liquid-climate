@@ -16,7 +16,9 @@
     "stepUp": "Raise target temperature",
     "target": "Target",
     "batteryLow": "Battery low",
-    "batteryLowValue": "Battery low, {value}%"
+    "batteryLowValue": "Battery low, {value}%",
+    "stepDownHumidity": "Lower target humidity",
+    "stepUpHumidity": "Raise target humidity"
   },
   "mode": {
     "off": "Off",
@@ -51,7 +53,37 @@
     "idle": "Idle",
     "off": "Off",
     "preheating": "Preheating",
-    "defrosting": "Defrosting"
+    "defrosting": "Defrosting",
+    "humidifying": "Humidifying"
+  },
+  "waterHeaterMode": {
+    "eco": "Eco",
+    "electric": "Electric",
+    "performance": "Performance",
+    "high_demand": "High demand",
+    "heat_pump": "Heat pump",
+    "gas": "Gas",
+    "off": "Off",
+    "on": "On"
+  },
+  "waterHeaterModeShort": {
+    "eco": "Eco",
+    "electric": "Elec",
+    "performance": "Perf",
+    "high_demand": "High",
+    "heat_pump": "Pump",
+    "gas": "Gas"
+  },
+  "humidifierMode": {
+    "normal": "Normal",
+    "eco": "Eco",
+    "away": "Away",
+    "boost": "Boost",
+    "comfort": "Comfort",
+    "home": "Home",
+    "sleep": "Sleep",
+    "auto": "Auto",
+    "baby": "Baby"
   },
   "option": {
     "stop": "Fixed",
@@ -104,7 +136,13 @@
     "ariaPreset": "Preset: {value}",
     "problem": "{source} reports a problem",
     "problemDetail": "{source} reports a problem ({detail})",
-    "subTargetState": "{state}, target {target}"
+    "subTargetState": "{state}, target {target}",
+    "current": "Now",
+    "currentValue": "Now {value}",
+    "ariaTargetHumidity": "Target humidity. Arrow keys change the setpoint.",
+    "ariaTargetWater": "Target water temperature. Arrow keys change the setpoint.",
+    "away": "Away",
+    "ariaAway": "Away mode: {value}"
   },
   "detect": {
     "humidity": "Humidity",
@@ -118,13 +156,18 @@
     "ariaTile": "{name} climate",
     "power": "Power, {name}",
     "insideSub": "{word}, {temp} inside",
-    "rangeAria": "Target range {range} {unit}, open controls"
+    "rangeAria": "Target range {range} {unit}, open controls",
+    "currentSub": "{word}, {temp} now",
+    "ariaWaterHeater": "{name} water heater",
+    "ariaHumidifier": "{name} humidifier",
+    "ariaDehumidifier": "{name} dehumidifier"
   },
   "badge": {
     "label": "{name}: {value}"
   },
   "cluster": {
     "title": "Climate",
+    "titleMixed": "Comfort",
     "empty": "No climate entities found. Choose rooms in the card editor.",
     "noEntities": "No climate entities",
     "other": "Other",
@@ -149,7 +192,8 @@
     "modeGroup": "Mode, {name}",
     "rangeAria": "Target range {range} {unit}, open controls",
     "valve": "valve {value}%",
-    "batteryLow": "Battery low: {n}"
+    "batteryLow": "Battery low: {n}",
+    "ariaCurrent": "now {value} {unit}"
   },
   "menu": {
     "details": "Details",
@@ -174,10 +218,12 @@
     "copied": "Copied",
     "diagnosticsFailed": "Copy failed",
     "help": "Help: {section}",
-    "climateEntity": "Climate entity",
+    "entity": "Entity",
     "name": "Name",
     "nameHint": "Empty uses the entity name.",
     "roomSensor": "Room temperature sensor",
+    "waterSensor": "Water temperature sensor",
+    "humiditySensor": "Humidity sensor",
     "unitSensor": "Unit sensor",
     "wholeUse": "This unit reports whole degrees. {sensor} reads {value}.",
     "useIt": "Use it",
@@ -283,6 +329,11 @@
     "sensorBattery": "Battery",
     "sensorValve": "Valve position",
     "sensorWindow": "Window contact",
-    "writeHold": "Show sent value for"
+    "writeHold": "Show sent value for",
+    "domains": "Device types",
+    "domainClimate": "Climate",
+    "domainWaterHeater": "Water heaters",
+    "domainHumidifier": "Humidifiers",
+    "domainsHint": "Water heaters and humidifiers join the cluster only when picked here."
   }
 }

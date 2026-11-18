@@ -24,10 +24,11 @@ The value is the first that applies. Unavailable wins over a low battery:
 |-------|------|--------|
 | Error | A health problem flag is on (error codes are only detail, as on the dial) | red |
 | Paused | `pause_entity` is `on`, or without `pause_entity` the window contact of the device is open | amber |
-| `--` | The climate entity is unavailable, unknown or missing | grey |
+| `--` | The entity is unavailable, unknown or missing | grey |
 | Battery low | The battery is under 20 percent or its low flag is on. It ranks below Paused and replaces the room temperature | amber |
 | Off | The unit is off | grey |
 | `21.0°` | Otherwise: the room temperature (`temperature_sensor` wins) | mode colour |
+| `45%` | A humidifier: its current humidity. A water heater shows its tank temperature. Without a reading, the mode (`Eco`) | domain colour |
 
 On light glass the amber, red and fan colours are drawn darker so they stay readable.
 
@@ -35,7 +36,7 @@ On light glass the amber, red and fan colours are drawn darker so they stay read
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `entity` | required | Climate entity |
+| `entity` | required | Climate, water heater or humidifier entity |
 | `name` | entity name | Name on the badge |
 | `temperature_sensor` | | Room temperature shown instead of the entity's own reading |
 | `pause_entity` | | Entity that shows the badge as Paused while `on`, for example a window contact. Wins over `sensors.window` |
@@ -56,9 +57,9 @@ tap_action: sheet
 
 ## Editor groups {#badge-editor}
 
-### Climate entity {#badge-entity}
+### Entity {#badge-entity}
 
-Pick the climate entity. Option: `entity`.
+Pick the climate, water heater or humidifier entity. Option: `entity`.
 
 ### Name {#badge-name}
 

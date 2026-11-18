@@ -8,15 +8,16 @@ import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import { ROOM_FILL, resolveGlass } from '../../ui/glass';
 import { glassTokens } from '../../ui/glass-styles';
 import { START, SWEEP, arcPath, fanSegments, fractionToAngle, litFanSegments, pt, valueToFraction } from '../../ui/geometry';
-import { ICONS, STATUS_COLORS, TINT, fanIntensity, modeInfo, modeLabel, rgba, spinSeconds, tone } from '../../ui/modes';
-import { num, t } from '../../i18n';
+import { ICONS, STATUS_COLORS, TINT, domainModeLabel, entityModeInfo, fanIntensity, iconClass, rgba, spinSeconds, tone } from '../../ui/modes';
+import { num, numAuto, t } from '../../i18n';
 import type { HomeAssistant } from '../../types';
-import { steppedTarget } from '../dial/capabilities';
+import { isSupportedEntity } from '../../domain';
+import { setpointPatch, steppedTarget } from '../dial/capabilities';
 import { WriterLease, type ClimateWriter } from '../shared/writer';
 import { hassNeedsRender } from '../shared/render-gate';
 import '../shared/sheet';
 import type { LiquidClimateSheet } from '../shared/sheet';
-import { clusterGroups, type RoomGroup } from './grouping';
+import { clusterGroups, defaultClusterTitle, type RoomGroup } from './grouping';
 import { clusterFigures, clusterSummary, roomFooter, roomModel, type RoomModel } from './model';
 
 /** Mini dial radii in the shared 400 x 400 geometry: setpoint track, fan ring, spin ring. */
@@ -49,8 +50,8 @@ export class LiquidClimateCluster extends LitElement {
   setConfig(raw: Record<string, unknown>): void {
     if (!raw || typeof raw !== 'object') throw new Error('Liquid Climate: invalid cluster config');
     const next = normalizeClusterConfig(migrateConfig(raw));
-    const bad = next.entities.find((r) => !r.entity.startsWith('climate.'));
-    if (bad) throw new Error(`Liquid Climate: "${bad.entity}" in entities is not a climate entity`);
+    const bad = next.entities.find((r) => !isSupportedEntity(r.entity));
+    if (bad) throw new Error(`Liquid Climate: "${bad.entity}" in entities is not a climate entity (climate, water_heater or humidifier)`);
     this._config = next;
     this._watched = [];
     this._awaiting = [];
@@ -156,7 +157,7 @@ export class LiquidClimateCluster extends LitElement {
     if (clusterSource(cfg) === 'list') this._climateIds = [];
     else {
       // Rendering scans the states anyway; the registry adds units whose state has not arrived yet.
-      const registry = Object.keys(this.hass.entities ?? {}).filter((id) => id.startsWith('climate.'));
+      const registry = Object.keys(this.hass.entities ?? {}).filter((id) => cfg.domains.some((d) => id.startsWith(`${d}.`)));
       this._climateIds = [...new Set([...rooms.map((r) => r.dial.entity), ...registry])];
     }
     const ids = new Set(rooms.map((r) => r.dial.entity));
@@ -180,13 +181,18 @@ export class LiquidClimateCluster extends LitElement {
   }
 
   private _setMode(r: RoomModel, mode: string) {
-    if (r.caps && mode !== r.mode) this._writeVia(r.dial.entity).setMode(mode);
+    if (!r.caps) return;
+    const w = this._writeVia(r.dial.entity);
+    // A humidifier's mode sits next to on and off: picking one while off turns it on too.
+    if (r.caps.domain === 'humidifier') {
+      if (mode !== r.view?.subMode || !r.on) w.set(r.on ? { mode } : { hvac_mode: 'on', mode });
+    } else if (mode !== r.mode) w.setMode(mode);
   }
 
   /** steppedTarget is null at a limit and while off, so an aria-disabled stepper does nothing. */
   private _step(r: RoomModel, dir: 1 | -1) {
     const next = r.view && r.caps ? steppedTarget(r.view, r.caps, dir) : null;
-    if (next != null) this._writeVia(r.dial.entity).set({ temperature: next });
+    if (next != null) this._writeVia(r.dial.entity).set(setpointPatch(r.caps!, next));
   }
 
   private _sheet(): LiquidClimateSheet | null {
@@ -201,21 +207,21 @@ export class LiquidClimateCluster extends LitElement {
   // ---- Rendering -------------------------------------------------------
 
   private _icon(path: string, size: number, sw: number) {
-    return svg`<svg class="i" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
+    return svg`<svg class="i ${iconClass(path)}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
   }
 
   /** Colour of a room's icon: status colours first, the mode colour only while it is doing its job. */
   private _roomColor(r: RoomModel, glass: 'dark' | 'light'): string | null {
     if (r.kind === 'error') return tone(STATUS_COLORS.error, glass);
     if (r.kind === 'paused' || r.kind === 'battery') return tone(STATUS_COLORS.paused, glass);
-    return r.on && r.active ? tone(modeInfo(r.mode).color, glass) : null;
+    return r.on && r.active ? tone(entityModeInfo(r.stateObj, r.mode).color, glass) : null;
   }
 
   /** The mini dial and its centre text, in one span: an <svg> at a template root does not parse in every DOM. */
   private _miniDial(r: RoomModel, glass: 'dark' | 'light', motion: string, center: TemplateResult) {
     const caps = r.caps;
     const view = r.view;
-    const color = tone(modeInfo(r.mode).color, glass);
+    const color = tone(entityModeInfo(r.stateObj, r.mode).color, glass);
     const angle = (v: number) => fractionToAngle(valueToFraction(v, caps!.min, caps!.max));
     const fans = caps?.fanModes ?? [];
     const fanIndex = view?.fan ? fans.indexOf(view.fan) : -1;
@@ -268,15 +274,18 @@ export class LiquidClimateCluster extends LitElement {
   private _roomTile(r: RoomModel, selected: boolean, glass: 'dark' | 'light', motion: string) {
     const tg = this._target(r);
     const color = this._roomColor(r, glass);
-    const icon = r.kind === 'error' || r.kind === 'battery' ? ICONS.alert : r.kind === 'paused' ? ICONS.door : modeInfo(r.on ? r.mode : 'off').icon;
+    const icon = r.kind === 'error' || r.kind === 'battery' ? ICONS.alert : r.kind === 'paused' ? ICONS.door : entityModeInfo(r.stateObj, r.on ? r.mode : 'off').icon;
     const foot = roomFooter(r, this.hass);
     const warn = r.kind === 'error' || r.kind === 'paused' || r.kind === 'battery';
     const unit = r.caps?.unit ?? '°';
+    const sym = r.caps?.symbol ?? '°';
+    const climate = !r.caps || r.caps.domain === 'climate';
+    const inside = r.inside == null ? '' : r.caps?.domain === 'humidifier' ? numAuto(this.hass, r.inside, 1) : num(this.hass, r.inside, 1);
     const aria = [
       r.ref.name,
       warn ? foot : r.verb,
       tg.deg ? t(this.hass, 'cluster.ariaTarget', { value: tg.spoken, unit }) : '',
-      r.inside != null ? t(this.hass, 'cluster.ariaInside', { value: num(this.hass, r.inside, 1), unit }) : '',
+      r.inside != null ? t(this.hass, climate ? 'cluster.ariaInside' : 'cluster.ariaCurrent', { value: inside, unit }) : '',
     ]
       .filter(Boolean)
       .join(', ');
@@ -295,8 +304,10 @@ export class LiquidClimateCluster extends LitElement {
         glass,
         motion,
         html`<span class="center">
-          <span class="tline ${tg.range ? 'range' : ''}"><span class="big">${tg.text}</span>${tg.deg ? html`<span class="deg">°</span>` : nothing}</span>
-          ${r.inside != null ? html`<span class="inside">${t(this.hass, 'dial.insideValue', { temp: `${num(this.hass, r.inside, 1)}°` })}</span>` : nothing}
+          <span class="tline ${tg.range ? 'range' : ''}"><span class="big">${tg.text}</span>${tg.deg ? html`<span class="deg">${sym}</span>` : nothing}</span>
+          ${r.inside != null
+            ? html`<span class="inside">${climate ? t(this.hass, 'dial.insideValue', { temp: `${inside}${sym}` }) : t(this.hass, 'dial.currentValue', { value: `${inside}${sym}` })}</span>`
+            : nothing}
         </span>`,
       )}
       ${warn
@@ -315,6 +326,8 @@ export class LiquidClimateCluster extends LitElement {
     const verb = err ?? (r.kind === 'error' || r.kind === 'paused' || r.kind === 'battery' ? roomFooter(r, this.hass) : r.verb);
     const modes = caps?.modes ?? [];
     const name = r.ref.name;
+    const sym = caps?.symbol ?? '°';
+    const hum = caps?.domain === 'humidifier';
     return html`<div class="strip ${modes.length ? '' : 'nomodes'}" role="group" aria-label=${t(this.hass, 'cluster.controls', { name })}>
       <button
         class="who"
@@ -331,12 +344,13 @@ export class LiquidClimateCluster extends LitElement {
       ${modes.length
         ? html`<div class="modes" role="group" aria-label=${t(this.hass, 'cluster.modeGroup', { name })}>
         ${modes.map((id) => {
-          const info = modeInfo(id);
-          const on = id === r.mode;
+          const info = entityModeInfo(r.stateObj, id);
+          const on = hum ? r.on && id === r.view?.subMode : id === r.mode;
           const c = tone(info.color, glass);
           return html`<button
             class="press mode"
-            aria-label=${modeLabel(this.hass, id)}
+            aria-label=${domainModeLabel(this.hass, caps!.domain, id)}
+            title=${caps!.domain === 'climate' ? nothing : domainModeLabel(this.hass, caps!.domain, id)}
             aria-pressed=${on ? 'true' : 'false'}
             style=${styleMap({
               background: on ? rgba(c, TINT.tile) : undefined,
@@ -358,22 +372,22 @@ export class LiquidClimateCluster extends LitElement {
               aria-label=${t(this.hass, 'cluster.rangeAria', { range: tg.spoken, unit: caps?.unit ?? '' })}
               @click=${(e: Event) => this._openSheet(r, e.currentTarget as HTMLElement)}
             >
-              ${tg.text}°
+              ${tg.text}${sym}
             </button>`
           : html`<button
                 class="press step"
-                aria-label=${t(this.hass, 'common.stepDown')}
+                aria-label=${t(this.hass, hum ? 'common.stepDownHumidity' : 'common.stepDown')}
                 aria-disabled=${!single || atMin ? 'true' : 'false'}
                 @click=${() => this._step(r, -1)}
               >
                 ${this._icon(ICONS.minus, 18, 2)}
               </button>
               <span class="target" aria-live="polite" aria-atomic="true"
-                ><span class="sr">${t(this.hass, 'common.target')} </span>${single ? html`<span class="tval">${tg.text}°</span>` : html`<span class="tval" aria-hidden="true">--</span>`}</span
+                ><span class="sr">${t(this.hass, 'common.target')} </span>${single ? html`<span class="tval">${tg.text}${sym}</span>` : html`<span class="tval" aria-hidden="true">--</span>`}</span
               >
               <button
                 class="press step"
-                aria-label=${t(this.hass, 'common.stepUp')}
+                aria-label=${t(this.hass, hum ? 'common.stepUpHumidity' : 'common.stepUp')}
                 aria-disabled=${!single || atMax ? 'true' : 'false'}
                 @click=${() => this._step(r, 1)}
               >
@@ -393,7 +407,7 @@ export class LiquidClimateCluster extends LitElement {
     const selected = rooms.find((r) => r.dial.entity === this._selected) ?? rooms[0];
     this._selected = selected?.dial.entity;
     const figures = clusterFigures(this.hass, rooms);
-    const title = cfg.title || t(this.hass, 'cluster.title');
+    const title = cfg.title || defaultClusterTitle(this.hass, cfg);
     const w = selected ? this._leases.get(selected.dial.entity)?.current : undefined;
     // Emptied while a new attempt is in flight, so the alert speaks again when that one fails too.
     const announce = w?.error && !w.sending ? `${selected!.ref.name}: ${w.error}` : '';

@@ -11,7 +11,8 @@ import type { Detection } from '../../detect/roles';
 import { statusTitle, statusValue, type StatusValue } from '../../ui/status';
 import { handleMenuKey, menuVisible, panelId, renderMenuPanel } from '../../ui/menu';
 import { resolveGlass } from '../../ui/glass';
-import { num, t } from '../../i18n';
+import { num, numAuto, t } from '../../i18n';
+import { ENTITY_ERROR, domainOf, isSupportedEntity } from '../../domain';
 import type { HomeAssistant } from '../../types';
 import { WriterLease, type ClimateWriter } from '../shared/writer';
 import { hassNeedsRender } from '../shared/render-gate';
@@ -31,23 +32,24 @@ import {
   litFanSegments,
   pointToFraction,
   pt,
-  snap,
   valueToFraction,
   zoneForDistance,
 } from '../../ui/geometry';
 import {
   ICONS,
+  domainModeLabel,
+  entityModeInfo,
+  iconClass,
   fanIntensity,
   fanShortLabels,
-  modeInfo,
-  modeLabel,
   optionLabel,
+  particleMode,
   particleDuration,
   rgba,
   spinSeconds,
   spinStyle,
 } from '../../ui/modes';
-import { buildView, getCapabilities, type Capabilities, type DialView, type Optimistic } from './capabilities';
+import { buildView, getCapabilities, setpointPatch, snapFor, type Capabilities, type DialView, type Optimistic } from './capabilities';
 import { dialStyles } from './styles';
 
 const PARTICLES = Array.from({ length: 14 }, (_, i) => ({
@@ -115,9 +117,7 @@ export class LiquidClimateCard extends LitElement {
   // ---- Lovelace API ----------------------------------------------------
 
   setConfig(raw: Record<string, unknown>): void {
-    if (!raw || typeof raw.entity !== 'string' || !raw.entity.startsWith('climate.')) {
-      throw new Error('Liquid Climate: "entity" must be a climate entity id');
-    }
+    if (!raw || !isSupportedEntity(raw.entity)) throw new Error(ENTITY_ERROR);
     const next = normalizeConfig(migrateConfig(raw));
     if (this._config && this._config.entity !== next.entity) {
       // Pending writes belong to the old entity: releasing its writer sends them.
@@ -233,6 +233,8 @@ export class LiquidClimateCard extends LitElement {
   private _context(): Ctx | null {
     const stateObj = this._entity();
     if (!stateObj || !this._config || stateObj.state === 'unavailable') return null;
+    // A water heater or humidifier in unknown has no mode to show; climate keeps its older behaviour.
+    if (stateObj.state === 'unknown' && domainOf(stateObj.entity_id) !== 'climate') return null;
     const caps = getCapabilities(stateObj, this._config, this.hass);
     const view = buildView(stateObj, caps, this._writer.local);
     return { stateObj, caps, view };
@@ -246,8 +248,10 @@ export class LiquidClimateCard extends LitElement {
 
   // ---- Interaction -----------------------------------------------------
 
-  private _setMode(mode: string) {
-    this._writer.setMode(mode);
+  private _setMode(ctx: Ctx, mode: string) {
+    // A humidifier's mode lives next to on and off: picking one while off turns it on too.
+    if (ctx.caps.domain === 'humidifier') this._queue.set(ctx.view.mode === 'off' ? { hvac_mode: 'on', mode } : { mode });
+    else this._writer.setMode(mode);
   }
 
   private _togglePower(ctx: Ctx) {
@@ -265,7 +269,7 @@ export class LiquidClimateCard extends LitElement {
         this._queue.set({ target_temp_low: clamp(lo, caps.min, caps.max), target_temp_high: clamp(Math.max(v, lo + caps.step), caps.min, caps.max) });
       }
     } else {
-      this._queue.set({ temperature: v });
+      this._queue.set(setpointPatch(caps, v));
     }
   }
 
@@ -274,7 +278,7 @@ export class LiquidClimateCard extends LitElement {
     if (!view.hasSetpoint) return;
     const cur = view.dual ? (knob === 'low' ? view.low : view.high) : view.target;
     if (cur == null) return;
-    this._setTemp(ctx, snap(cur + dir * caps.step, caps.step, caps.min, caps.max), knob);
+    this._setTemp(ctx, snapFor(caps, cur + dir * caps.step), knob);
   }
 
   private _stepFan(ctx: Ctx, dir: 1 | -1) {
@@ -300,7 +304,7 @@ export class LiquidClimateCard extends LitElement {
     const f = pointToFraction(x, y);
     if (zone === 'temp') {
       const { caps } = ctx;
-      this._setTemp(ctx, snap(caps.min + f * (caps.max - caps.min), caps.step, caps.min, caps.max));
+      this._setTemp(ctx, snapFor(caps, caps.min + f * (caps.max - caps.min)));
     } else {
       const { fanModes } = ctx.caps;
       const fan = fanModes[fanIndexFromFraction(f, fanModes.length)];
@@ -466,8 +470,9 @@ export class LiquidClimateCard extends LitElement {
     }
 
     const { caps, view } = ctx;
-    const info = modeInfo(view.mode);
+    const info = entityModeInfo(ctx.stateObj, view.mode);
     const on = view.mode !== 'off';
+    const sym = caps.symbol;
     const color = info.color;
     const sensors = resolveSensors(this.hass, cfg, this._detect(), caps.decimals);
     this._watched = [cfg.entity, ...sensors.watched, ...cfg.status_entities.flatMap((s) => [s.entity, ...(s.actions ?? [])])];
@@ -475,19 +480,19 @@ export class LiquidClimateCard extends LitElement {
     const fmt = (n: number) => num(this.hass, n, caps.decimals);
     const hass = this.hass;
     const changing = this._writer.modeChanging;
-    const verb = statusWord(hass, ctx.stateObj, view.mode, changing);
+    const verb = statusWord(hass, ctx.stateObj, view.mode, changing, view.subMode);
     // An activity reads "Heating to 20.0°"; a state ("Idle") reads "Idle, target 20.0°".
-    const activity = readsAsActivity(ctx.stateObj, view.mode, changing);
+    const activity = readsAsActivity(ctx.stateObj, view.mode, changing, view.subMode);
     const resting = isResting(ctx.stateObj, view.mode, changing);
 
     const headerSub = !on
       ? t(hass, 'common.off')
       : view.dual
         ? activity
-          ? t(hass, 'dial.subRange', { verb, range: `${t(hass, 'common.range', { low: fmt(view.low!), high: fmt(view.high!) })}°` })
-          : t(hass, 'dial.subTargetState', { state: verb, target: `${t(hass, 'common.range', { low: fmt(view.low!), high: fmt(view.high!) })}°` })
+          ? t(hass, 'dial.subRange', { verb, range: `${t(hass, 'common.range', { low: fmt(view.low!), high: fmt(view.high!) })}${sym}` })
+          : t(hass, 'dial.subTargetState', { state: verb, target: `${t(hass, 'common.range', { low: fmt(view.low!), high: fmt(view.high!) })}${sym}` })
         : view.hasSetpoint
-          ? t(hass, activity ? 'dial.subTarget' : 'dial.subTargetState', activity ? { verb, target: `${fmt(view.target!)}°` } : { state: verb, target: `${fmt(view.target!)}°` })
+          ? t(hass, activity ? 'dial.subTarget' : 'dial.subTargetState', activity ? { verb, target: `${fmt(view.target!)}${sym}` } : { state: verb, target: `${fmt(view.target!)}${sym}` })
           : verb;
 
     const intensity = view.fan ? fanIntensity(view.fan, caps.fanModes) : null;
@@ -567,7 +572,7 @@ export class LiquidClimateCard extends LitElement {
   }
 
   private _icon(path: string, size: number, sw = 1.8, cls = '') {
-    return svg`<svg class="i ${cls}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
+    return svg`<svg class="i ${cls} ${iconClass(path)}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
   }
 
   private _renderDial(ctx: Ctx, color: string, on: boolean, room: number | null, spinS: number, intensity: number | null, resting: boolean) {
@@ -593,7 +598,7 @@ export class LiquidClimateCard extends LitElement {
     let dim = '';
     let lit = '';
     const labels: { x: number; y: number; t: string }[] = [];
-    for (const t of buildTicks(min, max)) {
+    for (const t of buildTicks(min, max, caps.domain === 'humidifier')) {
       const p1 = pt(t.major ? 111 : 116, t.angle);
       const p2 = pt(123, t.angle);
       const seg = `M ${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} `;
@@ -625,21 +630,27 @@ export class LiquidClimateCard extends LitElement {
     const hass = this.hass;
     const dec = caps.decimals;
     const nf = (v: number, d = dec) => num(hass, v, d);
+    const sym = caps.symbol;
+    const climate = caps.domain === 'climate';
+    // Humidity reads whole when it is whole (45%), a temperature always with one decimal.
+    const roomText = (v: number) => (caps.domain === 'humidifier' ? numAuto(hass, v, 1) : nf(v, 1));
     const big = sp
       ? view.dual
         ? null
         : nf(view.target!)
       : on
         ? room != null
-          ? nf(room, 1)
+          ? roomText(room)
           : '--'
         : t(hass, 'common.off');
     const centerSub = this._queue.isPending || this._writer.sending
       ? t(hass, 'dial.sending')
       : room != null && (sp || !on)
-        ? t(hass, 'dial.insideValue', { temp: `${nf(room, 1)}°` })
+        ? climate
+          ? t(hass, 'dial.insideValue', { temp: `${roomText(room)}${sym}` })
+          : t(hass, 'dial.currentValue', { value: `${roomText(room)}${sym}` })
         : on && !sp
-          ? t(hass, 'dial.inside')
+          ? t(hass, climate ? 'dial.inside' : 'dial.current')
           : '';
 
     const valueText = view.dual
@@ -657,7 +668,7 @@ export class LiquidClimateCard extends LitElement {
         <div class="parts" aria-hidden="true">
           ${PARTICLES.map(
             (p) => html`<span
-              class="pt pt-${view.mode}"
+              class="pt pt-${particleMode(ctx.stateObj, view.mode)}"
               style=${styleMap({
                 left: `${p.left}%`,
                 width: `${p.size}px`,
@@ -675,7 +686,9 @@ export class LiquidClimateCard extends LitElement {
           tabindex=${view.dual ? nothing : '0'}
           aria-label=${view.dual
             ? t(hass, 'dial.ariaRange')
-            : t(hass, 'dial.ariaTarget')}
+            : climate
+              ? t(hass, 'dial.ariaTarget')
+              : t(hass, caps.domain === 'humidifier' ? 'dial.ariaTargetHumidity' : 'dial.ariaTargetWater')}
           aria-valuemin=${view.dual ? nothing : min}
           aria-valuemax=${view.dual ? nothing : max}
           aria-valuenow=${view.dual ? nothing : (nowValue ?? nothing)}
@@ -732,7 +745,7 @@ export class LiquidClimateCard extends LitElement {
             html`<div class="big pop ${view.dual ? 'dual' : ''}">
               ${view.dual
                 ? html`<span>${nf(view.low!)}</span><span class="dash"></span><span>${nf(view.high!)}</span><span class="deg">°</span>`
-                : html`<span>${big}</span>${on ? html`<span class="deg">°</span>` : nothing}`}
+                : html`<span>${big}</span>${on ? html`<span class="deg">${sym}</span>` : nothing}`}
             </div>`,
           )}
           <div class="centersub">
@@ -754,11 +767,12 @@ export class LiquidClimateCard extends LitElement {
    */
   private _renderSteps(ctx: Ctx) {
     const sp = ctx.view.hasSetpoint;
+    const hum = ctx.caps.domain === 'humidifier';
     return html`<div class="steps">
-      <button class="press step" aria-label=${t(this.hass, 'common.stepDown')} ?disabled=${!sp} @click=${() => this._stepTemp(ctx, -1)}>
+      <button class="press step" aria-label=${t(this.hass, hum ? 'common.stepDownHumidity' : 'common.stepDown')} ?disabled=${!sp} @click=${() => this._stepTemp(ctx, -1)}>
         ${this._icon('M5 12h14', 18, 2)}
       </button>
-      <button class="press step" aria-label=${t(this.hass, 'common.stepUp')} ?disabled=${!sp} @click=${() => this._stepTemp(ctx, 1)}>
+      <button class="press step" aria-label=${t(this.hass, hum ? 'common.stepUpHumidity' : 'common.stepUp')} ?disabled=${!sp} @click=${() => this._stepTemp(ctx, 1)}>
         ${this._icon('M5 12h14 M12 5v14', 18, 2)}
       </button>
     </div>`;
@@ -774,21 +788,23 @@ export class LiquidClimateCard extends LitElement {
       style=${styleMap({ gridTemplateColumns: `repeat(${caps.modes.length}, minmax(0, 1fr))` })}
     >
       ${caps.modes.map((id) => {
-        const m = modeInfo(id);
-        const act = id === view.mode;
+        const m = entityModeInfo(ctx.stateObj, id);
+        // A humidifier's mode shows as picked while it is on; its state is only on or off.
+        const act = caps.domain === 'humidifier' ? view.mode !== 'off' && id === view.subMode : id === view.mode;
         return html`<button
           class="press mode"
           aria-pressed=${act ? 'true' : 'false'}
-          aria-label=${modeLabel(this.hass, id, false, caps.modes)}
+          aria-label=${domainModeLabel(this.hass, caps.domain, id, false, caps.modes)}
+          title=${caps.domain === 'climate' ? nothing : domainModeLabel(this.hass, caps.domain, id, false, caps.modes)}
           style=${styleMap({
             background: act ? rgba(m.color, 0.2) : undefined,
             borderColor: act ? rgba(m.color, 0.45) : undefined,
             color: act ? 'var(--lc-fg)' : 'var(--lc-fg2)',
           })}
-          @click=${() => this._setMode(id)}
+          @click=${() => this._setMode(ctx, id)}
         >
           ${this._icon(m.icon, 19)}
-          <span>${modeLabel(this.hass, id, true, caps.modes)}</span>
+          <span>${domainModeLabel(this.hass, caps.domain, id, true, caps.modes)}</span>
         </button>`;
       })}
     </div>`;
@@ -839,6 +855,19 @@ export class LiquidClimateCard extends LitElement {
         active: !INACTIVE.includes(v),
         aria: t(this.hass, 'dial.ariaPreset', { value: optionLabel(this.hass, 'preset_mode', v, ctx.stateObj) }),
         go: () => this._cycle('preset_mode', caps.presetModes, view.preset),
+      });
+    }
+    if (caps.away && view.away != null) {
+      const away = view.away;
+      const value = t(this.hass, away ? 'common.on' : 'common.off');
+      chips.push({
+        label: t(this.hass, 'dial.away'),
+        value,
+        icon: ICONS.away,
+        cls: '',
+        active: away,
+        aria: t(this.hass, 'dial.ariaAway', { value }),
+        go: () => this._queue.set({ away_mode: away ? 'off' : 'on' }),
       });
     }
     if (!chips.length) return nothing;

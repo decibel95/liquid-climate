@@ -16,8 +16,15 @@ import { getDeviceFamily } from '../detect/family';
 import { fetchRegistry } from '../detect/registry';
 import { materializeConfig } from '../detect/materialize';
 import { detectSensors, type RegistryInfo } from '../detect/roles';
-import { clusterGroups, type RoomRef } from '../cards/cluster/grouping';
+import { clusterGroups, defaultClusterTitle, type RoomRef } from '../cards/cluster/grouping';
 import { LiquidClimateCardEditor } from './liquid-climate-card-editor';
+import { DOMAINS, SENSOR_LISTS, currentSensor, domainOf, type Domain } from '../domain';
+
+const DOMAIN_LABELS: Record<Domain, string> = {
+  climate: 'editor.domainClimate',
+  water_heater: 'editor.domainWaterHeater',
+  humidifier: 'editor.domainHumidifier',
+};
 
 const PAUSE_DOMAINS = ['binary_sensor.', 'input_boolean.', 'switch.'];
 type RoomField = 'name' | 'temperature_sensor' | 'pause_entity';
@@ -239,11 +246,11 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
     const detail = ref.areaName ? this._t('editor.roomDetail', { area: ref.areaName, name: ref.entityName }) : ref.entityName;
     const open = this._open === id;
     const listed = list && shown;
-    const field = (key: RoomField, label: string, placeholder: string, suggest = false, help = '') => html`<label class="field">
+    const field = (key: RoomField, label: string, placeholder: string, suggest = false, help = '', listId = `lc-${key}`) => html`<label class="field">
       <span class="lbl">${label}</span>
       <input
         type="text"
-        list=${suggest ? `lc-${key}` : nothing}
+        list=${suggest ? listId : nothing}
         .value=${ref.room[key] ?? ''}
         placeholder=${placeholder}
         @change=${(e: Event) => this._patchRoom(id, key, (e.target as HTMLInputElement).value.trim())}
@@ -251,6 +258,7 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
       ${help ? html`<span class="hint">${help}</span>` : nothing}
     </label>`;
     const panel = `lc-override-${index}`;
+    const figure = currentSensor(domainOf(id));
     return html`<div class="roomrow ${shown ? '' : 'off'}">
       <div class="row">
         ${list
@@ -277,7 +285,7 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
       ${open && shown
         ? html`<div class="override" id=${panel}>
             ${field('name', this._t('editor.name'), ref.areaName && ref.name === ref.areaName ? ref.areaName : ref.entityName)}
-            ${field('temperature_sensor', this._t('editor.roomSensor'), this._t('editor.unitSensor'), true)}
+            ${field('temperature_sensor', this._t(figure.label), this._t('editor.unitSensor'), true, '', figure.list)}
             ${field('pause_entity', this._t('editor.pauseEntity'), 'binary_sensor.window', true, this._t('editor.pauseHelp'))}
           </div>`
         : nothing}
@@ -291,9 +299,10 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
     const rows = this._roomRows(cfg);
     const areas = this._areas();
     const floors = this._floors();
-    const roomSensors = Object.keys(this.hass.states).filter(
-      (id) => id.startsWith('sensor.') && this.hass.states[id].attributes.device_class === 'temperature',
-    );
+    const sensorsOf = (deviceClass: string) =>
+      Object.keys(this.hass.states).filter((id) => id.startsWith('sensor.') && this.hass.states[id].attributes.device_class === deviceClass);
+    const roomSensors = sensorsOf(SENSOR_LISTS.temperature.deviceClass);
+    const humiditySensors = sensorsOf(SENSOR_LISTS.humidity.deviceClass);
     const pauseIds = Object.keys(this.hass.states).filter((id) => PAUSE_DOMAINS.some((d) => id.startsWith(d)));
     const note =
       source === 'list'
@@ -308,7 +317,7 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
           <input
             type="text"
             .value=${cfg.title ?? ''}
-            placeholder=${this._t('cluster.title')}
+            placeholder=${defaultClusterTitle(this.hass, cfg)}
             @change=${(e: Event) => this._set({ title: (e.target as HTMLInputElement).value.trim() || undefined })}
           />
         </label>
@@ -334,6 +343,27 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
               cfg.group_by,
               (v) => this._set({ group_by: v }),
             )
+          : nothing}
+        ${source !== 'list'
+          ? html`<div class="field">
+          <div class="lblrow"><span class="lbl" id="lc-domains-label">${this._t('editor.domains')}</span>${this._help('domains', 'editor.domains')}</div>
+          <div class="chiprow" role="group" aria-labelledby="lc-domains-label">
+            ${DOMAINS.map((d) => {
+              const on = cfg.domains.includes(d);
+              // At least one kind stays picked.
+              const last = on && cfg.domains.length === 1;
+              return html`<button
+                class="pill ${on ? 'on' : ''}"
+                aria-pressed=${on ? 'true' : 'false'}
+                ?disabled=${last}
+                @click=${() => this._set((c) => ({ ...c, domains: DOMAINS.filter((x) => (x === d ? !on : c.domains.includes(x))) }))}
+              >
+                ${this._t(DOMAIN_LABELS[d])}
+              </button>`;
+            })}
+          </div>
+          <span class="hint">${this._t('editor.domainsHint')}</span>
+        </div>`
           : nothing}
         ${source === 'floor'
           ? html`<label class="field">
@@ -365,7 +395,8 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
               : html`<span class="hint pad">${this._t('editor.noRooms')}</span>`}
           </div>
           <span class="hint">${note}</span>
-          <datalist id="lc-temperature_sensor">${roomSensors.map((id) => html`<option value=${id}></option>`)}</datalist>
+          <datalist id=${SENSOR_LISTS.temperature.list}>${roomSensors.map((id) => html`<option value=${id}></option>`)}</datalist>
+          <datalist id=${SENSOR_LISTS.humidity.list}>${humiditySensors.map((id) => html`<option value=${id}></option>`)}</datalist>
           <datalist id="lc-pause_entity">${pauseIds.map((id) => html`<option value=${id}></option>`)}</datalist>
         </div>
         ${this._writeDelay(this._config!)}

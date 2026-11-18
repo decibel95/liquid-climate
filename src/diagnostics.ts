@@ -12,6 +12,7 @@ import { materializeConfig } from './detect/materialize';
 import { windowOf } from './detect/resolve';
 import { detectSensors, type RegistryInfo, type SensorRef } from './detect/roles';
 import type { HomeAssistant } from './types';
+import { domainOf } from './domain';
 
 /** Config keys whose name contains one of these (or the whole word pin) are dropped, in any case and at any depth. */
 const SECRET = /token|pass(word|wd)?|pwd|key|secret|auth|bearer|credential|cookie|webhook|signature|jwt|(?:^|[^a-z])pin(?:[^a-z]|$)/i;
@@ -69,7 +70,7 @@ function rolesOf(hass: HomeAssistant, config: LiquidClimateConfig, roles: readon
   }
   out.room_temperature = config.temperature_sensor
     ? { source: 'override', entities: [config.temperature_sensor] }
-    : { source: 'auto', entities: [config.entity], via: 'current_temperature' };
+    : { source: 'auto', entities: [config.entity], via: domainOf(config.entity) === 'humidifier' ? 'current_humidity' : 'current_temperature' };
   return out;
 }
 
@@ -90,6 +91,11 @@ function climateOf(hass: HomeAssistant, entity: string) {
     min_temp: num(a.min_temp),
     max_temp: num(a.max_temp),
     target_temp_step: num(a.target_temp_step),
+    // Water heater and humidifier: their modes, the humidifier mode and away mode.
+    operation_list: strings(a.operation_list),
+    available_modes: strings(a.available_modes),
+    mode: typeof a.mode === 'string' ? a.mode : null,
+    away_mode: typeof a.away_mode === 'string' ? a.away_mode : null,
     temperature_unit: hass.config?.unit_system?.temperature ?? (typeof a.temperature_unit === 'string' ? a.temperature_unit : null),
   };
 }

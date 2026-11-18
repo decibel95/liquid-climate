@@ -8,11 +8,12 @@ import { Memo } from '../../detect/cache';
 import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import { resolveGlass } from '../../ui/glass';
 import { glassTokens } from '../../ui/glass-styles';
-import { ICONS, STATUS_COLORS, TINT, modeInfo, rgba, tone } from '../../ui/modes';
-import { num, t } from '../../i18n';
+import { ICONS, STATUS_COLORS, TINT, entityModeInfo, iconClass, rgba, tone } from '../../ui/modes';
+import { num, numAuto, t } from '../../i18n';
+import { ENTITY_ERROR, domainOf, isSupportedEntity } from '../../domain';
 import type { HassEntity, HomeAssistant } from '../../types';
-import { buildView, getCapabilities, steppedTarget, type Capabilities, type DialView } from '../dial/capabilities';
-import { WriterLease, powerOnMode, rememberedMode, type ClimateWriter } from '../shared/writer';
+import { buildView, getCapabilities, setpointPatch, steppedTarget, type Capabilities, type DialView } from '../dial/capabilities';
+import { WriterLease, powerOnModeOf, rememberedMode, type ClimateWriter } from '../shared/writer';
 import { hassNeedsRender } from '../shared/render-gate';
 import { activelyHeating, batteryText, statusWord } from '../shared/status';
 import '../shared/sheet';
@@ -48,9 +49,7 @@ export class LiquidClimateTile extends LitElement {
   // ---- Lovelace API ----------------------------------------------------
 
   setConfig(raw: Record<string, unknown>): void {
-    if (!raw || typeof raw.entity !== 'string' || !raw.entity.startsWith('climate.')) {
-      throw new Error('Liquid Climate: "entity" must be a climate entity id');
-    }
+    if (!raw || !isSupportedEntity(raw.entity)) throw new Error(ENTITY_ERROR);
     const next = normalizeTileConfig(migrateConfig(raw));
     // Pending writes belong to the old entity: releasing its writer sends them.
     if (this._config && this._config.entity !== next.entity) {
@@ -108,7 +107,7 @@ export class LiquidClimateTile extends LitElement {
   private _step(dir: 1 | -1) {
     const ctx = this._context();
     const next = ctx ? steppedTarget(ctx.view, ctx.caps, dir) : null;
-    if (next != null) this._writer.set({ temperature: next });
+    if (next != null) this._writer.set(setpointPatch(ctx!.caps, next));
   }
 
   private _power() {
@@ -135,8 +134,16 @@ export class LiquidClimateTile extends LitElement {
 
   // ---- Rendering -------------------------------------------------------
 
+  /** "Living Room climate", "Tank water heater", "Bedroom dehumidifier". */
+  private _ariaKey(stateObj: HassEntity | undefined): string {
+    const domain = this._config ? domainOf(this._config.entity) : 'climate';
+    if (domain === 'water_heater') return 'tile.ariaWaterHeater';
+    if (domain === 'humidifier') return stateObj?.attributes.device_class === 'dehumidifier' ? 'tile.ariaDehumidifier' : 'tile.ariaHumidifier';
+    return 'tile.ariaTile';
+  }
+
   private _icon(path: string, size: number, sw: number, cls = '') {
-    return svg`<svg class="i ${cls}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
+    return svg`<svg class="i ${cls} ${iconClass(path)}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
   }
 
   protected override render(): TemplateResult {
@@ -153,10 +160,10 @@ export class LiquidClimateTile extends LitElement {
     const changing = this._writer.modeChanging;
 
     // Off shows the mode the power button would return to, muted.
-    const shown = on ? mode : (powerOnMode(stateObj?.attributes.hvac_modes, rememberedMode(cfg.entity)) ?? 'off');
-    const info = modeInfo(shown);
+    const shown = on ? mode : (powerOnModeOf(stateObj, rememberedMode(cfg.entity)) ?? 'off');
+    const info = entityModeInfo(stateObj, shown);
     const flicker = on && cfg.look.motion !== 'minimal' && activelyHeating(stateObj!, mode, changing);
-    const canPower = !!ctx && (on ? ctx.caps.hasOff : !!powerOnMode(stateObj!.attributes.hvac_modes, rememberedMode(cfg.entity)));
+    const canPower = !!ctx && (on ? ctx.caps.hasOff : !!powerOnModeOf(stateObj, rememberedMode(cfg.entity)));
 
     // Health: problem flags decide, error codes are only detail (same resolution as the dial and badge).
     const found = runtimeDetection(this.hass, cfg.entity, this._detection);
@@ -169,21 +176,24 @@ export class LiquidClimateTile extends LitElement {
     const lowBattery = sensors.battery?.low ? batteryText(this.hass, sensors.battery) : null;
 
     const room = roomTemperatureOf(this.hass, cfg);
+    const sym = ctx?.caps.symbol ?? '°';
+    const climate = !ctx || ctx.caps.domain === 'climate';
+    const roomText = room == null ? '' : ctx?.caps.domain === 'humidifier' ? numAuto(this.hass, room, 1) : num(this.hass, room, 1);
     let sub: string;
     if (problem) sub = problem;
     else if (lowBattery && stateObj && ctx) sub = lowBattery;
     else if (!stateObj) sub = t(this.hass, 'common.entityNotFound', { entity: cfg.entity });
     else if (!ctx) sub = t(this.hass, 'common.unavailable');
     else {
-      const word = statusWord(this.hass, stateObj, mode, changing);
-      sub = room != null ? t(this.hass, 'tile.insideSub', { word, temp: `${num(this.hass, room, 1)}°` }) : word;
+      const word = statusWord(this.hass, stateObj, mode, changing, view?.subMode);
+      sub = room != null ? t(this.hass, climate ? 'tile.insideSub' : 'tile.currentSub', { word, temp: `${roomText}${sym}` }) : word;
     }
 
     const dec = ctx?.caps.decimals ?? 1;
     const single = on && !!view?.hasSetpoint && !view.dual && view.target != null;
     const range = on && !!view?.dual;
     const nf = (v: number) => num(this.hass, v, dec);
-    const target = single ? `${nf(view!.target!)}°` : range ? `${nf(view!.low!)}–${nf(view!.high!)}°` : '--';
+    const target = single ? `${nf(view!.target!)}${sym}` : range ? `${nf(view!.low!)}–${nf(view!.high!)}${sym}` : '--';
     const atMin = single && view!.target! <= ctx!.caps.min;
     const atMax = single && view!.target! >= ctx!.caps.max;
     const tap = cfg.tap_action;
@@ -195,7 +205,7 @@ export class LiquidClimateTile extends LitElement {
     const tint = problem ? tone(STATUS_COLORS.error, glassKind) : on ? tone(info.color, glassKind) : null;
 
     return html`
-      <article class="tile rim ${glass}" style=${styleMap({ '--_blur': `${cfg.look.blur}px` })} aria-label=${t(this.hass, 'tile.ariaTile', { name })}>
+      <article class="tile rim ${glass}" style=${styleMap({ '--_blur': `${cfg.look.blur}px` })} aria-label=${t(this.hass, this._ariaKey(stateObj), { name })}>
         <button
           class="press power"
           aria-label=${t(this.hass, 'tile.power', { name })}
@@ -223,11 +233,11 @@ export class LiquidClimateTile extends LitElement {
               >
                 ${target}
               </button>`
-            : html`<button class="press step" aria-label=${t(this.hass, 'common.stepDown')} ?disabled=${!single || atMin} @click=${() => this._step(-1)}>
+            : html`<button class="press step" aria-label=${t(this.hass, sym === '%' ? 'common.stepDownHumidity' : 'common.stepDown')} ?disabled=${!single || atMin} @click=${() => this._step(-1)}>
                   ${this._icon(ICONS.minus, 16, 2.2)}
                 </button>
                 <span class="target" aria-live="polite">${single ? target : html`<span aria-hidden="true">--</span>`}</span>
-                <button class="press step" aria-label=${t(this.hass, 'common.stepUp')} ?disabled=${!single || atMax} @click=${() => this._step(1)}>
+                <button class="press step" aria-label=${t(this.hass, sym === '%' ? 'common.stepUpHumidity' : 'common.stepUp')} ?disabled=${!single || atMax} @click=${() => this._step(1)}>
                   ${this._icon(ICONS.plus, 16, 2.2)}
                 </button>`}
         </div>

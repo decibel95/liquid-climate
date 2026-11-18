@@ -16,7 +16,9 @@
     "stepUp": "Zieltemperatur erhöhen",
     "target": "Ziel",
     "batteryLow": "Batterie schwach",
-    "batteryLowValue": "Batterie schwach, {value}%"
+    "batteryLowValue": "Batterie schwach, {value}%",
+    "stepDownHumidity": "Zielfeuchte senken",
+    "stepUpHumidity": "Zielfeuchte erhöhen"
   },
   "mode": {
     "off": "Aus",
@@ -51,7 +53,37 @@
     "idle": "Leerlauf",
     "off": "Aus",
     "preheating": "Heizt vor",
-    "defrosting": "Taut ab"
+    "defrosting": "Taut ab",
+    "humidifying": "Befeuchtet"
+  },
+  "waterHeaterMode": {
+    "eco": "Eco",
+    "electric": "Elektrisch",
+    "performance": "Leistung",
+    "high_demand": "Hoher Bedarf",
+    "heat_pump": "Wärmepumpe",
+    "gas": "Gas",
+    "off": "Aus",
+    "on": "An"
+  },
+  "waterHeaterModeShort": {
+    "eco": "Eco",
+    "electric": "Strom",
+    "performance": "Leist",
+    "high_demand": "Hoch",
+    "heat_pump": "Pumpe",
+    "gas": "Gas"
+  },
+  "humidifierMode": {
+    "normal": "Normal",
+    "eco": "Eco",
+    "away": "Abwesend",
+    "boost": "Boost",
+    "comfort": "Komfort",
+    "home": "Zuhause",
+    "sleep": "Schlafen",
+    "auto": "Auto",
+    "baby": "Baby"
   },
   "option": {
     "stop": "Fest",
@@ -104,7 +136,13 @@
     "ariaPreset": "Voreinstellung: {value}",
     "problem": "{source} meldet ein Problem",
     "problemDetail": "{source} meldet ein Problem ({detail})",
-    "subTargetState": "{state}, Ziel {target}"
+    "subTargetState": "{state}, Ziel {target}",
+    "current": "Jetzt",
+    "currentValue": "Jetzt {value}",
+    "ariaTargetHumidity": "Zielfeuchte. Pfeiltasten ändern den Sollwert.",
+    "ariaTargetWater": "Ziel-Wassertemperatur. Pfeiltasten ändern den Sollwert.",
+    "away": "Abwesend",
+    "ariaAway": "Abwesenheitsmodus: {value}"
   },
   "detect": {
     "humidity": "Feuchte",
@@ -118,13 +156,18 @@
     "ariaTile": "{name} Klima",
     "power": "Ein/Aus, {name}",
     "insideSub": "{word}, innen {temp}",
-    "rangeAria": "Zielbereich {range} {unit}, Steuerung öffnen"
+    "rangeAria": "Zielbereich {range} {unit}, Steuerung öffnen",
+    "currentSub": "{word}, jetzt {temp}",
+    "ariaWaterHeater": "{name} Warmwasserbereiter",
+    "ariaHumidifier": "{name} Luftbefeuchter",
+    "ariaDehumidifier": "{name} Luftentfeuchter"
   },
   "badge": {
     "label": "{name}: {value}"
   },
   "cluster": {
     "title": "Klima",
+    "titleMixed": "Komfort",
     "empty": "Keine Klima-Entitäten gefunden. Wähle Räume im Karteneditor.",
     "noEntities": "Keine Klima-Entitäten",
     "other": "Sonstige",
@@ -149,7 +192,8 @@
     "modeGroup": "Modus, {name}",
     "rangeAria": "Zielbereich {range} {unit}, Steuerung öffnen",
     "valve": "Ventil {value}%",
-    "batteryLow": "Batterie schwach: {n}"
+    "batteryLow": "Batterie schwach: {n}",
+    "ariaCurrent": "jetzt {value} {unit}"
   },
   "menu": {
     "details": "Details",
@@ -174,10 +218,12 @@
     "copied": "Kopiert",
     "diagnosticsFailed": "Kopieren fehlgeschlagen",
     "help": "Hilfe: {section}",
-    "climateEntity": "Klima-Entität",
+    "entity": "Entität",
     "name": "Name",
     "nameHint": "Leer verwendet den Namen der Entität.",
     "roomSensor": "Raumtemperatursensor",
+    "waterSensor": "Wassertemperatursensor",
+    "humiditySensor": "Feuchtigkeitssensor",
     "unitSensor": "Sensor des Geräts",
     "wholeUse": "Dieses Gerät meldet ganze Grad. {sensor} zeigt {value}.",
     "useIt": "Verwenden",
@@ -283,6 +329,11 @@
     "sensorBattery": "Batterie",
     "sensorValve": "Ventilstellung",
     "sensorWindow": "Fensterkontakt",
-    "writeHold": "Gesendeten Wert anzeigen"
+    "writeHold": "Gesendeten Wert anzeigen",
+    "domains": "Gerätearten",
+    "domainClimate": "Klima",
+    "domainWaterHeater": "Warmwasserbereiter",
+    "domainHumidifier": "Luftbefeuchter",
+    "domainsHint": "Warmwasserbereiter und Luftbefeuchter kommen nur in den Cluster, wenn sie hier gewählt sind."
   }
 }

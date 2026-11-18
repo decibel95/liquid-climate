@@ -26,6 +26,7 @@ import { MODES, modeLabel } from '../ui/modes';
 import { formatState } from '../ui/status';
 import { buildDiagnostics, copyText, diagnosticsText } from '../diagnostics';
 import { DOCS_URL } from '../const';
+import { currentSensor, domainOf, isSupportedEntity, roleApplies } from '../domain';
 import { num, t, type Vars } from '../i18n';
 import type { HomeAssistant } from '../types';
 
@@ -204,21 +205,25 @@ export class LiquidClimateCardEditor extends LitElement {
   // ---- Setup -----------------------------------------------------------
 
   protected _setup(cfg: LiquidClimateConfig) {
-    const climates = Object.keys(this.hass.states).filter((id) => id.startsWith('climate.'));
+    const climates = Object.keys(this.hass.states).filter((id) => isSupportedEntity(id));
     const detection = this._detection();
     const stateObj = this.hass.states[cfg.entity];
     const area = stateObj?.attributes.friendly_name ?? '';
     const unit = detection?.unitTemperature;
     const suggestions = stateObj ? suggestRoomSensors(this.hass, cfg.entity) : [];
-    const useSuggestion = !cfg.temperature_sensor && unit?.wholeDegrees ? suggestions[0] : undefined;
+    // Whole degrees and their room sensor suggestion are about climate units.
+    const climate = domainOf(cfg.entity) === 'climate';
+    const useSuggestion = climate && !cfg.temperature_sensor && unit?.wholeDegrees ? suggestions[0] : undefined;
     const cloud = stateObj ? this.hass.entities[cfg.entity]?.platform === 'daikin_onecta' : false;
+    // The override of the figure the card shows: room temperature, water temperature or humidity.
+    const figure = currentSensor(domainOf(cfg.entity));
     const roomSensors = Object.keys(this.hass.states).filter(
-      (id) => id.startsWith('sensor.') && this.hass.states[id].attributes.device_class === 'temperature',
+      (id) => id.startsWith('sensor.') && this.hass.states[id].attributes.device_class === figure.deviceClass,
     );
 
     return html`
       <label class="field">
-        <span class="lbl">${this._t('editor.climateEntity')}</span>
+        <span class="lbl">${this._t('editor.entity')}</span>
         <select @change=${(e: Event) => this._fire({ entity: (e.target as HTMLSelectElement).value })}>
           ${climates.map(
             (id) => html`<option value=${id} ?selected=${id === cfg.entity}>
@@ -238,7 +243,7 @@ export class LiquidClimateCardEditor extends LitElement {
         <span class="hint">${this._t('editor.nameHint')}</span>
       </label>
       <label class="field">
-        <span class="lbl">${this._t('editor.roomSensor')}</span>
+        <span class="lbl">${this._t(figure.label)}</span>
         <input
           type="text"
           list="lc-room-sensors"
@@ -258,7 +263,7 @@ export class LiquidClimateCardEditor extends LitElement {
             </span>
             <button class="solid" @click=${() => this._fire({ temperature_sensor: useSuggestion })}>${this._t('editor.useIt')}</button>
           </div>`
-        : !cfg.temperature_sensor && unit?.wholeDegrees
+        : climate && !cfg.temperature_sensor && unit?.wholeDegrees
           ? html`<div class="note warn">
               <span>${this._t('editor.wholePick')}</span>
             </div>`
@@ -327,6 +332,8 @@ export class LiquidClimateCardEditor extends LitElement {
     const readsWindow = this._card === 'badge' || this._card === 'cluster';
     const rows = this._rows(cfg, d)
       .filter((r) => r.key !== 'window' || readsWindow)
+      // A role that means nothing for this domain shows only when it was set explicitly.
+      .filter((r) => roleApplies(domainOf(cfg.entity), r.key) || cfg.sensors[r.key] !== 'auto')
       .filter((r) => !optional.includes(r.key) || r.found || cfg.sensors[r.key] !== 'auto');
     const unit = d.unitTemperature;
     // display: contents keeps the body's spacing while every part sits inside an element.
@@ -413,6 +420,8 @@ export class LiquidClimateCardEditor extends LitElement {
 
   private _controls(cfg: LiquidClimateConfig) {
     const stateObj = this.hass.states[cfg.entity];
+    // Mode, fan, swing and preset choices are climate options: a water heater or humidifier shows what it supports by itself.
+    const climate = domainOf(cfg.entity) === 'climate';
     const caps = stateObj ? getCapabilities(stateObj, { ...cfg, controls: { ...cfg.controls, modes: MODES.map((m) => m.id) } }, this.hass) : null;
     const modeIds = ['off', 'heat', 'cool', 'heat_cool', 'auto', 'dry', 'fan_only'].filter((m) => !caps || caps.modes.includes(m));
     const toggles: [keyof LiquidClimateConfig['controls'], string, string][] = [
@@ -421,8 +430,10 @@ export class LiquidClimateCardEditor extends LitElement {
       ['swing_horizontal', this._t('editor.swingHorizontal'), caps?.swingHModes.join(', ') ?? ''],
       ['presets', this._t('editor.presets'), caps?.presetModes.join(', ') ?? ''],
     ];
+    // display: contents (.group) keeps the body's spacing while the climate part sits inside one element.
     return html`
-      <div class="field">
+      ${climate
+        ? html`<div class="group"><div class="field">
         <span class="lbl">${this._t('editor.modesOnCard')}</span>
         <div class="chiprow">
           ${modeIds.map((id) => {
@@ -462,7 +473,8 @@ export class LiquidClimateCardEditor extends LitElement {
             <span></span>
           </button>
         </div>`;
-      })}
+      })}</div>`
+        : nothing}
       ${this._writeDelay(cfg)}
       <div class="field">
         <div class="lblrow"><span class="lbl">${this._t('editor.statusRows')}</span>${this._help('status-rows', 'editor.statusRows')}</div>

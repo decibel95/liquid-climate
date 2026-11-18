@@ -1,6 +1,6 @@
 # Dial card {#dial}
 
-Full control for one climate unit. Type: `custom:liquid-climate-card`.
+Full control for one climate unit, water heater or humidifier. Type: `custom:liquid-climate-card`.
 
 <img class="light-only" src="/media/dial-light.png" alt="The dial card in light glass" loading="lazy">
 <img class="dark-only" src="/media/dial-dark.png" alt="The dial card in dark glass" loading="lazy">
@@ -33,6 +33,35 @@ Units and steps follow the entity.
 
 <LiveCard type="dial" :config="{ entity: 'climate.fahrenheit' }" />
 
+### Water heater {#dial-water-heater}
+
+A `water_heater` entity: the arc sets `temperature` between `min_temp` and `max_temp` in `target_temp_step` steps (0.5 in Celsius, 1 in Fahrenheit when it reports none). The centre shows `current_temperature` when the heater reports it. The operation modes are the mode buttons; `off` is the power button. Power uses `turn_on` and `turn_off` when the heater supports them, else the operation mode `off`. Away mode is a chip when the heater supports it. There is no fan ring. The colour is a warm orange-red.
+
+<img class="light-only" src="/media/appliances-light.png" alt="A water heater dial with its mode strip (Eco, Elec, Perf, High, Pump, Gas) and an Away chip, next to a humidifier dial at 55%" loading="lazy">
+<img class="dark-only" src="/media/appliances-dark.png" alt="A water heater dial with its mode strip (Eco, Elec, Perf, High, Pump, Gas) and an Away chip, next to a humidifier dial at 55%" loading="lazy">
+
+<LiveCard type="dial" :config="{ entity: 'water_heater.demo_water_heater_celsius' }" />
+
+```yaml
+type: custom:liquid-climate-card
+entity: water_heater.boiler
+```
+
+### Humidifier {#dial-humidifier}
+
+A `humidifier` entity: the arc sets `humidity` in % between `min_humidity` and `max_humidity` (0 to 100 by default) in steps of `target_humidity_step` or 1. The centre shows `current_humidity`. The header follows `action` (Humidifying, Drying, Idle) as it follows `hvac_action` on climate. `available_modes` become mode buttons when the entity supports modes. Power is `turn_on` and `turn_off`. There is no fan ring. A humidifier is blue, a dehumidifier (`device_class: dehumidifier`) teal.
+
+<LiveCard type="dial" :config="{ entity: 'humidifier.hygrostat' }" />
+
+```yaml
+type: custom:liquid-climate-card
+entity: humidifier.bedroom
+```
+
+<img src="/media/appliances.webp" alt="Switching the water heater mode from Eco to Heat pump and back, then dragging the humidifier target from 55 to 60 percent and back" loading="lazy">
+
+The climate-only options (`controls`, the fan, swing and preset rows) have no effect on a water heater or humidifier, and the editor hides them.
+
 ### Keyboard {#dial-keyboard}
 
 Focus the dial and use the arrow keys to step the setpoint, Home and End for the limits, Page Up and Page Down for the fan speed. On a dual setpoint each knob is its own slider. On the dial itself plain arrows move the lower knob and Shift plus an arrow the upper knob.
@@ -43,7 +72,7 @@ Only `entity` is required.
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `entity` | required | Climate entity |
+| `entity` | required | Climate, water heater or humidifier entity |
 | `name` | entity name | Name on the dial |
 | `temperature_sensor` | | Room temperature shown instead of the entity's own reading |
 | `sensors.humidity` | `auto` | `auto`, `false` (hide), an entity id or `{entity, name}` |
@@ -108,9 +137,9 @@ config_version: 1
 
 The visual editor has four tabs. Each group below links to its option.
 
-### Climate entity {#dial-entity}
+### Entity {#dial-entity}
 
-Setup tab. Pick the climate entity. Option: `entity`.
+Setup tab. Pick the climate, water heater or humidifier entity. Option: `entity`.
 
 ### Name {#dial-name}
 

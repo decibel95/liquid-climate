@@ -23,14 +23,17 @@ entity: climate.living_room
 - The status line also follows `hvac_action` for radiator valves, so a valve at its target reads `Idle, 19.4° inside`. A low battery replaces it with `Battery low, 12%` in the warning colour, see [Radiator valves](/sensors#sensors-valves).
 - When a health problem flag is on, the power button turns red with an alert icon and the status line reads `Error`, plus the error code when there is one. Screen readers hear it through a live region.
 - `unavailable` and `unknown` both show `Unavailable` with every control disabled.
+- A water heater steps its temperature in its own step and names its operation mode (`Eco`). A humidifier steps the target humidity in %, reads its `action` and its current humidity (`Humidifying, 45% now`). Power works as on the dial.
 
 <LiveCard type="tile" :config="{ entity: 'climate.studio' }" />
+
+<LiveCard type="tile" :config="{ entity: 'humidifier.humidifier' }" />
 
 ## Options {#tile-options}
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `entity` | required | Climate entity |
+| `entity` | required | Climate, water heater or humidifier entity |
 | `name` | entity name | Name on the tile |
 | `temperature_sensor` | | Room temperature shown instead of the entity's own reading |
 | `tap_action` | `sheet` | Tap on the name: `sheet` (dial), `more-info` or `none` |
@@ -55,9 +58,9 @@ controls:
 
 ## Editor groups {#tile-editor}
 
-### Climate entity {#tile-entity}
+### Entity {#tile-entity}
 
-Pick the climate entity. Option: `entity`.
+Pick the climate, water heater or humidifier entity. Option: `entity`.
 
 ### Name {#tile-name}
 

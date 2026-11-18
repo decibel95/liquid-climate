@@ -2,6 +2,7 @@ import { parseSensor, type LiquidClimateConfig, type ParsedSensor, type SensorSe
 import { num, numAuto, t } from '../i18n';
 import type { HomeAssistant } from '../types';
 import { deviceName } from './family';
+import { currentFigure, domainOf, roleApplies } from '../domain';
 import { NO_ERROR_CODES, type Detection, type SensorRef } from './roles';
 
 export interface InfoItem {
@@ -63,10 +64,12 @@ export function isPaused(hass: HomeAssistant, pauseEntity: string | undefined, w
   return pauseEntity ? hass.states[pauseEntity]?.state === 'on' : windowOpen;
 }
 
-/** Room temperature: the temperature_sensor override when it has a number, else the entity's current_temperature. */
+/**
+ * Room temperature: the temperature_sensor override when it has a number, else the entity's current_temperature.
+ * For a humidifier this is the current humidity, the figure its dial is about.
+ */
 export function roomTemperatureOf(hass: HomeAssistant, config: { entity: string; temperature_sensor?: string }): number | null {
-  const raw = hass.states[config.entity]?.attributes.current_temperature;
-  return numericState(hass, config.temperature_sensor) ?? (typeof raw === 'number' && Number.isFinite(raw) ? raw : null);
+  return numericState(hass, config.temperature_sensor) ?? currentFigure(hass.states[config.entity]);
 }
 
 const TO_KWH: Record<string, number> = { kWh: 1, Wh: 0.001, MWh: 1000 };
@@ -114,12 +117,16 @@ export function resolveSensors(
 
   const info: InfoItem[] = [];
 
-  const humPick = pick(s.humidity, detection.humidity ? [detection.humidity.entity_id] : []);
+  // Roles that mean nothing for the domain are not detected (a humidifier's humidity is its main figure
+  // already); an explicit entity still shows.
+  const applies = (role: string) => roleApplies(domainOf(config.entity), role);
+  const humPick = pick(s.humidity, detection.humidity && applies('humidity') ? [detection.humidity.entity_id] : []);
   const humId = seen(humPick.ids)[0];
-  const hum = numericState(hass, humId) ?? (humPick.p.mode === 'auto' ? numOrNull(stateObj?.attributes.current_humidity) : null);
+  const ownHumidity = humPick.p.mode === 'auto' && applies('humidity') ? numOrNull(stateObj?.attributes.current_humidity) : null;
+  const hum = numericState(hass, humId) ?? ownHumidity;
   if (hum != null) info.push({ key: 'humidity', label: humPick.p.name ?? t(hass, 'detect.humidity'), value: numAuto(hass, hum, 0), unit: '%' });
 
-  const outPick = pick(s.outdoor, detection.outdoor ? [detection.outdoor.entity_id] : []);
+  const outPick = pick(s.outdoor, detection.outdoor && applies('outdoor') ? [detection.outdoor.entity_id] : []);
   const outId = seen(outPick.ids)[0];
   const out = numericState(hass, outId);
   if (out != null) info.push({ key: 'outdoor', label: outPick.p.name ?? t(hass, 'detect.outdoor'), value: numAuto(hass, out, precision), unit: '°' });
@@ -138,7 +145,7 @@ export function resolveSensors(
     info.push({ key: 'cloud_limit', label: cloudPick.p.name ?? t(hass, 'detect.cloud'), value: num(hass, Math.round(cloud), 0), unit: '', warn: cloud < 30 });
   }
 
-  const valvePick = pick(s.valve, detection.valve ? [detection.valve.entity_id] : []);
+  const valvePick = pick(s.valve, detection.valve && applies('valve') ? [detection.valve.entity_id] : []);
   const valveId = seen(valvePick.ids)[0];
   const valve = valvePercent(hass, valveId);
   if (valve != null) info.push({ key: 'valve', label: valvePick.p.name ?? t(hass, 'detect.valve'), value: num(hass, Math.round(valve), 0), unit: '%' });
@@ -155,7 +162,7 @@ export function resolveSensors(
     info.push({ key: 'battery', label: batPick.p.name ?? t(hass, 'detect.battery'), value: num(hass, Math.round(level), 0), unit: '%', warn: battery!.low });
   }
 
-  const winPick = pick(s.window, [windowOf(detection, s.valve)].filter((r) => !!r).map((r) => r!.entity_id));
+  const winPick = pick(s.window, applies('window') ? [windowOf(detection, s.valve)].filter((r) => !!r).map((r) => r!.entity_id) : []);
   const winId = seen(winPick.ids)[0];
   const windowOpen = !!winId && hass.states[winId]?.state === 'on';
 

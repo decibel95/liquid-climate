@@ -94,4 +94,9 @@ export const glassTokens = css`
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+  /* Material Design Icons are filled shapes, not strokes. */
+  svg.i.fill {
+    fill: currentColor;
+    stroke: none;
+  }
 `;

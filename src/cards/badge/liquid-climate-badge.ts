@@ -9,8 +9,10 @@ import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import type { Detection } from '../../detect/roles';
 import { DOT_RING, resolveGlass } from '../../ui/glass';
 import { glassTokens } from '../../ui/glass-styles';
-import { ICONS, STATUS_COLORS, TINT, modeInfo, modeVerb, rgba, tone } from '../../ui/modes';
-import { num, t } from '../../i18n';
+import { ICONS, STATUS_COLORS, TINT, entityModeInfo, iconClass, modeVerb, rgba, tone } from '../../ui/modes';
+import { num, numAuto, t } from '../../i18n';
+import { ENTITY_ERROR, domainOf, isSupportedEntity } from '../../domain';
+import { statusWord } from '../shared/status';
 import type { HomeAssistant } from '../../types';
 import { hassNeedsRender } from '../shared/render-gate';
 import '../shared/sheet';
@@ -54,12 +56,15 @@ export function badgeState(hass: HomeAssistant, cfg: BadgeConfig, detection: Det
   if (s.state === 'off') {
     return { ...base, kind: 'off', value: t(hass, 'common.off'), color: STATUS_COLORS.off, icon: ICONS.power, attention: false };
   }
-  const info = modeInfo(s.state);
+  const info = entityModeInfo(s, s.state);
   const room = sensors.roomTemperature;
+  const domain = domainOf(s.entity_id);
+  // The current figure with its unit: 21.4° for a room or a tank, 45% for a humidifier.
+  const figure = room == null ? null : domain === 'humidifier' ? `${numAuto(hass, room, 1)}%` : `${num(hass, room, 1)}°`;
   return {
     ...base,
     kind: 'on',
-    value: room != null ? `${num(hass, room, 1)}°` : modeVerb(hass, s.state),
+    value: figure ?? (domain === 'climate' ? modeVerb(hass, s.state) : statusWord(hass, s, s.state, false)),
     color: info.color,
     icon: info.icon,
     attention: false,
@@ -78,9 +83,7 @@ export class LiquidClimateBadge extends LitElement {
   private _awaiting: string[] = [];
 
   setConfig(raw: Record<string, unknown>): void {
-    if (!raw || typeof raw.entity !== 'string' || !raw.entity.startsWith('climate.')) {
-      throw new Error('Liquid Climate: "entity" must be a climate entity id');
-    }
+    if (!raw || !isSupportedEntity(raw.entity)) throw new Error(ENTITY_ERROR);
     this._config = normalizeBadgeConfig(migrateConfig(raw));
     this._sheet()?.reconfigure(sheetConfig(this._config));
     this._detection.clear();
@@ -147,7 +150,7 @@ export class LiquidClimateBadge extends LitElement {
     });
 
     const icon = html`<span class="ic" style=${styleMap({ backgroundColor: cfg.icon_only ? undefined : tint })}
-      >${svg`<svg class="i" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path d=${st.icon}></path></svg>`}</span
+      >${svg`<svg class="i ${iconClass(st.icon)}" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path d=${st.icon}></path></svg>`}</span
     >`;
     const extra = cfg.icon_only
       ? st.attention

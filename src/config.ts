@@ -1,3 +1,5 @@
+import { DOMAINS, type Domain } from './domain';
+
 export const CONFIG_VERSION = 1;
 
 /** A sensor with an optional display name. `entity: auto` names the detected sensor. */
@@ -280,6 +282,8 @@ export interface ClusterConfig {
   group_by: 'floor' | 'area';
   /** Auto modes: climate entities left out. */
   exclude: string[];
+  /** Auto modes: which entity domains become rooms. Default climate only, so water heaters and humidifiers are opt-in. */
+  domains: Domain[];
   /** Auto modes: per-room overrides, the same objects as in `entities`. */
   rooms: ClusterRoom[];
   sensors: LiquidClimateConfig['sensors'];
@@ -310,6 +314,7 @@ export function defaultClusterConfig(): ClusterConfig {
     entities: [],
     group_by: 'floor',
     exclude: [],
+    domains: ['climate'],
     rooms: [],
     sensors: d.sensors,
     controls: d.controls,
@@ -355,6 +360,13 @@ function parseRoomSensors(raw: unknown): ClusterRoom['sensors'] | undefined {
   return Object.keys(out).length ? (out as ClusterRoom['sensors']) : undefined;
 }
 
+/** Known domains in their fixed order, or undefined when none is given. */
+function parseDomains(v: unknown): Domain[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const out = DOMAINS.filter((d) => v.includes(d));
+  return out.length ? out : undefined;
+}
+
 /** Fill every missing option with its default. Input must already be migrated. */
 export function normalizeClusterConfig(raw: Record<string, any>): ClusterConfig {
   const d = defaultClusterConfig();
@@ -373,6 +385,7 @@ export function normalizeClusterConfig(raw: Record<string, any>): ClusterConfig 
     floor,
     group_by: raw.group_by === 'area' ? 'area' : 'floor',
     exclude: Array.isArray(raw.exclude) ? raw.exclude.filter((x: unknown): x is string => typeof x === 'string') : [],
+    domains: parseDomains(raw.domains) ?? d.domains,
     rooms: rooms(raw.rooms),
     sensors: dial.sensors,
     controls: dial.controls,

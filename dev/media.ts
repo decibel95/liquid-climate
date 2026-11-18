@@ -2,7 +2,7 @@
  * Staging page for the README and docs media. No harness chrome: just the cards on a calm
  * background, in Home Assistant's light or dark theme. Driven by scripts/media (Playwright).
  *
- *   ?scene=hero|dial|tile|badge|cluster|editor|cluster-editor|status-menu|sheet|trv
+ *   ?scene=hero|dial|tile|badge|cluster|editor|cluster-editor|status-menu|sheet|trv|appliances
  *   ?theme=light|dark|split   ?lang=en|nl|de|fr|es|it   ?cursor=1 (visible pointer for recordings)
  *
  * Window API for the scripts: __mediaReady (true once fonts and all cards have rendered) and
@@ -12,8 +12,8 @@
 import './media-focus';
 import '../src/index';
 import { englishFixture } from '../src/demo/english';
-import { addHelperEntities } from '../src/demo/service';
-import { makeHass } from '../src/demo/fixtures';
+import { addHelperEntities, applyAppliance } from '../src/demo/service';
+import { APPLIANCE_IDS, appliances, makeHass } from '../src/demo/fixtures';
 import { trvSonoff } from '../test/fixtures/trv';
 import type { HassEntity, HomeAssistant } from '../src/types';
 
@@ -76,6 +76,21 @@ function setTrv(slug: TrvRoom, patch: { action?: string; current?: number; targe
 }
 setTrv('hallway', { action: 'idle', current: 20.6, target: 20, valve: 0, battery: 78 });
 setTrv('bedroom', { action: 'heating', current: 17.8, target: 20.5, valve: 65, battery: 78 });
+
+// A water heater and a humidifier (Home Assistant's demo entities, with neutral ids and names).
+const WATER_HEATER = 'water_heater.boiler';
+const HUMIDIFIER = 'humidifier.bedroom';
+{
+  const demo = appliances();
+  const heater = { ...demo.states[APPLIANCE_IDS.waterHeater], entity_id: WATER_HEATER };
+  heater.attributes = { ...heater.attributes, friendly_name: 'Water Heater', temperature: 52, current_temperature: 47 };
+  const humid = { ...demo.states[APPLIANCE_IDS.humidifier], entity_id: HUMIDIFIER };
+  humid.attributes = { ...humid.attributes, friendly_name: 'Bedroom Humidifier', humidity: 55, current_humidity: 42 };
+  states[WATER_HEATER] = heater;
+  states[HUMIDIFIER] = humid;
+  fixture.entities[WATER_HEATER] = { entity_id: WATER_HEATER, translation_key: null, platform: 'demo', device_id: null };
+  fixture.entities[HUMIDIFIER] = { entity_id: HUMIDIFIER, translation_key: null, platform: 'demo', device_id: null };
+}
 
 // ---- What the card reads as a state: HA's formatEntityState ------------------------------------
 const WORDS: Record<string, Record<string, string>> = {
@@ -148,6 +163,8 @@ function newRoot(dark: boolean): Root {
       setTimeout(() => {
         if (['input_select', 'select', 'input_boolean', 'switch', 'script', 'automation'].includes(domain)) {
           applyHelper(domain, service, data as Record<string, unknown>);
+        } else if (domain === 'water_heater' || domain === 'humidifier') {
+          applyAppliance(states, domain, service, data as Record<string, unknown>);
         } else applyClimate(service, data as Record<string, unknown>);
         publish();
         resolve();
@@ -261,6 +278,11 @@ function build(r: Root, parent: HTMLElement) {
     case 'trv': {
       const w = el('div', 'trv-scene', parent);
       for (const room of Object.values(TRV_ROOMS)) card(r, 'liquid-climate-card', { entity: room.id, name: room.name, look, sensors: { valve: room.id.replace('climate.', 'sensor.') + '_pi_heating_demand' } }, el('div', 'w-dial', w));
+      break;
+    }
+    case 'appliances': {
+      const w = el('div', 'trv-scene', parent);
+      for (const entity of [WATER_HEATER, HUMIDIFIER]) card(r, 'liquid-climate-card', { entity, look }, el('div', 'w-dial', w));
       break;
     }
     case 'tile': {

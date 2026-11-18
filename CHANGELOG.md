@@ -3,9 +3,29 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.10.3
+## 0.11.0
 
 The current version.
+
+### Added
+- **Water heaters and humidifiers** work on all four cards, next to climate. The dial, tile, badge and cluster read the entity's own features and hide what it does not support.
+- Water heater: the temperature arc (`min_temp`, `max_temp`, `target_temp_step`, else 0.5 in Celsius and 1 in Fahrenheit), the tank temperature as the current figure, the operation modes as mode buttons, power through `turn_on` and `turn_off` (or the operation mode `off` without them) and an Away chip. No fan ring.
+- Humidifier: the target humidity arc in % (`min_humidity`, `max_humidity`, `target_humidity_step`), the current humidity in the centre, `available_modes` as mode buttons, on and off, and the `action` (Humidifying, Drying, Idle) on the status line. No fan ring.
+- Each known water heater and humidifier mode has its own Material Design icon, and the water heater mode buttons use short labels of up to 6 letters (Elec, Perf, High, Pump) with the full name in the tooltip and for screen readers.
+- Colours: water heater `#ff6a3d`, humidifier `#5b8cff`, dehumidifier `#2fbfa0`, listed in Theming.
+- Cluster option `domains` (default `[climate]`): water heaters and humidifiers join the automatic modes only when picked, so existing clusters do not change. An `entities` list takes any of the three. No `config_version` change: the option is additive.
+- The cluster's default title is "Comfort" (translated) once water heaters or humidifiers can be rooms; climate-only clusters keep "Climate". A set `title` always wins.
+- Mode names for the known operation modes (eco, electric, performance, high_demand, heat_pump, gas) and humidifier modes (normal, eco, away, boost, comfort, home, sleep, auto, baby) in all six languages. Home Assistant's own translation wins; unknown values are made readable.
+- Demo and docs: the water heaters and humidifiers of Home Assistant's demo integration.
+- Docs: screenshots and an animation of water heater and humidifier dials.
+- The editors' Setup sensor field follows the entity: Room temperature sensor for climate, Water temperature sensor for a water heater, Humidity sensor for a humidifier, each suggesting matching sensors. Sensor roles that mean nothing for the domain (room humidity, valve and window for a water heater; humidity, outdoor and valve for a humidifier) are not detected and leave the Sensors tab unless set explicitly.
+
+### Changed
+- A water heater or humidifier steps on multiples of its step, so a water heater with limits 43.3 to 60 steps 45, 46, 47. Climate units step from `min_temp` as before.
+- The humidity scale (0 to 100) ticks every 2 and labels every 20. Climate scales are unchanged.
+- The editors' entity picker lists climate, water heater and humidifier entities and is labelled "Entity"; climate-only controls are hidden for the others.
+
+## 0.10.3
 
 ### Changed
 - Liquid Climate is in the HACS default catalog. Install docs and the README now start with searching in the Marketplace or HACS, with the custom repository link as a fallback.

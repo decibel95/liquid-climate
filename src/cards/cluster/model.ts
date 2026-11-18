@@ -65,7 +65,7 @@ export function roomModel(
   const mode = view?.mode ?? 'off';
   const on = available && mode !== 'off';
   const active = on && !isResting(stateObj!, mode, modeChanging);
-  const verb = !stateObj ? t(hass, 'common.notFound') : !available ? t(hass, 'common.unavailable') : statusWord(hass, stateObj, mode, modeChanging);
+  const verb = !stateObj ? t(hass, 'common.notFound') : !available ? t(hass, 'common.unavailable') : statusWord(hass, stateObj, mode, modeChanging, view?.subMode);
   const paused = isPaused(hass, pause, sensors.windowOpen);
   const kind: RoomKind = problem ? 'error' : paused ? 'paused' : !available ? 'unavailable' : battery ? 'battery' : on ? 'on' : 'off';
   return { ...base, caps, view, kind, available, mode, on, verb, active };

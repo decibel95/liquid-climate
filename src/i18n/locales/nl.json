@@ -16,7 +16,9 @@
     "stepUp": "Doeltemperatuur verhogen",
     "target": "Doel",
     "batteryLow": "Batterij laag",
-    "batteryLowValue": "Batterij laag, {value}%"
+    "batteryLowValue": "Batterij laag, {value}%",
+    "stepDownHumidity": "Doelvochtigheid verlagen",
+    "stepUpHumidity": "Doelvochtigheid verhogen"
   },
   "mode": {
     "off": "Uit",
@@ -51,7 +53,37 @@
     "idle": "Inactief",
     "off": "Uit",
     "preheating": "Voorverwarmt",
-    "defrosting": "Ontdooit"
+    "defrosting": "Ontdooit",
+    "humidifying": "Bevochtigt"
+  },
+  "waterHeaterMode": {
+    "eco": "Eco",
+    "electric": "Elektrisch",
+    "performance": "Prestatie",
+    "high_demand": "Hoge vraag",
+    "heat_pump": "Warmtepomp",
+    "gas": "Gas",
+    "off": "Uit",
+    "on": "Aan"
+  },
+  "waterHeaterModeShort": {
+    "eco": "Eco",
+    "electric": "Elektr",
+    "performance": "Prest",
+    "high_demand": "Hoog",
+    "heat_pump": "Pomp",
+    "gas": "Gas"
+  },
+  "humidifierMode": {
+    "normal": "Normaal",
+    "eco": "Eco",
+    "away": "Afwezig",
+    "boost": "Boost",
+    "comfort": "Comfort",
+    "home": "Thuis",
+    "sleep": "Slapen",
+    "auto": "Auto",
+    "baby": "Baby"
   },
   "option": {
     "stop": "Vast",
@@ -104,7 +136,13 @@
     "ariaPreset": "Voorinstelling: {value}",
     "problem": "{source} meldt een probleem",
     "problemDetail": "{source} meldt een probleem ({detail})",
-    "subTargetState": "{state}, doel {target}"
+    "subTargetState": "{state}, doel {target}",
+    "current": "Nu",
+    "currentValue": "Nu {value}",
+    "ariaTargetHumidity": "Doelvochtigheid. Pijltjestoetsen wijzigen de instelwaarde.",
+    "ariaTargetWater": "Doeltemperatuur van het water. Pijltjestoetsen wijzigen de instelwaarde.",
+    "away": "Afwezig",
+    "ariaAway": "Afwezigheidsmodus: {value}"
   },
   "detect": {
     "humidity": "Vochtigheid",
@@ -118,13 +156,18 @@
     "ariaTile": "{name} klimaat",
     "power": "Aan/uit, {name}",
     "insideSub": "{word}, {temp} binnen",
-    "rangeAria": "Doelbereik {range} {unit}, bediening openen"
+    "rangeAria": "Doelbereik {range} {unit}, bediening openen",
+    "currentSub": "{word}, nu {temp}",
+    "ariaWaterHeater": "{name} boiler",
+    "ariaHumidifier": "{name} luchtbevochtiger",
+    "ariaDehumidifier": "{name} luchtontvochtiger"
   },
   "badge": {
     "label": "{name}: {value}"
   },
   "cluster": {
     "title": "Klimaat",
+    "titleMixed": "Comfort",
     "empty": "Geen klimaatentiteiten gevonden. Kies kamers in de kaarteditor.",
     "noEntities": "Geen klimaatentiteiten",
     "other": "Overig",
@@ -149,7 +192,8 @@
     "modeGroup": "Modus, {name}",
     "rangeAria": "Doelbereik {range} {unit}, bediening openen",
     "valve": "klep {value}%",
-    "batteryLow": "Batterij laag: {n}"
+    "batteryLow": "Batterij laag: {n}",
+    "ariaCurrent": "nu {value} {unit}"
   },
   "menu": {
     "details": "Details",
@@ -174,10 +218,12 @@
     "copied": "Gekopieerd",
     "diagnosticsFailed": "Kopiëren mislukt",
     "help": "Help: {section}",
-    "climateEntity": "Klimaatentiteit",
+    "entity": "Entiteit",
     "name": "Naam",
     "nameHint": "Leeg gebruikt de naam van de entiteit.",
     "roomSensor": "Kamertemperatuursensor",
+    "waterSensor": "Watertemperatuursensor",
+    "humiditySensor": "Vochtigheidssensor",
     "unitSensor": "Sensor van het toestel",
     "wholeUse": "Dit toestel meldt hele graden. {sensor} meet {value}.",
     "useIt": "Gebruiken",
@@ -283,6 +329,11 @@
     "sensorBattery": "Batterij",
     "sensorValve": "Klepstand",
     "sensorWindow": "Raamcontact",
-    "writeHold": "Verzonden waarde tonen"
+    "writeHold": "Verzonden waarde tonen",
+    "domains": "Apparaattypen",
+    "domainClimate": "Klimaat",
+    "domainWaterHeater": "Boilers",
+    "domainHumidifier": "Luchtbevochtigers",
+    "domainsHint": "Boilers en luchtbevochtigers komen alleen in het cluster als ze hier gekozen zijn."
   }
 }

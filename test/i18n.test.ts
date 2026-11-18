@@ -55,7 +55,7 @@ describe('keys in the source', () => {
   });
 
   it('every key of en.json is used (the mode, verb, action and option groups are looked up by value)', () => {
-    const dynamic = /^(mode|modeVerb|modeLong|hvacAction|option)\./;
+    const dynamic = /^(mode|modeVerb|modeLong|hvacAction|option|waterHeaterMode|waterHeaterModeShort|humidifierMode)\./;
     expect(Object.keys(EN).filter((k) => !dynamic.test(k) && !used.has(k))).toEqual([]);
   });
 });

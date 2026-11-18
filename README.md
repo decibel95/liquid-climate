@@ -8,7 +8,7 @@
 
 # Liquid Climate
 
-Glass cards for Home Assistant climate entities: dial, tile, badge and cluster.
+Glass cards for Home Assistant climate entities, water heaters and humidifiers: dial, tile, badge and cluster.
 
 [![HACS Default](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://hacs.xyz)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -17,7 +17,7 @@ Glass cards for Home Assistant climate entities: dial, tile, badge and cluster.
 
 </div>
 
-A liquid glass look, any `climate` entity, a visual editor for every card. Controls the entity does not support are hidden. Light and dark follow your Home Assistant theme.
+A liquid glass look, any `climate`, `water_heater` or `humidifier` entity, a visual editor for every card. Controls the entity does not support are hidden. Light and dark follow your Home Assistant theme.
 
 ## Cards
 
@@ -73,6 +73,17 @@ Radiator valves (Zigbee2MQTT, Better Thermostat, generic thermostat) work on all
   </picture>
 </div>
 
+### Water heaters and humidifiers
+
+A `water_heater` gets the temperature arc, its operation modes (Eco, Electric, Heat pump and so on) as buttons, power and an Away chip when it supports them. A `humidifier` gets the target humidity in %, the current humidity in the centre, its modes when it has them, and power. Water heaters are orange-red, humidifiers blue and dehumidifiers teal. There is no fan ring for either. The tile and badge show the same figures. In a cluster they are opt-in through `domains`, so an existing cluster does not change.
+
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/public/media/appliances-dark.png">
+    <img src="docs/public/media/appliances-light.png" alt="A water heater dial with its mode strip (Eco, Elec, Perf, High, Pump, Gas) and an Away chip, next to a humidifier dial at 55%" width="520">
+  </picture>
+</div>
+
 ### Also included
 
 - **Status rows and menu.** Add rows under the dial for helpers, scripts and automations. Rows for `input_select`, `select`, `input_boolean` and `switch` open an inline menu to change the value.
@@ -104,7 +115,7 @@ Radiator valves (Zigbee2MQTT, Better Thermostat, generic thermostat) work on all
 **Manual install instead:** download `liquid-climate.js` from the latest release (or build it: `npm run build` writes `dist/liquid-climate.js`) and copy it to `/config/www/`. Then Settings, Dashboards, Resources: add `/local/liquid-climate.js` as a **JavaScript module** and hard refresh.
 <!-- ha-marketplace:exclude-end -->
 
-**Add a card.** Edit a dashboard, add a card, pick **Liquid Climate** (or the tile, badge or cluster) and choose your climate entity.
+**Add a card.** Edit a dashboard, add a card, pick **Liquid Climate** (or the tile, badge or cluster) and choose your climate, water heater or humidifier entity.
 
 ## YAML examples
 
@@ -136,6 +147,23 @@ type: custom:liquid-climate-cluster
 title: Climate
 exclude:
   - climate.guest_room
+```
+
+```yaml
+# A water heater and a humidifier
+type: custom:liquid-climate-card
+entity: water_heater.boiler
+```
+
+```yaml
+type: custom:liquid-climate-tile
+entity: humidifier.bedroom
+```
+
+```yaml
+# Water heaters and humidifiers join a cluster only when asked
+type: custom:liquid-climate-cluster
+domains: [climate, water_heater, humidifier]
 ```
 
 All options are in the [dial](https://decibel95.github.io/liquid-climate/cards/dial#dial-options), [tile](https://decibel95.github.io/liquid-climate/cards/tile), [badge](https://decibel95.github.io/liquid-climate/cards/badge) and [cluster](https://decibel95.github.io/liquid-climate/cards/cluster) docs.

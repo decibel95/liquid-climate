@@ -243,6 +243,37 @@ export const allFixtures = mergeFixtures(keuken, slaapkamer, nagelsalon, dualSet
 
 export const CLIMATE_IDS = Object.keys(allFixtures.states).filter((id) => id.startsWith('climate.'));
 
+/**
+ * Water heaters and humidifiers of Home Assistant's demo integration (demo/water_heater.py and
+ * demo/humidifier.py). The metric attributes were read from a test Home Assistant running the demo
+ * integration on 2026-11-17. The imperial ones follow from them: Demo Water Heater is Fahrenheit
+ * natively (119 F, limits 110 to 140 F, the water heater defaults), Demo Water Heater Celsius is
+ * 45 C, shown as 113 F. Neither reports current_temperature. The entities have no device.
+ */
+export const APPLIANCE_IDS = {
+  waterHeater: 'water_heater.demo_water_heater',
+  waterHeaterCelsius: 'water_heater.demo_water_heater_celsius',
+  humidifier: 'humidifier.humidifier',
+  dehumidifier: 'humidifier.dehumidifier',
+  hygrostat: 'humidifier.hygrostat',
+} as const;
+
+export function appliances(system: '°C' | '°F' = '°C'): Fixture {
+  const f = emptyFixture();
+  const reg = { platform: 'demo', device_id: null };
+  const metric = system === '°C';
+  const operation_list = ['eco', 'electric', 'performance', 'high_demand', 'heat_pump', 'gas', 'off'];
+  // TARGET_TEMPERATURE | OPERATION_MODE | AWAY_MODE | ON_OFF
+  const heater = { target_temp_step: 1, operation_list, current_temperature: null, target_temp_high: null, target_temp_low: null, operation_mode: 'eco', supported_features: 15 };
+  const limits = metric ? { min_temp: 43.3, max_temp: 60, temperature_unit: '°C' } : { min_temp: 110, max_temp: 140, temperature_unit: '°F' };
+  addEntity(f, APPLIANCE_IDS.waterHeater, 'eco', { ...limits, ...heater, temperature: metric ? 48.3 : 119, away_mode: 'off', friendly_name: 'Demo Water Heater' }, reg);
+  addEntity(f, APPLIANCE_IDS.waterHeaterCelsius, 'eco', { ...limits, ...heater, temperature: metric ? 45 : 113, away_mode: 'on', friendly_name: 'Demo Water Heater Celsius' }, reg);
+  addEntity(f, APPLIANCE_IDS.humidifier, 'on', { min_humidity: 0, max_humidity: 100, target_humidity_step: 5, action: 'humidifying', current_humidity: 45, humidity: 65, device_class: 'humidifier', friendly_name: 'Humidifier', supported_features: 0 }, reg);
+  addEntity(f, APPLIANCE_IDS.dehumidifier, 'on', { min_humidity: 0, max_humidity: 100, action: 'drying', current_humidity: 59.4, humidity: 54.2, device_class: 'dehumidifier', friendly_name: 'Dehumidifier', supported_features: 0 }, reg);
+  addEntity(f, APPLIANCE_IDS.hygrostat, 'on', { min_humidity: 0, max_humidity: 100, available_modes: ['home', 'eco'], humidity: 50, mode: 'home', friendly_name: 'Hygrostat', supported_features: 1 }, reg);
+  return f;
+}
+
 /** What the editor gets from the websocket registry for a fixture. */
 export const registryOf = (f: Fixture) => f.registry;
 

@@ -120,6 +120,27 @@ export const steps = {
     await sleep(900);
   },
 
+  /** Water heater: Eco -> Pump -> Eco, then the humidifier target 55 -> 60 -> 55. */
+  async applianceControls(page, p) {
+    const settled = async () => {
+      await page.waitForFunction(() =>
+        [...document.querySelectorAll('liquid-climate-card')].every((c) => !c.shadowRoot?.querySelector('.progress') && !/Sending/.test(c.shadowRoot?.querySelector('.centersub')?.textContent ?? '')),
+      );
+      await sleep(150);
+    };
+    const modes = page.locator('.w-dial:nth-child(1) liquid-climate-card .modes button.mode');
+    for (const i of [4, 0]) {
+      const b = await modes.nth(i).boundingBox();
+      await p.click(b.x + b.width / 2, b.y + b.height / 2, 300);
+      await sleep(900);
+    }
+    await settled();
+    const scope = '.w-dial:nth-child(2) liquid-climate-card';
+    const humidity = await Promise.all([0.55, 0.6, 0.55].map((f) => dialPoint(page, 'temp', f, scope)));
+    await p.dragThrough(humidity, 220);
+    await settled();
+  },
+
   /** en -> nl -> de -> en. */
   async languages(page) {
     for (const lang of ['nl', 'de', 'en']) {
@@ -132,6 +153,7 @@ export const steps = {
 /**
  * scene: the staging scene. first: where the pointer first appears (it fades in there).
  * grow: extra canvas height in CSS px, for a card that gets taller during the clip (the battery alert).
+ * webpMax: a tighter size budget in bytes for the webp (default 2.4 MB).
  * tall: size the canvas for the open status menu, so the whole menu and the card's bottom edge stay in frame.
  */
 export const ANIMATIONS = {
@@ -160,6 +182,12 @@ export const ANIMATIONS = {
     run: (page, p) => steps.statusMenu(page, p),
   },
   trv: { scene: 'trv', grow: 48, pointer: false, run: (page) => steps.trvHeats(page) },
+  appliances: {
+    scene: 'appliances',
+    webpMax: 0.9 * 1048576,
+    first: (page) => centerOf(page, '.w-dial:nth-child(1) liquid-climate-card .modes button.mode >> nth=4'),
+    run: (page, p) => steps.applianceControls(page, p),
+  },
   language: { scene: 'dial', pointer: false, run: (page) => steps.languages(page) },
 };
 
@@ -206,7 +234,7 @@ export async function renderAnimations(browser, base, out, only = []) {
       await sleep(HOLD + 300);
       const done = await cap.stop();
       const gif = await encodeGif(done, join(out, `${name}.gif`));
-      const webp = await encodeWebp(done, join(out, `${name}.webp`));
+      const webp = await encodeWebp(done, join(out, `${name}.webp`), def.webpMax ? { maxBytes: def.webpMax } : {});
       console.log(`  ${name}: ${done.frames.length} frames, gif ${gif.width}px ${gif.fps}fps ${mb(gif.size)} MB, webp ${webp.width}px ${webp.fps}fps ${mb(webp.size)} MB`);
     } finally {
       await page.context().close();

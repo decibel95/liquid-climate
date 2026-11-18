@@ -28,6 +28,7 @@
     "cluster.title": "/cards/cluster#cluster-title",
     "cluster.source": "/cards/cluster#cluster-source",
     "cluster.group_by": "/cards/cluster#cluster-grouping",
+    "cluster.domains": "/cards/cluster#cluster-domains",
     "cluster.floor": "/cards/cluster#cluster-floor",
     "cluster.area": "/cards/cluster#cluster-area",
     "cluster.rooms": "/cards/cluster#cluster-rooms",

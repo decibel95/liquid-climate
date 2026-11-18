@@ -3,7 +3,7 @@
 ## Requirements {#requirements}
 
 - Home Assistant 2025.1 or newer.
-- At least one `climate` entity.
+- At least one `climate`, `water_heater` or `humidifier` entity.
 
 ## Install with HACS {#install-hacs}
 
@@ -35,11 +35,11 @@ If Liquid Climate does not show up in the search, add it as a custom repository.
 3. Add `/local/liquid-climate.js` as a **JavaScript module**.
 4. Hard refresh the browser.
 
-Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.10.3`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
+Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.11.0`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
 
 ## Add a card in the visual editor {#add-visual}
 
-Edit a dashboard, add a card and pick **Liquid Climate** (or the tile, badge or cluster). Choose your climate entity. The editor saves only what differs from the defaults, so the YAML stays short.
+Edit a dashboard, add a card and pick **Liquid Climate** (or the tile, badge or cluster). Choose your climate, water heater or humidifier entity. The editor saves only what differs from the defaults, so the YAML stays short.
 
 <img class="light-only" src="/media/editor-light.png" alt="The Liquid Climate card editor with the Setup, Sensors, Controls and Look tabs" loading="lazy">
 <img class="dark-only" src="/media/editor-dark.png" alt="The Liquid Climate card editor with the Setup, Sensors, Controls and Look tabs" loading="lazy">
@@ -53,6 +53,13 @@ Only `entity` is required.
 ```yaml
 type: custom:liquid-climate-card
 entity: climate.living_room
+```
+
+A water heater or a humidifier works the same way:
+
+```yaml
+type: custom:liquid-climate-card
+entity: water_heater.boiler
 ```
 
 Badges go in the view badges:

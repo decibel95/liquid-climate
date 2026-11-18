@@ -16,7 +16,9 @@
     "stepUp": "Subir la temperatura objetivo",
     "target": "Objetivo",
     "batteryLow": "Batería baja",
-    "batteryLowValue": "Batería baja, {value}%"
+    "batteryLowValue": "Batería baja, {value}%",
+    "stepDownHumidity": "Bajar la humedad objetivo",
+    "stepUpHumidity": "Subir la humedad objetivo"
   },
   "mode": {
     "off": "Apagado",
@@ -51,7 +53,37 @@
     "idle": "Inactivo",
     "off": "Apagado",
     "preheating": "Precalentando",
-    "defrosting": "Descongelando"
+    "defrosting": "Descongelando",
+    "humidifying": "Humidificando"
+  },
+  "waterHeaterMode": {
+    "eco": "Eco",
+    "electric": "Eléctrico",
+    "performance": "Rendimiento",
+    "high_demand": "Alta demanda",
+    "heat_pump": "Bomba de calor",
+    "gas": "Gas",
+    "off": "Apagado",
+    "on": "Encendido"
+  },
+  "waterHeaterModeShort": {
+    "eco": "Eco",
+    "electric": "Eléc",
+    "performance": "Rend",
+    "high_demand": "Alta",
+    "heat_pump": "Bomba",
+    "gas": "Gas"
+  },
+  "humidifierMode": {
+    "normal": "Normal",
+    "eco": "Eco",
+    "away": "Ausente",
+    "boost": "Turbo",
+    "comfort": "Confort",
+    "home": "En casa",
+    "sleep": "Dormir",
+    "auto": "Auto",
+    "baby": "Bebé"
   },
   "option": {
     "stop": "Fijo",
@@ -104,7 +136,13 @@
     "ariaPreset": "Preajuste: {value}",
     "problem": "{source} informa de un problema",
     "problemDetail": "{source} informa de un problema ({detail})",
-    "subTargetState": "{state}, objetivo {target}"
+    "subTargetState": "{state}, objetivo {target}",
+    "current": "Ahora",
+    "currentValue": "Ahora {value}",
+    "ariaTargetHumidity": "Humedad objetivo. Las flechas cambian la consigna.",
+    "ariaTargetWater": "Temperatura objetivo del agua. Las flechas cambian la consigna.",
+    "away": "Ausente",
+    "ariaAway": "Modo ausente: {value}"
   },
   "detect": {
     "humidity": "Humedad",
@@ -118,13 +156,18 @@
     "ariaTile": "Clima {name}",
     "power": "Encendido, {name}",
     "insideSub": "{word}, {temp} en el interior",
-    "rangeAria": "Rango objetivo {range} {unit}, abrir controles"
+    "rangeAria": "Rango objetivo {range} {unit}, abrir controles",
+    "currentSub": "{word}, {temp} ahora",
+    "ariaWaterHeater": "Calentador de agua {name}",
+    "ariaHumidifier": "Humidificador {name}",
+    "ariaDehumidifier": "Deshumidificador {name}"
   },
   "badge": {
     "label": "{name}: {value}"
   },
   "cluster": {
     "title": "Clima",
+    "titleMixed": "Confort",
     "empty": "No se encontraron entidades de clima. Elige habitaciones en el editor de la tarjeta.",
     "noEntities": "Sin entidades de clima",
     "other": "Otras",
@@ -149,7 +192,8 @@
     "modeGroup": "Modo, {name}",
     "rangeAria": "Rango objetivo {range} {unit}, abrir controles",
     "valve": "válvula {value}%",
-    "batteryLow": "Batería baja: {n}"
+    "batteryLow": "Batería baja: {n}",
+    "ariaCurrent": "ahora {value} {unit}"
   },
   "menu": {
     "details": "Detalles",
@@ -174,10 +218,12 @@
     "copied": "Copiado",
     "diagnosticsFailed": "Error al copiar",
     "help": "Ayuda: {section}",
-    "climateEntity": "Entidad de clima",
+    "entity": "Entidad",
     "name": "Nombre",
     "nameHint": "Vacío usa el nombre de la entidad.",
     "roomSensor": "Sensor de temperatura de la habitación",
+    "waterSensor": "Sensor de temperatura del agua",
+    "humiditySensor": "Sensor de humedad",
     "unitSensor": "Sensor del equipo",
     "wholeUse": "Este equipo indica grados enteros. {sensor} marca {value}.",
     "useIt": "Usar",
@@ -283,6 +329,11 @@
     "sensorBattery": "Batería",
     "sensorValve": "Apertura de la válvula",
     "sensorWindow": "Contacto de ventana",
-    "writeHold": "Mostrar el valor enviado"
+    "writeHold": "Mostrar el valor enviado",
+    "domains": "Tipos de equipo",
+    "domainClimate": "Clima",
+    "domainWaterHeater": "Calentadores de agua",
+    "domainHumidifier": "Humidificadores",
+    "domainsHint": "Los calentadores de agua y humidificadores solo entran en el clúster si se eligen aquí."
   }
 }

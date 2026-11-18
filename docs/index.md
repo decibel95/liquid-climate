@@ -4,8 +4,8 @@ title: Liquid Climate
 
 hero:
   name: Liquid Climate
-  text: Glass cards for Home Assistant climate entities
-  tagline: Dial, tile, badge and cluster in a liquid glass style. Any climate entity, a visual editor for every card.
+  text: Glass cards for Home Assistant climate, water heater and humidifier entities
+  tagline: Dial, tile, badge and cluster in a liquid glass style, with a visual editor for every card.
   image:
     light: /media/hero-light.png
     dark: /media/hero-dark.png

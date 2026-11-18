@@ -37,7 +37,7 @@ window.customCards = window.customCards || [];
 register(window.customCards, {
   type: 'liquid-climate-card',
   name: 'Liquid Climate',
-  description: 'Glass dial for any climate entity: setpoint and fan rings, modes, swing, presets and detected sensors.',
+  description: 'Glass dial for any climate entity, water heater or humidifier: setpoint and fan rings, modes, swing, presets and detected sensors.',
   preview: true,
 });
 register(window.customCards, {

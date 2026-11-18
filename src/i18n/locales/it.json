@@ -16,7 +16,9 @@
     "stepUp": "Alza la temperatura target",
     "target": "Target",
     "batteryLow": "Batteria scarica",
-    "batteryLowValue": "Batteria scarica, {value}%"
+    "batteryLowValue": "Batteria scarica, {value}%",
+    "stepDownHumidity": "Abbassa l'umidità target",
+    "stepUpHumidity": "Alza l'umidità target"
   },
   "mode": {
     "off": "Spento",
@@ -51,7 +53,37 @@
     "idle": "Inattivo",
     "off": "Spento",
     "preheating": "Preriscalda",
-    "defrosting": "Sbrina"
+    "defrosting": "Sbrina",
+    "humidifying": "Umidifica"
+  },
+  "waterHeaterMode": {
+    "eco": "Eco",
+    "electric": "Elettrico",
+    "performance": "Prestazioni",
+    "high_demand": "Alta richiesta",
+    "heat_pump": "Pompa di calore",
+    "gas": "Gas",
+    "off": "Spento",
+    "on": "Acceso"
+  },
+  "waterHeaterModeShort": {
+    "eco": "Eco",
+    "electric": "Elett",
+    "performance": "Prest",
+    "high_demand": "Alta",
+    "heat_pump": "Pompa",
+    "gas": "Gas"
+  },
+  "humidifierMode": {
+    "normal": "Normale",
+    "eco": "Eco",
+    "away": "Assente",
+    "boost": "Boost",
+    "comfort": "Comfort",
+    "home": "Casa",
+    "sleep": "Notte",
+    "auto": "Auto",
+    "baby": "Bambino"
   },
   "option": {
     "stop": "Fisso",
@@ -104,7 +136,13 @@
     "ariaPreset": "Preset: {value}",
     "problem": "{source} segnala un problema",
     "problemDetail": "{source} segnala un problema ({detail})",
-    "subTargetState": "{state}, target {target}"
+    "subTargetState": "{state}, target {target}",
+    "current": "Ora",
+    "currentValue": "Ora {value}",
+    "ariaTargetHumidity": "Umidità target. Le frecce cambiano il setpoint.",
+    "ariaTargetWater": "Temperatura target dell'acqua. Le frecce cambiano il setpoint.",
+    "away": "Assente",
+    "ariaAway": "Modalità assente: {value}"
   },
   "detect": {
     "humidity": "Umidità",
@@ -118,13 +156,18 @@
     "ariaTile": "Clima {name}",
     "power": "Accensione, {name}",
     "insideSub": "{word}, {temp} all'interno",
-    "rangeAria": "Intervallo target {range} {unit}, apri i controlli"
+    "rangeAria": "Intervallo target {range} {unit}, apri i controlli",
+    "currentSub": "{word}, {temp} ora",
+    "ariaWaterHeater": "Scaldacqua {name}",
+    "ariaHumidifier": "Umidificatore {name}",
+    "ariaDehumidifier": "Deumidificatore {name}"
   },
   "badge": {
     "label": "{name}: {value}"
   },
   "cluster": {
     "title": "Clima",
+    "titleMixed": "Comfort",
     "empty": "Nessuna entità clima trovata. Scegli le stanze nell'editor della scheda.",
     "noEntities": "Nessuna entità clima",
     "other": "Altre",
@@ -149,7 +192,8 @@
     "modeGroup": "Modalità, {name}",
     "rangeAria": "Intervallo target {range} {unit}, apri i controlli",
     "valve": "valvola {value}%",
-    "batteryLow": "Batteria scarica: {n}"
+    "batteryLow": "Batteria scarica: {n}",
+    "ariaCurrent": "ora {value} {unit}"
   },
   "menu": {
     "details": "Dettagli",
@@ -174,10 +218,12 @@
     "copied": "Copiato",
     "diagnosticsFailed": "Copia non riuscita",
     "help": "Aiuto: {section}",
-    "climateEntity": "Entità clima",
+    "entity": "Entità",
     "name": "Nome",
     "nameHint": "Vuoto usa il nome dell'entità.",
     "roomSensor": "Sensore di temperatura della stanza",
+    "waterSensor": "Sensore di temperatura dell'acqua",
+    "humiditySensor": "Sensore di umidità",
     "unitSensor": "Sensore dell'unità",
     "wholeUse": "Questa unità indica gradi interi. {sensor} legge {value}.",
     "useIt": "Usa",
@@ -283,6 +329,11 @@
     "sensorBattery": "Batteria",
     "sensorValve": "Apertura valvola",
     "sensorWindow": "Contatto finestra",
-    "writeHold": "Mostra il valore inviato"
+    "writeHold": "Mostra il valore inviato",
+    "domains": "Tipi di dispositivo",
+    "domainClimate": "Clima",
+    "domainWaterHeater": "Scaldacqua",
+    "domainHumidifier": "Umidificatori",
+    "domainsHint": "Scaldacqua e umidificatori entrano nel cluster solo se scelti qui."
   }
 }
