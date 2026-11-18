@@ -8,7 +8,7 @@ import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import { ROOM_FILL, resolveGlass } from '../../ui/glass';
 import { glassTokens } from '../../ui/glass-styles';
 import { START, SWEEP, arcPath, fanSegments, fractionToAngle, litFanSegments, pt, valueToFraction } from '../../ui/geometry';
-import { ICONS, STATUS_COLORS, TINT, domainModeLabel, entityModeInfo, fanIntensity, iconClass, rgba, spinSeconds, tone } from '../../ui/modes';
+import { ICONS, STATUS_COLORS, TINT, domainModeLabel, entityModeInfo, fanIntensity, rgba, spinSeconds, tone } from '../../ui/modes';
 import { num, numAuto, t } from '../../i18n';
 import type { HomeAssistant } from '../../types';
 import { isSupportedEntity } from '../../domain';
@@ -207,7 +207,7 @@ export class LiquidClimateCluster extends LitElement {
   // ---- Rendering -------------------------------------------------------
 
   private _icon(path: string, size: number, sw: number) {
-    return svg`<svg class="i ${iconClass(path)}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
+    return svg`<svg class="i" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
   }
 
   /** Colour of a room's icon: status colours first, the mode colour only while it is doing its job. */
@@ -350,7 +350,6 @@ export class LiquidClimateCluster extends LitElement {
           return html`<button
             class="press mode"
             aria-label=${domainModeLabel(this.hass, caps!.domain, id)}
-            title=${caps!.domain === 'climate' ? nothing : domainModeLabel(this.hass, caps!.domain, id)}
             aria-pressed=${on ? 'true' : 'false'}
             style=${styleMap({
               background: on ? rgba(c, TINT.tile) : undefined,

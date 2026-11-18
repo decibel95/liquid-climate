@@ -3,9 +3,17 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.11.0
+## 0.11.1
 
 The current version.
+
+### Changed
+- Water heaters and humidifiers follow one climate twin for colour, particles and motion, so they match climate cards: a water heater uses the heat colour, a humidifier cool, a dehumidifier dry, and the separate domain colours are gone. Humidifier particles fall like cool, dehumidifier particles like dry, and a water heater that is not off flickers on the tile like climate heat.
+- Every water heater and humidifier mode icon is now a line icon in the same style as the climate icons, replacing the filled Material Design icons.
+- Water heater and humidifier scales are as airy as a climate dial: the tick spacing is the smallest of 1, 2, 5 and 10 that keeps the scale to 35 ticks (humidity 0 to 100 ticks every 5, with labels at 0, 50 and 100). Climate scales are unchanged.
+- Mode buttons no longer carry a `title` tooltip in any domain; the full mode name stays in `aria-label`.
+
+## 0.11.0
 
 ### Added
 - **Water heaters and humidifiers** work on all four cards, next to climate. The dial, tile, badge and cluster read the entity's own features and hide what it does not support.

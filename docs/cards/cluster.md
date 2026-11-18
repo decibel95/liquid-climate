@@ -73,7 +73,7 @@ A unit's area is the entity's own area, else its device's area. Hidden and disab
 
 ### Device types {#cluster-domains}
 
-Water heaters and humidifiers are opt-in, so an existing cluster does not change by itself. With the source set to All, One floor or One area, pick Climate, Water heaters and Humidifiers in the editor, or set `domains`. A chosen list takes any of them. A room of another kind shows its own figure: the tank temperature of a water heater, the humidity of a humidifier, with the target in % and its colour (blue, teal for a dehumidifier). Option: `domains`.
+Water heaters and humidifiers are opt-in, so an existing cluster does not change by itself. With the source set to All, One floor or One area, pick Climate, Water heaters and Humidifiers in the editor, or set `domains`. A chosen list takes any of them. A room of another kind shows its own figure: the tank temperature of a water heater, the humidity of a humidifier, with the target in % and its colour (cool, dry for a dehumidifier). Option: `domains`.
 
 ```yaml
 # Every climate unit and every humidifier, by floor

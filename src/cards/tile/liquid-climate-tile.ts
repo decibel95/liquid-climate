@@ -8,7 +8,7 @@ import { Memo } from '../../detect/cache';
 import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import { resolveGlass } from '../../ui/glass';
 import { glassTokens } from '../../ui/glass-styles';
-import { ICONS, STATUS_COLORS, TINT, entityModeInfo, iconClass, rgba, tone } from '../../ui/modes';
+import { ICONS, STATUS_COLORS, TINT, entityModeInfo, rgba, tone } from '../../ui/modes';
 import { num, numAuto, t } from '../../i18n';
 import { ENTITY_ERROR, domainOf, isSupportedEntity } from '../../domain';
 import type { HassEntity, HomeAssistant } from '../../types';
@@ -143,7 +143,7 @@ export class LiquidClimateTile extends LitElement {
   }
 
   private _icon(path: string, size: number, sw: number, cls = '') {
-    return svg`<svg class="i ${cls} ${iconClass(path)}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
+    return svg`<svg class="i ${cls}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
   }
 
   protected override render(): TemplateResult {

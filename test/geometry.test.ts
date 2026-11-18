@@ -126,6 +126,16 @@ describe('ticks', () => {
     expect(ticks.filter((t) => t.label).map((t) => t.value)).toEqual([10, 20, 30]);
   });
 
+  it.each([
+    [7, 35, 29, 6, 3],
+    [10, 30, 21, 5, 3],
+    [16, 30, 15, 3, 2],
+    [45, 95, 51, 11, 5],
+  ])('climate span %i to %i is pinned: %i ticks, %i majors, %i labels', (min, max, n, majors, labels) => {
+    const ticks = buildTicks(min, max);
+    expect([ticks.length, ticks.filter((t) => t.major).length, ticks.filter((t) => t.label).length]).toEqual([n, majors, labels]);
+  });
+
   it('copes with fractional bounds', () => {
     const ticks = buildTicks(4.5, 9.5);
     expect(ticks.map((t) => t.value)).toEqual([5, 6, 7, 8, 9]);

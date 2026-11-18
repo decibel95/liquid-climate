@@ -75,7 +75,7 @@ Radiator valves (Zigbee2MQTT, Better Thermostat, generic thermostat) work on all
 
 ### Water heaters and humidifiers
 
-A `water_heater` gets the temperature arc, its operation modes (Eco, Electric, Heat pump and so on) as buttons, power and an Away chip when it supports them. A `humidifier` gets the target humidity in %, the current humidity in the centre, its modes when it has them, and power. Water heaters are orange-red, humidifiers blue and dehumidifiers teal. There is no fan ring for either. The tile and badge show the same figures. In a cluster they are opt-in through `domains`, so an existing cluster does not change.
+A `water_heater` gets the temperature arc, its operation modes (Eco, Electric, Heat pump and so on) as buttons, power and an Away chip when it supports them. A `humidifier` gets the target humidity in %, the current humidity in the centre, its modes when it has them, and power. They use the same colours as heat, cool and dry. There is no fan ring for either. The tile and badge show the same figures. In a cluster they are opt-in through `domains`, so an existing cluster does not change.
 
 <div align="center">
   <picture>

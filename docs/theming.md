@@ -63,14 +63,11 @@ Mode colours sit only on the setpoint arc, the knob and the active mode (and the
 
 | Token | Colour | Used for |
 |-------|--------|----------|
-| `heat` | `#ff9447` | Heat |
-| `cool` | `#5ab0ff` | Cool |
+| `heat` | `#ff9447` | Heat, and a water heater in any mode but off |
+| `cool` | `#5ab0ff` | Cool, and a humidifier (also one without a `device_class`) |
 | `heat_cool`, `auto` | `#a99cff` | Auto |
-| `dry` | `#40d3c8` | Dry |
+| `dry` | `#40d3c8` | Dry, and a humidifier with `device_class: dehumidifier` |
 | `fan_only` | `#d5dce6` | Fan |
-| `water_heater` | `#ff6a3d` | A water heater in any mode but off |
-| `humidifier` | `#5b8cff` | A humidifier, also one without a `device_class` |
-| `dehumidifier` | `#2fbfa0` | A humidifier with `device_class: dehumidifier` |
 
 ## HA theme variables the cards follow {#theming-ha}
 

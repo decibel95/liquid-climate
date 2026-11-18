@@ -93,16 +93,25 @@ export interface Tick {
   label: boolean;
 }
 
-export function buildTicks(min: number, max: number, wide = false): Tick[] {
+/**
+ * Tick spacing of the dial scale. Climate always ticks every degree. A water heater or humidifier
+ * takes the smallest of 1, 2, 5 and 10 that keeps the scale to 35 ticks, so a 0 to 100 humidity
+ * range is as airy as a climate dial.
+ */
+export function tickInterval(domain: string, min: number, max: number): number {
+  if (domain === 'climate') return 1;
+  return [1, 2, 5, 10].find((k) => Math.floor(max / k) - Math.ceil(min / k) + 1 <= 35) ?? 10;
+}
+
+/** A tick every k, a major every 5k and a label every 10k, on multiples of k. */
+export function buildTicks(min: number, max: number, k = 1): Tick[] {
   const ticks: Tick[] = [];
-  // A wide scale (humidity 0 to 100) ticks every 2, majors every 10 and labels every 20.
-  const every = wide && max - min > 60 ? 2 : 1;
-  for (let t = Math.ceil(min / every) * every; t <= Math.floor(max); t += every) {
+  for (let t = Math.ceil(min / k) * k; t <= Math.floor(max); t += k) {
     ticks.push({
       value: t,
       angle: fractionToAngle(valueToFraction(t, min, max)),
-      major: t % (5 * every) === 0,
-      label: t % (10 * every) === 0,
+      major: t % (5 * k) === 0,
+      label: t % (10 * k) === 0,
     });
   }
   return ticks;

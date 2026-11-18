@@ -32,18 +32,18 @@ import {
   litFanSegments,
   pointToFraction,
   pt,
+  tickInterval,
   valueToFraction,
   zoneForDistance,
 } from '../../ui/geometry';
 import {
   ICONS,
+  climateTwin,
   domainModeLabel,
   entityModeInfo,
-  iconClass,
   fanIntensity,
   fanShortLabels,
   optionLabel,
-  particleMode,
   particleDuration,
   rgba,
   spinSeconds,
@@ -572,7 +572,7 @@ export class LiquidClimateCard extends LitElement {
   }
 
   private _icon(path: string, size: number, sw = 1.8, cls = '') {
-    return svg`<svg class="i ${cls} ${iconClass(path)}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
+    return svg`<svg class="i ${cls}" width=${size} height=${size} viewBox="0 0 24 24" stroke-width=${sw} aria-hidden="true"><path d=${path}></path></svg>`;
   }
 
   private _renderDial(ctx: Ctx, color: string, on: boolean, room: number | null, spinS: number, intensity: number | null, resting: boolean) {
@@ -598,7 +598,7 @@ export class LiquidClimateCard extends LitElement {
     let dim = '';
     let lit = '';
     const labels: { x: number; y: number; t: string }[] = [];
-    for (const t of buildTicks(min, max, caps.domain === 'humidifier')) {
+    for (const t of buildTicks(min, max, tickInterval(caps.domain, min, max))) {
       const p1 = pt(t.major ? 111 : 116, t.angle);
       const p2 = pt(123, t.angle);
       const seg = `M ${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} `;
@@ -668,7 +668,7 @@ export class LiquidClimateCard extends LitElement {
         <div class="parts" aria-hidden="true">
           ${PARTICLES.map(
             (p) => html`<span
-              class="pt pt-${particleMode(ctx.stateObj, view.mode)}"
+              class="pt pt-${climateTwin(ctx.stateObj, view.mode)}"
               style=${styleMap({
                 left: `${p.left}%`,
                 width: `${p.size}px`,
@@ -795,7 +795,6 @@ export class LiquidClimateCard extends LitElement {
           class="press mode"
           aria-pressed=${act ? 'true' : 'false'}
           aria-label=${domainModeLabel(this.hass, caps.domain, id, false, caps.modes)}
-          title=${caps.domain === 'climate' ? nothing : domainModeLabel(this.hass, caps.domain, id, false, caps.modes)}
           style=${styleMap({
             background: act ? rgba(m.color, 0.2) : undefined,
             borderColor: act ? rgba(m.color, 0.45) : undefined,

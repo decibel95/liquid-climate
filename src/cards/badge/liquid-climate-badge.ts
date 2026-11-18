@@ -9,7 +9,7 @@ import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import type { Detection } from '../../detect/roles';
 import { DOT_RING, resolveGlass } from '../../ui/glass';
 import { glassTokens } from '../../ui/glass-styles';
-import { ICONS, STATUS_COLORS, TINT, entityModeInfo, iconClass, modeVerb, rgba, tone } from '../../ui/modes';
+import { ICONS, STATUS_COLORS, TINT, entityModeInfo, modeVerb, rgba, tone } from '../../ui/modes';
 import { num, numAuto, t } from '../../i18n';
 import { ENTITY_ERROR, domainOf, isSupportedEntity } from '../../domain';
 import { statusWord } from '../shared/status';
@@ -150,7 +150,7 @@ export class LiquidClimateBadge extends LitElement {
     });
 
     const icon = html`<span class="ic" style=${styleMap({ backgroundColor: cfg.icon_only ? undefined : tint })}
-      >${svg`<svg class="i ${iconClass(st.icon)}" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path d=${st.icon}></path></svg>`}</span
+      >${svg`<svg class="i" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path d=${st.icon}></path></svg>`}</span
     >`;
     const extra = cfg.icon_only
       ? st.attention

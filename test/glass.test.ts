@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DOT_RING, GLASS, MENU_GLASS, ROOM_FILL, composite, contrast, cssColorIsDark, parseColor, resolveGlass, type Rgb } from '../src/ui/glass';
-import { DOMAIN_COLORS, MODES, STATUS_COLORS, TINT, rgba, tone } from '../src/ui/modes';
+import { MODES, STATUS_COLORS, TINT, rgba, tone } from '../src/ui/modes';
 
 describe('glass resolution', () => {
   it('theme follows the HA dark mode', () => {
@@ -165,7 +165,6 @@ describe('tile and badge contrast on any backdrop', () => {
   const colours: [string, string][] = [
     ...MODES.filter((m) => m.id !== 'auto').map((m) => [m.id, m.color] as [string, string]),
     ...Object.entries(STATUS_COLORS),
-    ...Object.entries(DOMAIN_COLORS),
   ];
 
   for (const kind of ['dark', 'light'] as const) {

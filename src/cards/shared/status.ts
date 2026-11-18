@@ -1,6 +1,6 @@
 import { BATTERY_LOW, type BatteryState } from '../../detect/resolve';
 import { humanize, num, optionName, t } from '../../i18n';
-import { MODES, domainModeLabel, modeVerb } from '../../ui/modes';
+import { MODES, climateTwin, domainModeLabel, modeVerb } from '../../ui/modes';
 import { actionOf, domainOf } from '../../domain';
 import type { HassEntity, HomeAssistant } from '../../types';
 
@@ -29,7 +29,7 @@ export function activelyHeating(s: HassEntity, mode: string, modeChanging: boole
   if (mode === 'off') return false;
   const action = actionOf(s);
   if (!modeChanging && action) return action === 'heating' || action === 'preheating';
-  return mode === 'heat';
+  return climateTwin(s, mode) === 'heat';
 }
 
 /** Actions that read as "doing it": a sentence like "Heating to 20.0°" fits them. */

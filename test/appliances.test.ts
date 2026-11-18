@@ -5,12 +5,17 @@ import '../src/index';
 import { forgetModes } from '../src/cards/shared/writer';
 import { getCapabilities, buildView, steppedTarget } from '../src/cards/dial/capabilities';
 import { defaultConfig } from '../src/config';
-import { DOMAIN_COLORS } from '../src/ui/modes';
+import { ICONS, MODES, climateTwin, entityModeInfo } from '../src/ui/modes';
 import { LOCALES } from '../src/i18n';
-import { buildTicks } from '../src/ui/geometry';
+import { buildTicks, tickInterval } from '../src/ui/geometry';
 import { emptyElements } from './empty-elements';
 import { APPLIANCE_IDS as ID, allFixtures, appliances, makeHass, mergeFixtures, type Fixture } from './fixtures';
 import type { HomeAssistant } from '../src/types';
+
+const color = (id: string) => MODES.find((m) => m.id === id)!.color;
+const HEAT = color('heat');
+const COOL = color('cool');
+const DRY = color('dry');
 
 type AnyEl = HTMLElement & Record<string, any>;
 type Call = { domain: string; service: string; data: any };
@@ -127,14 +132,22 @@ describe('capabilities: water heater and humidifier', () => {
     expect(buildView(s, c, { hvac_mode: 'off' }).hasSetpoint).toBe(false);
   });
 
-  it('the humidity scale ticks every 2, labels every 20; climate scales stay as they were', () => {
-    const ticks = buildTicks(0, 100, true);
-    expect(ticks).toHaveLength(51);
-    expect(ticks.filter((t) => t.label).map((t) => t.value)).toEqual([0, 20, 40, 60, 80, 100]);
-    expect(buildTicks(10, 30)).toHaveLength(21);
-    const f = buildTicks(45, 110);
-    expect(f).toHaveLength(66);
-    expect(f.filter((t) => t.label).map((t) => t.value)).toEqual([50, 60, 70, 80, 90, 100, 110]);
+  it.each([
+    ['humidifier', 0, 100, 5, 21, [0, 25, 50, 75, 100], [0, 50, 100]],
+    ['humidifier', 30, 80, 2, 26, [30, 40, 50, 60, 70, 80], [40, 60, 80]],
+    ['water_heater', 43, 60, 1, 18, [45, 50, 55, 60], [50, 60]],
+    ['water_heater', 110, 140, 1, 31, [110, 115, 120, 125, 130, 135, 140], [110, 120, 130, 140]],
+  ])('%s scale %i to %i: interval %i, %i ticks', (domain, min, max, k, n, majors, labels) => {
+    expect(tickInterval(domain, min, max)).toBe(k);
+    const ticks = buildTicks(min, max, k);
+    expect(ticks).toHaveLength(n);
+    expect(ticks.filter((t) => t.major).map((t) => t.value)).toEqual(majors);
+    expect(ticks.filter((t) => t.label).map((t) => t.value)).toEqual(labels);
+  });
+
+  it('climate always ticks every unit, whatever the span', () => {
+    expect(tickInterval('climate', 0, 100)).toBe(1);
+    expect(buildTicks(0, 100)).toHaveLength(101);
   });
 });
 
@@ -187,19 +200,20 @@ describe('dial: water heater', () => {
     expect(text($(el, '.sub'))).toBe('Eco, target 45°');
     expect($$(el, '.modes button').map(text)).toEqual(['Eco', 'Elec', 'Perf', 'High', 'Pump', 'Gas']);
     expect($(el, '.modes button[aria-pressed=true]')?.textContent).toContain('Eco');
-    expect(colours(el)).toContain(DOMAIN_COLORS.water_heater);
+    expect(colours(el)).toContain(HEAT);
   });
 
-  it('six operation modes: a distinct filled icon each and a short label that fits, the full name in aria-label and title', async () => {
+  it('six operation modes: a distinct line icon each and a short label that fits, the full name in aria-label only', async () => {
     const { el } = mount('liquid-climate-card', { entity: ID.waterHeater });
     await settle(el);
     const buttons = $$(el, '.modes button');
     expect(buttons.map((b) => text(b.querySelector('span')))).toEqual(['Eco', 'Elec', 'Perf', 'High', 'Pump', 'Gas']);
     expect(buttons.map((b) => b.getAttribute('aria-label'))).toEqual(['Eco', 'Electric', 'Performance', 'High demand', 'Heat pump', 'Gas']);
-    expect(buttons.map((b) => b.getAttribute('title'))).toEqual(['Eco', 'Electric', 'Performance', 'High demand', 'Heat pump', 'Gas']);
+    expect(buttons.every((b) => !b.hasAttribute('title'))).toBe(true);
     const icons = buttons.map((b) => b.querySelector('path')!.getAttribute('d'));
     expect(new Set(icons).size).toBe(6);
-    expect(buttons.every((b) => b.querySelector('svg')!.classList.contains('fill'))).toBe(true);
+    const known = new Set<string>(Object.values(ICONS));
+    expect(buttons.every((b) => known.has(b.querySelector('path')!.getAttribute('d')!))).toBe(true);
   });
 
   it.each(['en', 'nl', 'de', 'fr', 'es', 'it'])('%s: every short water heater label has at most 6 letters', (lang) => {
@@ -357,24 +371,51 @@ describe('dial: humidifier', () => {
     expect($(el, '.info')).toBeNull();
   });
 
-  it('colour follows device_class: blue for a humidifier, teal for a dehumidifier', async () => {
+  it('colour follows device_class: cool for a humidifier, dry for a dehumidifier', async () => {
     const hum = mount('liquid-climate-card', { entity: ID.humidifier });
     await settle(hum.el);
-    expect(colours(hum.el)).toContain(DOMAIN_COLORS.humidifier);
-    expect(colours(hum.el)).not.toContain(DOMAIN_COLORS.dehumidifier);
+    expect(colours(hum.el)).toContain(COOL);
+    expect(colours(hum.el)).not.toContain(DRY);
     document.body.innerHTML = '';
     const de = mount('liquid-climate-card', { entity: ID.dehumidifier });
     await settle(de.el);
     expect(text($(de.el, '.sub'))).toBe('Drying to 54%');
-    expect(colours(de.el)).toContain(DOMAIN_COLORS.dehumidifier);
-    expect(colours(de.el)).not.toContain(DOMAIN_COLORS.humidifier);
+    expect(colours(de.el)).toContain(DRY);
+    expect(colours(de.el)).not.toContain(COOL);
+  });
+
+  it('the dial wires the domain into the tick interval', async () => {
+    const dial = async (entity: string, tweak?: (f: Fixture) => void) => {
+      document.body.replaceChildren();
+      const { el } = mount('liquid-climate-card', { entity }, { tweak });
+      await settle(el);
+      const strs = values(el.render()).filter((x): x is string => typeof x === 'string');
+      const ticks = strs.filter((x) => /^M [\d.]+ [\d.]+ L /.test(x)).reduce((n, d) => n + d.split(' L ').length - 1, 0);
+      const labels = $$(el, '.tick-label').map(text);
+      return { ticks, labels: labels.length ? labels : strs.filter((x) => /^\d+$/.test(x)) };
+    };
+    const humRange = (min: number, max: number) => (f: Fixture) => {
+      f.states[ID.humidifier].attributes.min_humidity = min;
+      f.states[ID.humidifier].attributes.max_humidity = max;
+    };
+    const climateId = Object.keys(allFixtures.states).find(
+      (id) => id.startsWith('climate.') && allFixtures.states[id].attributes.min_temp === 10 && allFixtures.states[id].attributes.max_temp === 30,
+    )!;
+
+    const hum = await dial(ID.humidifier);
+    expect(hum.ticks).toBe(21);
+    expect(hum.labels).toEqual(['0', '50', '100']);
+    const climate = await dial(climateId);
+    expect(climate.ticks).toBe(21);
+    expect(climate.labels).toEqual(['10', '20', '30']);
+    expect((await dial(ID.humidifier, humRange(30, 80))).ticks).toBe(26);
   });
 
   it('without device_class it is a humidifier, and without an action it names its mode', async () => {
     const { el } = mount('liquid-climate-card', { entity: ID.hygrostat });
     await settle(el);
     expect(text($(el, '.sub'))).toBe('Home, target 50%');
-    expect(colours(el)).toContain(DOMAIN_COLORS.humidifier);
+    expect(colours(el)).toContain(COOL);
     expect($$(el, '.modes button').map(text)).toEqual(['Home', 'Eco']);
     expect($(el, '.modes button[aria-pressed=true]')?.textContent).toContain('Home');
   });
@@ -590,5 +631,63 @@ describe('setConfig', () => {
     const el = document.createElement(tag) as AnyEl;
     for (const entity of ['climate.x', ID.waterHeater, ID.humidifier]) expect(() => el.setConfig({ entity })).not.toThrow();
     expect(() => el.setConfig({ entity: 'sensor.x' })).toThrow(/climate entity/);
+  });
+
+  it('uses the climate mode colours and only line icons', () => {
+    const st = (entity_id: string, device_class?: string) => ({ entity_id, state: 'on', attributes: { device_class } }) as any;
+    expect(entityModeInfo(st('water_heater.x'), 'eco').color).toBe(HEAT);
+    expect(entityModeInfo(st('humidifier.x'), 'normal').color).toBe(COOL);
+    expect(entityModeInfo(st('humidifier.x', 'dehumidifier'), 'normal').color).toBe(DRY);
+    const icons = new Set<string>(Object.values(ICONS));
+    const modes = ['eco', 'electric', 'performance', 'high_demand', 'heat_pump', 'gas', 'normal', 'away', 'boost', 'comfort', 'home', 'sleep', 'auto', 'baby', 'unknown'];
+    for (const id of ['water_heater.x', 'humidifier.x'])
+      for (const m of modes) expect(icons.has(entityModeInfo(st(id), m).icon)).toBe(true);
+  });
+
+  it('the climate twin: colour and particle class for water heater, humidifier and dehumidifier', async () => {
+    const st = (entity_id: string, device_class?: string) => ({ entity_id, state: 'on', attributes: { device_class } }) as any;
+    expect(climateTwin(st('water_heater.x'), 'eco')).toBe('heat');
+    expect(climateTwin(st('humidifier.x'), 'normal')).toBe('cool');
+    expect(climateTwin(st('humidifier.x', 'dehumidifier'), 'normal')).toBe('dry');
+    expect(climateTwin(st('climate.x'), 'heat_cool')).toBe('heat_cool');
+    for (const id of ['water_heater.x', 'humidifier.x']) expect(climateTwin(st(id), 'off')).toBe('off');
+    for (const [entity, twin] of [[ID.waterHeater, 'heat'], [ID.humidifier, 'cool'], [ID.dehumidifier, 'dry']] as const) {
+      document.body.innerHTML = '';
+      const { el } = mount('liquid-climate-card', { entity });
+      await settle(el);
+      const cls = $$(el, '.parts .pt').map((p) => p.className);
+      expect(cls.length).toBeGreaterThan(0);
+      expect(cls.every((c) => c.includes(`pt-${twin}`))).toBe(true);
+    }
+  });
+
+  it('a water heater flickers on the tile like climate heat, unless off or motion is minimal', async () => {
+    const flick = async (cfg: Record<string, unknown>, tweak?: (f: Fixture) => void) => {
+      document.body.innerHTML = '';
+      const { el } = mount('liquid-climate-tile', cfg, { tweak });
+      await settle(el);
+      return $(el, 'button.power svg')!.getAttribute('class')!.includes('flick');
+    };
+    expect(await flick({ entity: ID.waterHeater })).toBe(true);
+    expect(await flick({ entity: ID.waterHeater, look: { motion: 'minimal' } })).toBe(false);
+    expect(await flick({ entity: ID.waterHeater }, (f) => (f.states[ID.waterHeater].state = 'off'))).toBe(false);
+    expect(await flick({ entity: ID.humidifier })).toBe(false);
+  });
+
+  it('mode buttons carry no title in any domain', async () => {
+    for (const entity of [ID.waterHeater, ID.hygrostat, ID.humidifier, ID.dehumidifier]) {
+      document.body.innerHTML = '';
+      const { el } = mount('liquid-climate-card', { entity });
+      await settle(el);
+      const buttons = $$(el, '.modes button');
+      if (entity === ID.waterHeater || entity === ID.hygrostat) expect(buttons.length).toBeGreaterThan(0);
+      expect(buttons.every((b) => !b.hasAttribute('title'))).toBe(true);
+    }
+    document.body.innerHTML = '';
+    const { el } = mount('liquid-climate-cluster', { domains: ['water_heater'] });
+    await settle(el);
+    const modeButtons = $$(el, '.modes button');
+    expect(modeButtons.length).toBeGreaterThan(0);
+    expect(modeButtons.every((b) => !b.hasAttribute('title'))).toBe(true);
   });
 });

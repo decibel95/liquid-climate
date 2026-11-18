@@ -1,21 +1,5 @@
 import { haLocalize, haMode, humanize, optionName, t, type I18nHass, type OptionKind } from '../i18n';
 import { domainOf, type Domain } from '../domain';
-import {
-  mdiAccountArrowRight,
-  mdiAutorenew,
-  mdiBabyCarriage,
-  mdiFire,
-  mdiFlash,
-  mdiHeatPump,
-  mdiHome,
-  mdiLeaf,
-  mdiPowerSleep,
-  mdiRocketLaunch,
-  mdiSofa,
-  mdiSpeedometer,
-  mdiWaterBoiler,
-  mdiWaterPercent,
-} from '@mdi/js';
 import type { HassEntity } from '../types';
 
 export const ICONS = {
@@ -36,6 +20,15 @@ export const ICONS = {
   minus: 'M5 12h14',
   plus: 'M5 12h14 M12 5v14',
   close: 'M6 6l12 12 M18 6L6 18',
+  leaf: 'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12',
+  zap: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z',
+  gauge: 'm12 14 4-4 M3.34 19a10 10 0 1 1 17.32 0',
+  heatPump: 'M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8 M21 3v5h-5 M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16 M8 16H3v5',
+  house:
+    'M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8 M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',
+  moon: 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z',
+  sofa: 'M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3 M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z M4 18v2 M20 18v2 M12 4v9',
+  baby: 'M9 12h.01 M15 12h.01 M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5 M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1',
 } as const;
 
 export interface ModeInfo {
@@ -55,17 +48,6 @@ export const MODES: ModeInfo[] = [
   { id: 'dry', color: '#40d3c8', icon: ICONS.drop, setpoint: false },
   { id: 'fan_only', color: '#d5dce6', icon: ICONS.fan, setpoint: false },
 ];
-
-/**
- * Colours of the other domains, one per kind of unit: a water heater is a warmer orange-red than heat,
- * a humidifier blue, a dehumidifier teal. Like the mode colours, only on the setpoint arc, the knob and
- * the active mode. A humidifier without a device_class counts as a humidifier.
- */
-export const DOMAIN_COLORS = {
-  water_heater: '#ff6a3d',
-  humidifier: '#5b8cff',
-  dehumidifier: '#2fbfa0',
-} as const;
 
 /** Badge states that are not hvac modes. */
 export const STATUS_COLORS = {
@@ -190,10 +172,16 @@ export function spinStyle(seconds: number, on: boolean): Record<string, string> 
   return { animationDuration: `${seconds.toFixed(1)}s`, animationPlayState: on ? 'running' : 'paused' };
 }
 
-/** The colour of a non-climate entity while it is on. */
-function domainColor(stateObj: HassEntity): string {
-  if (domainOf(stateObj.entity_id) === 'water_heater') return DOMAIN_COLORS.water_heater;
-  return stateObj.attributes.device_class === 'dehumidifier' ? DOMAIN_COLORS.dehumidifier : DOMAIN_COLORS.humidifier;
+/**
+ * The climate mode an entity behaves like: a water heater is heat, a humidifier cool, a dehumidifier
+ * dry. Colour, particles and the tile flicker follow it. Climate and off keep their own mode.
+ */
+export function climateTwin(stateObj: HassEntity | undefined, mode: string): string {
+  if (!stateObj || mode === 'off') return mode;
+  const domain = domainOf(stateObj.entity_id);
+  if (domain === 'climate') return mode;
+  if (domain === 'water_heater') return 'heat';
+  return stateObj.attributes.device_class === 'dehumidifier' ? 'dry' : 'cool';
 }
 
 /**
@@ -203,45 +191,32 @@ function domainColor(stateObj: HassEntity): string {
 export function entityModeInfo(stateObj: HassEntity | undefined, mode: string): ModeInfo {
   if (!stateObj || domainOf(stateObj.entity_id) === 'climate' || mode === 'off') return modeInfo(mode);
   const water = domainOf(stateObj.entity_id) === 'water_heater';
-  const icon = (water ? WATER_HEATER_ICONS[mode] : HUMIDIFIER_ICONS[mode]) ?? (water ? mdiWaterBoiler : mdiWaterPercent);
-  return { id: mode, color: domainColor(stateObj), icon, setpoint: true };
+  const icon = (water ? WATER_HEATER_ICONS[mode] : HUMIDIFIER_ICONS[mode]) ?? (water ? ICONS.flame : ICONS.drop);
+  return { id: mode, color: modeInfo(climateTwin(stateObj, mode)).color, icon, setpoint: true };
 }
 
-/** Material Design Icons per water heater operation mode. */
+/** Icon per water heater operation mode. */
 const WATER_HEATER_ICONS: Record<string, string> = {
-  eco: mdiLeaf,
-  electric: mdiFlash,
-  performance: mdiRocketLaunch,
-  high_demand: mdiSpeedometer,
-  heat_pump: mdiHeatPump,
-  gas: mdiFire,
+  eco: ICONS.leaf,
+  electric: ICONS.zap,
+  performance: ICONS.boost,
+  high_demand: ICONS.gauge,
+  heat_pump: ICONS.heatPump,
+  gas: ICONS.flame,
 };
 
-/** Material Design Icons per humidifier mode. */
+/** Icon per humidifier mode. */
 const HUMIDIFIER_ICONS: Record<string, string> = {
-  normal: mdiWaterPercent,
-  eco: mdiLeaf,
-  away: mdiAccountArrowRight,
-  boost: mdiRocketLaunch,
-  comfort: mdiSofa,
-  home: mdiHome,
-  sleep: mdiPowerSleep,
-  auto: mdiAutorenew,
-  baby: mdiBabyCarriage,
+  normal: ICONS.drop,
+  eco: ICONS.leaf,
+  away: ICONS.away,
+  boost: ICONS.boost,
+  comfort: ICONS.sofa,
+  home: ICONS.house,
+  sleep: ICONS.moon,
+  auto: ICONS.auto,
+  baby: ICONS.baby,
 };
-
-const FILLED = new Set([...Object.values(WATER_HEATER_ICONS), ...Object.values(HUMIDIFIER_ICONS), mdiWaterBoiler]);
-
-/** MDI icons are filled shapes, ours are strokes: the svg of a filled one gets the class `fill`. */
-export function iconClass(path: string): string {
-  return FILLED.has(path) ? 'fill' : '';
-}
-
-/** The particle class of the dial: rising for heat and a water heater or humidifier, dripping for a dehumidifier. */
-export function particleMode(stateObj: HassEntity | undefined, mode: string): string {
-  if (!stateObj || domainOf(stateObj.entity_id) === 'climate' || mode === 'off') return mode;
-  return stateObj.attributes.device_class === 'dehumidifier' ? 'dry' : 'heat';
-}
 
 const MODE_KEYS: Record<Exclude<Domain, 'climate'>, { ha: string; own: string; short?: string }> = {
   water_heater: { ha: 'component.water_heater.entity_component._.state', own: 'waterHeaterMode', short: 'waterHeaterModeShort' },
@@ -260,7 +235,7 @@ export function domainModeLabel(hass: I18nHass, domain: Domain, id: string, comp
   const haOk = !!ha && ha !== haKey && ha !== id;
   const own = t(hass, `${keys.own}.${id}`);
   const ownOk = own !== `${keys.own}.${id}`;
-  // Six water heater modes share one row: the buttons get a short word, the full name stays in aria-label and title.
+  // Six water heater modes share one row: the buttons get a short word, the full name stays in aria-label.
   const short = keys.short ? t(hass, `${keys.short}.${id}`) : '';
   if (compact && keys.short && short !== `${keys.short}.${id}`) return short;
   if (compact && ownOk) return own;

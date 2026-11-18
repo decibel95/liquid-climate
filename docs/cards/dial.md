@@ -35,7 +35,7 @@ Units and steps follow the entity.
 
 ### Water heater {#dial-water-heater}
 
-A `water_heater` entity: the arc sets `temperature` between `min_temp` and `max_temp` in `target_temp_step` steps (0.5 in Celsius, 1 in Fahrenheit when it reports none). The centre shows `current_temperature` when the heater reports it. The operation modes are the mode buttons; `off` is the power button. Power uses `turn_on` and `turn_off` when the heater supports them, else the operation mode `off`. Away mode is a chip when the heater supports it. There is no fan ring. The colour is a warm orange-red.
+A `water_heater` entity: the arc sets `temperature` between `min_temp` and `max_temp` in `target_temp_step` steps (0.5 in Celsius, 1 in Fahrenheit when it reports none). The centre shows `current_temperature` when the heater reports it. The operation modes are the mode buttons; `off` is the power button. Power uses `turn_on` and `turn_off` when the heater supports them, else the operation mode `off`. Away mode is a chip when the heater supports it. There is no fan ring. The colour is the heat colour.
 
 <img class="light-only" src="/media/appliances-light.png" alt="A water heater dial with its mode strip (Eco, Elec, Perf, High, Pump, Gas) and an Away chip, next to a humidifier dial at 55%" loading="lazy">
 <img class="dark-only" src="/media/appliances-dark.png" alt="A water heater dial with its mode strip (Eco, Elec, Perf, High, Pump, Gas) and an Away chip, next to a humidifier dial at 55%" loading="lazy">
@@ -49,7 +49,7 @@ entity: water_heater.boiler
 
 ### Humidifier {#dial-humidifier}
 
-A `humidifier` entity: the arc sets `humidity` in % between `min_humidity` and `max_humidity` (0 to 100 by default) in steps of `target_humidity_step` or 1. The centre shows `current_humidity`. The header follows `action` (Humidifying, Drying, Idle) as it follows `hvac_action` on climate. `available_modes` become mode buttons when the entity supports modes. Power is `turn_on` and `turn_off`. There is no fan ring. A humidifier is blue, a dehumidifier (`device_class: dehumidifier`) teal.
+A `humidifier` entity: the arc sets `humidity` in % between `min_humidity` and `max_humidity` (0 to 100 by default) in steps of `target_humidity_step` or 1. The centre shows `current_humidity`. The header follows `action` (Humidifying, Drying, Idle) as it follows `hvac_action` on climate. `available_modes` become mode buttons when the entity supports modes. Power is `turn_on` and `turn_off`. There is no fan ring. A humidifier uses the cool colour, a dehumidifier (`device_class: dehumidifier`) the dry colour.
 
 <LiveCard type="dial" :config="{ entity: 'humidifier.hygrostat' }" />
 
