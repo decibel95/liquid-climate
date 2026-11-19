@@ -5,6 +5,7 @@ import de from './locales/de.json';
 import fr from './locales/fr.json';
 import es from './locales/es.json';
 import it from './locales/it.json';
+import pl from './locales/pl.json';
 
 type Tree = { [key: string]: string | Tree };
 export type Vars = Record<string, string | number>;
@@ -29,6 +30,7 @@ export const LOCALES: Record<string, Record<string, string>> = {
   fr: flatten(fr),
   es: flatten(es),
   it: flatten(it),
+  pl: flatten(pl)
 };
 
 /** The language tag Home Assistant reports for this user, as written. */
