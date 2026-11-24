@@ -3,15 +3,31 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.11.1
+## 0.12.0
 
 The current version.
 
+### Added
+- **History button** on the dial, next to the power button. It opens the Home Assistant history page for that entity. From a tile, badge or cluster, it closes the dial first.
+- The button shows by default after updating. To hide it, turn off History button in the Controls tab of the dial editor, or add `show_history: false` to the card.
+- The History button switch is also in the tile, badge and cluster editors, for the dial they open.
+- The button also shows on a dial that is unavailable or whose entity is missing, so you can see its last known history.
+- Liquid Climate now ships the Inter font, so the cards look the same on every device, whatever fonts it has installed. Manual installs: copy the two new files `liquid-inter.woff2` (the font) and `liquid-inter-OFL.txt` (its licence) to `/config/www/` next to `liquid-climate.js`.
+
+### Fixed
+- A dial opened for an unavailable or missing device now always has a Close button.
+
+## 0.11.1
+
+### Added
+- **Water heaters and humidifiers** (including dehumidifiers) now work on the dial, tile, badge and cluster, right next to your climate devices.
+- Water heaters get their operation modes and an Away switch.
+- Humidifiers get a target humidity and their modes.
+- In a cluster they are opt-in: add `domains` to pick them.
+
 ### Changed
-- Water heaters and humidifiers follow one climate twin for colour, particles and motion, so they match climate cards: a water heater uses the heat colour, a humidifier cool, a dehumidifier dry, and the separate domain colours are gone. Humidifier particles fall like cool, dehumidifier particles like dry, and a water heater that is not off flickers on the tile like climate heat.
-- Every water heater and humidifier mode icon is now a line icon in the same style as the climate icons, replacing the filled Material Design icons.
-- Water heater and humidifier scales are as airy as a climate dial: the tick spacing is the smallest of 1, 2, 5 and 10 that keeps the scale to 35 ticks (humidity 0 to 100 ticks every 5, with labels at 0, 50 and 100). Climate scales are unchanged.
-- Mode buttons no longer carry a `title` tooltip in any domain; the full mode name stays in `aria-label`.
+- Water heaters and humidifiers look exactly like your climate cards: the same colours (heat, cool and dry), the same line icons and the same calm scale.
+- Mode buttons no longer show a hover tooltip.
 
 ## 0.11.0
 

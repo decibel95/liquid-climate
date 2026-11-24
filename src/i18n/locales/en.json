@@ -117,6 +117,7 @@
   "dial": {
     "turnOff": "Turn off",
     "turnOn": "Turn on",
+    "history": "History",
     "sending": "Sending",
     "inside": "Inside",
     "insideValue": "Inside {temp}",
@@ -261,6 +262,9 @@
     "swingHorizontal": "Horizontal swing",
     "presets": "Presets",
     "notSupported": "Not supported by this entity",
+    "historyButton": "History button",
+    "historyHint": "Opens the history page of this entity",
+    "historyHintCluster": "Opens the history page of the entity of the room you open",
     "statusRows": "Status rows under the dial",
     "statusEntity": "Status entity",
     "statusName": "Status name",

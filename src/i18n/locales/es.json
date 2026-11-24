@@ -117,6 +117,7 @@
   "dial": {
     "turnOff": "Apagar",
     "turnOn": "Encender",
+    "history": "Historial",
     "sending": "Enviando",
     "inside": "Interior",
     "insideValue": "Interior {temp}",
@@ -261,6 +262,9 @@
     "swingHorizontal": "Oscilación horizontal",
     "presets": "Preajustes",
     "notSupported": "No compatible con esta entidad",
+    "historyButton": "Botón de historial",
+    "historyHint": "Abre el historial de esta entidad",
+    "historyHintCluster": "Abre el historial de la entidad de la habitación que abres",
     "statusRows": "Filas de estado bajo el dial",
     "statusEntity": "Entidad de estado",
     "statusName": "Nombre del estado",

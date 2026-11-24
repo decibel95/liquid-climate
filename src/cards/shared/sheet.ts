@@ -106,6 +106,12 @@ export class LiquidClimateSheet extends LitElement {
     }
   };
 
+  /** The dial leaves the page (its history button): close now, before it navigates. */
+  private _onLeave = (e: Event) => {
+    e.stopPropagation();
+    this.close();
+  };
+
   /** A click that lands on the dialog itself, not its content, is a click on the backdrop. */
   private _onClick = (e: MouseEvent) => {
     if (e.target === e.currentTarget) this.close();
@@ -122,6 +128,7 @@ export class LiquidClimateSheet extends LitElement {
       @close=${this._closed}
       @keydown=${this._onKey}
       @click=${this._onClick}
+      @liquid-climate-close=${this._onLeave}
     >
       ${this._card
         ? html`<div class="frame">${this._card}</div>`

@@ -399,6 +399,7 @@ export class LiquidClimateClusterEditor extends LiquidClimateCardEditor {
           <datalist id=${SENSOR_LISTS.humidity.list}>${humiditySensors.map((id) => html`<option value=${id}></option>`)}</datalist>
           <datalist id="lc-pause_entity">${pauseIds.map((id) => html`<option value=${id}></option>`)}</datalist>
         </div>
+        ${this._historySwitch(this._config!, 'editor.historyHintCluster')}
         ${this._writeDelay(this._config!)}
         ${this._head('look', 'editor.tabLook')}
         ${this._look(this._config!)}

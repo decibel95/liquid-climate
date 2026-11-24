@@ -137,6 +137,8 @@ export interface LiquidClimateConfig {
   /** Seconds a sent value is shown as is while the device has not reported it back. */
   write_hold: number;
   status_entities: StatusItem[];
+  /** A button in the header that opens Home Assistant's history page for the entity. */
+  show_history: boolean;
   look: {
     glass: 'dark' | 'light' | 'theme';
     tint: number;
@@ -157,6 +159,7 @@ export function defaultConfig(entity: string): LiquidClimateConfig {
     write_delay: 1.5,
     write_hold: 10,
     status_entities: [],
+    show_history: true,
     look: { glass: 'theme', tint: 0.09, blur: 30, motion: 'rich' },
     config_version: CONFIG_VERSION,
   };
@@ -203,6 +206,7 @@ export function normalizeConfig(raw: Record<string, any>): LiquidClimateConfig {
     status_entities: Array.isArray(raw.status_entities)
       ? raw.status_entities.filter((s: any) => s && typeof s.entity === 'string').map(normalizeStatus)
       : [],
+    show_history: raw.show_history !== false,
     look: { ...d.look, ...(raw.look ?? {}) },
     config_version: raw.config_version ?? CONFIG_VERSION,
   };
@@ -290,6 +294,8 @@ export interface ClusterConfig {
   controls: LiquidClimateConfig['controls'];
   write_delay: number;
   write_hold: number;
+  /** The history button in the dial a room opens. */
+  show_history: boolean;
   look: LiquidClimateConfig['look'];
   config_version: number;
 }
@@ -320,6 +326,7 @@ export function defaultClusterConfig(): ClusterConfig {
     controls: d.controls,
     write_delay: d.write_delay,
     write_hold: d.write_hold,
+    show_history: d.show_history,
     look: d.look,
     config_version: CONFIG_VERSION,
   };
@@ -391,6 +398,7 @@ export function normalizeClusterConfig(raw: Record<string, any>): ClusterConfig 
     controls: dial.controls,
     write_delay: dial.write_delay,
     write_hold: dial.write_hold,
+    show_history: dial.show_history,
     look: dial.look,
     config_version: dial.config_version,
   };
@@ -407,6 +415,7 @@ export function roomDialConfig(cfg: ClusterConfig, room: ClusterRoom, name?: str
     controls: cfg.controls,
     write_delay: cfg.write_delay,
     write_hold: cfg.write_hold,
+    show_history: cfg.show_history,
     look: cfg.look,
     config_version: cfg.config_version,
   });

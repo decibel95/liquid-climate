@@ -42,6 +42,7 @@ On light glass the amber, red and fan colours are drawn darker so they stay read
 | `pause_entity` | | Entity that shows the badge as Paused while `on`, for example a window contact. Wins over `sensors.window` |
 | `icon_only` | `false` | Round icon badge |
 | `tap_action` | `more-info` | `more-info`, `sheet` (dial) or `none` |
+| `show_history` | `true` | History button in the dial sheet. `false` hides it |
 | `sensors.health` | `auto` | As on the dial: `auto`, `false` or entity ids |
 | `sensors.window` | `auto` | `auto`, `false` or an entity id. The device's window contact pauses the badge when `pause_entity` is not set |
 | `sensors.battery` | `auto` | `auto`, `false` or an entity id. A low battery shows as Battery low |
@@ -86,6 +87,12 @@ In the demo, the pause entity is the helper `input_boolean.window`.
 ### Tap action {#badge-tap-action}
 
 Choices: More info (`more-info`, the default), Open dial (`sheet`), Nothing (`none`). Option: `tap_action`.
+
+### History button {#badge-history}
+
+A button next to the power button of the dial in the sheet opens Home Assistant's history page for the entity. The sheet closes first. On by default. Option: `show_history`.
+
+The switch only has effect when Tap action is Open dial (`tap_action: sheet`). With the default, More info, there is no dial and no button.
 
 ### Look {#badge-look}
 

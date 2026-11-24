@@ -117,6 +117,7 @@
   "dial": {
     "turnOff": "Uitzetten",
     "turnOn": "Aanzetten",
+    "history": "Geschiedenis",
     "sending": "Verzenden",
     "inside": "Binnen",
     "insideValue": "Binnen {temp}",
@@ -261,6 +262,9 @@
     "swingHorizontal": "Horizontaal zwenken",
     "presets": "Voorinstellingen",
     "notSupported": "Niet ondersteund door deze entiteit",
+    "historyButton": "Geschiedenisknop",
+    "historyHint": "Opent de geschiedenis van deze entiteit",
+    "historyHintCluster": "Opent de geschiedenis van de entiteit van de kamer die je opent",
     "statusRows": "Statusrijen onder de regelaar",
     "statusEntity": "Statusentiteit",
     "statusName": "Statusnaam",

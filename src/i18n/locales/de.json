@@ -117,6 +117,7 @@
   "dial": {
     "turnOff": "Ausschalten",
     "turnOn": "Einschalten",
+    "history": "Verlauf",
     "sending": "Senden",
     "inside": "Innen",
     "insideValue": "Innen {temp}",
@@ -261,6 +262,9 @@
     "swingHorizontal": "Horizontales Schwenken",
     "presets": "Voreinstellungen",
     "notSupported": "Von dieser Entität nicht unterstützt",
+    "historyButton": "Verlaufsschaltfläche",
+    "historyHint": "Öffnet den Verlauf dieser Entität",
+    "historyHintCluster": "Öffnet den Verlauf der Entität des geöffneten Raums",
     "statusRows": "Statuszeilen unter dem Regler",
     "statusEntity": "Status-Entität",
     "statusName": "Statusname",

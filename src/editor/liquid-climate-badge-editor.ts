@@ -67,6 +67,7 @@ export class LiquidClimateBadgeEditor extends LiquidClimateCardEditor {
           (v) => this._patch({ tap_action: v }),
           this._help('tap-action', 'editor.tap'),
         )}
+        ${this._historySwitch(cfg)}
         ${this._head('look', 'editor.tabLook')}
         ${this._look(cfg)}
       </div>

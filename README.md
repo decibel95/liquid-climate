@@ -23,7 +23,7 @@ A liquid glass look, any `climate`, `water_heater` or `humidifier` entity, a vis
 
 ### Dial
 
-Full control for one unit. The inner ring sets the temperature, the outer segmented ring sets the fan speed. Dual setpoint entities get two knobs. Humidity, outdoor temperature, energy, cloud rate limit and unit health are found on the device automatically, including Daikin Onecta.
+Full control for one unit. The inner ring sets the temperature, the outer segmented ring sets the fan speed. Dual setpoint entities get two knobs. Humidity, outdoor temperature, energy, cloud rate limit and unit health are found on the device automatically, including Daikin Onecta. A history button in the header opens Home Assistant's history page for the entity (`show_history: false` hides it).
 
 <table align="center">
   <tr>
@@ -112,7 +112,7 @@ A `water_heater` gets the temperature arc, its operation modes (Eco, Electric, H
 
 **Not found in the search?** Add it by link as a custom repository: `https://github.com/decibel95/liquid-climate`, category **Dashboard**. In the Marketplace use the menu, **Add from link** (needs a connected GitHub account). In HACS use the menu (three dots), **Custom repositories**.
 
-**Manual install instead:** download `liquid-climate.js` from the latest release (or build it: `npm run build` writes `dist/liquid-climate.js`) and copy it to `/config/www/`. Then Settings, Dashboards, Resources: add `/local/liquid-climate.js` as a **JavaScript module** and hard refresh.
+**Manual install instead:** download `liquid-climate.js`, `liquid-inter.woff2` and `liquid-inter-OFL.txt` from the latest release (or build them: `npm run build` writes all three to `dist/`) and copy all three to `/config/www/`. Then Settings, Dashboards, Resources: add `/local/liquid-climate.js` as a **JavaScript module** and hard refresh.
 <!-- ha-marketplace:exclude-end -->
 
 **Add a card.** Edit a dashboard, add a card, pick **Liquid Climate** (or the tile, badge or cluster) and choose your climate, water heater or humidifier entity.
@@ -198,3 +198,5 @@ Translations are welcome, see [CONTRIBUTING-translations.md](CONTRIBUTING-transl
 ## License
 
 [MIT](LICENSE)
+
+The Inter font (`liquid-inter.woff2`) is under the SIL Open Font License 1.1, see [NOTICE](NOTICE). The line icons come from Lucide, see [NOTICE](NOTICE).

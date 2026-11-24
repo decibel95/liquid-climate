@@ -1,6 +1,6 @@
 {
   "name": "liquid-climate",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "Liquid Climate: glass dial, tile, badge and cluster for Home Assistant climate entities, water heaters and humidifiers",
   "license": "MIT",
   "type": "module",
@@ -22,7 +22,9 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "docs:typecheck": "tsc --noEmit -p docs/.vitepress",
-    "media": "node scripts/media/run.mjs"
+    "media": "node scripts/media/run.mjs",
+    "pixel": "node scripts/pixel/run.mjs check",
+    "pixel:update": "node scripts/pixel/run.mjs update"
   },
   "dependencies": {
     "lit": "3.2.1"

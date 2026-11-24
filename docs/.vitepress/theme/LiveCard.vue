@@ -84,10 +84,12 @@ const effective = computed<HaTheme>(() => {
 const themeStyle = computed(() => HA_THEME_VARS[effective.value]);
 const boxStyle = computed(() => ({ width: props.width ?? DEFAULT_WIDTH[props.type], height: props.height }));
 // A config for another entity does not inherit the name and status rows written for the default one.
+// The history button is off in every example: it would leave the docs for a /history page that only Home Assistant has.
+// An example can still show it with `show_history: true` in its config.
 const merged = computed<Config>(() => {
   const base = DEFAULT_CONFIG[props.type];
   const other = props.config.entity !== undefined && props.config.entity !== base.entity;
-  return { ...(other ? {} : base), ...props.config };
+  return { show_history: false, ...(other ? {} : base), ...props.config };
 });
 
 let demo: Demo | undefined;

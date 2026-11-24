@@ -117,6 +117,7 @@
   "dial": {
     "turnOff": "Éteindre",
     "turnOn": "Allumer",
+    "history": "Historique",
     "sending": "Envoi",
     "inside": "Intérieur",
     "insideValue": "Intérieur {temp}",
@@ -261,6 +262,9 @@
     "swingHorizontal": "Oscillation horizontale",
     "presets": "Préréglages",
     "notSupported": "Non pris en charge par cette entité",
+    "historyButton": "Bouton Historique",
+    "historyHint": "Ouvre l'historique de cette entité",
+    "historyHintCluster": "Ouvre l'historique de l'entité de la pièce ouverte",
     "statusRows": "Lignes d'état sous le cadran",
     "statusEntity": "Entité d'état",
     "statusName": "Nom de l'état",

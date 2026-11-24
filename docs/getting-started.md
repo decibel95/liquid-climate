@@ -30,12 +30,12 @@ If Liquid Climate does not show up in the search, add it as a custom repository.
 
 ## Install manually {#install-manual}
 
-1. Get `liquid-climate.js` from a release, or build it yourself with `npm run build` (the file ends up in `dist/`). Copy it to `/config/www/liquid-climate.js`.
+1. Get `liquid-climate.js`, `liquid-inter.woff2` and `liquid-inter-OFL.txt` from a release, or build them yourself with `npm run build` (the files end up in `dist/`). Copy all three to `/config/www/`, next to each other. The cards load the Inter font from `liquid-inter.woff2`; the third file is its licence. Without the font file the cards still work, in your system font.
 2. Go to Settings, Dashboards, three dots, **Resources**.
 3. Add `/local/liquid-climate.js` as a **JavaScript module**.
 4. Hard refresh the browser.
 
-Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.11.0`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
+Home Assistant caches files under `/local/` for a long time. After you replace the files, add a version to the URL, for example `/local/liquid-climate.js?v=0.11.0`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
 
 ## Add a card in the visual editor {#add-visual}
 

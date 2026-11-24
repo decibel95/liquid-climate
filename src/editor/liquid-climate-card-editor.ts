@@ -431,7 +431,9 @@ export class LiquidClimateCardEditor extends LitElement {
       ['presets', this._t('editor.presets'), caps?.presetModes.join(', ') ?? ''],
     ];
     // display: contents (.group) keeps the body's spacing while the climate part sits inside one element.
-    return html`
+    // The History switch applies to every domain, so it sits after the climate-only part.
+    // The wrapper keeps the template from starting with a child part (happy-dom shifts the bindings of such a template).
+    return html`<div class="group">
       ${climate
         ? html`<div class="group"><div class="field">
         <span class="lbl">${this._t('editor.modesOnCard')}</span>
@@ -475,6 +477,7 @@ export class LiquidClimateCardEditor extends LitElement {
         </div>`;
       })}</div>`
         : nothing}
+      ${this._historySwitch(cfg)}
       ${this._writeDelay(cfg)}
       <div class="field">
         <div class="lblrow"><span class="lbl">${this._t('editor.statusRows')}</span>${this._help('status-rows', 'editor.statusRows')}</div>
@@ -521,7 +524,7 @@ export class LiquidClimateCardEditor extends LitElement {
         <datalist id="lc-status-ids">${Object.keys(this.hass.states).map((id) => html`<option value=${id}></option>`)}</datalist>
         <button class="ghost dashed" @click=${() => this._fire((c) => ({ ...c, status_entities: [...c.status_entities, { entity: '' }] }))}>${this._t('editor.addEntity')}</button>
       </div>
-    `;
+    </div>`;
   }
 
   /** Segmented single choice, as a radio group. */
@@ -538,6 +541,23 @@ export class LiquidClimateCardEditor extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  /** The History button switch, the same in every editor: on is the default and is not saved. */
+  protected _historySwitch(cfg: LiquidClimateConfig, hint = 'editor.historyHint') {
+    return html`<div class="row">
+      <span class="grow name">${this._t('editor.historyButton')}</span>
+      <span class="hint">${this._t(hint)}</span>
+      <button
+        class="sw ${cfg.show_history ? 'on' : ''}"
+        role="switch"
+        aria-checked=${cfg.show_history ? 'true' : 'false'}
+        aria-label=${this._t('editor.historyButton')}
+        @click=${() => this._fire((c) => ({ ...c, show_history: !c.show_history }))}
+      >
+        <span></span>
+      </button>
+    </div>`;
   }
 
   /** The write delay and the hold after sending, in one wrapper that adds no layout. */

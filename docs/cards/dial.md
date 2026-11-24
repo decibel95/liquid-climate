@@ -91,6 +91,7 @@ Only `entity` is required.
 | `write_delay` | `1.5` | Seconds to collect changes before sending, `0` sends immediately |
 | `write_hold` | `10` | Seconds a sent value stays on screen while the device has not reported it back |
 | `status_entities` | `[]` | Rows under the dial, see [Status rows](/status-rows) |
+| `show_history` | `true` | History button in the header, opens Home Assistant's history page for the entity. `false` hides it |
 | `look.glass` | `theme` | `theme` (dark or light by the HA mode), `dark` or `light` |
 | `look.tint` | `0.09` | Mode tint opacity |
 | `look.blur` | `30` | Backdrop blur in px |
@@ -125,6 +126,7 @@ status_entities:
   - entity: input_boolean.living_room_pause
     name: Window pause
     icon: mdi:window-open
+show_history: true
 look:
   glass: theme
   tint: 0.09
@@ -164,6 +166,16 @@ sensors:
   health:
     - { entity: binary_sensor.unit_error, name: Indoor unit }
     - sensor.unit_error_code
+```
+
+### History button {#dial-history}
+
+Controls tab, after the climate options (every domain has it). A button next to the power button opens Home Assistant's history page for the entity, the same page the history link of Home Assistant's own cards opens. In a sheet, the sheet closes first. On by default. Option: `show_history`.
+
+The button also shows on a dial whose entity is unavailable, or missing from Home Assistant, so you can see its last known history.
+
+```yaml
+show_history: false
 ```
 
 ### Modes {#dial-modes}
@@ -214,6 +226,6 @@ Look tab. Glass, mode tint, blur and motion. Options: `look.glass`, `look.tint`,
 
 The mode buttons show the modes the entity supports. Vertical swing, horizontal swing and presets show as chips under the dial. Tapping a chip steps to the next value. Mode, fan, swing and preset names come from Home Assistant's own translations when it has them.
 
-The [tile](/cards/tile), the [badge](/cards/badge) and the [cluster](/cards/cluster) open this same dial in a sheet, with the dial options of their own config.
+The [tile](/cards/tile), the [badge](/cards/badge) and the [cluster](/cards/cluster) open this same dial in a sheet, with the dial options of their own config. The sheet's dial has the history button too (turn off History button in the tile, badge or cluster editor, or add `show_history: false` to its config); it closes the sheet and then opens the history page.
 
 <img src="/media/sheet-open.webp" alt="The dial opened as a sheet" loading="lazy">

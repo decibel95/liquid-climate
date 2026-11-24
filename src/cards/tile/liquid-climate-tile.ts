@@ -254,7 +254,7 @@ export class LiquidClimateTile extends LitElement {
         display: block;
       }
       .tile {
-        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Liquid Inter', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
         font-feature-settings: 'tnum' 1;
         position: relative;
