@@ -2,6 +2,3 @@
 
 # Pixel baseline screenshots are compared byte for byte by decoding: never touch their line endings
 test/pixel/baseline/*.png binary
-
-# The shipped Inter font: never touch its bytes
-fonts/*.woff2 binary

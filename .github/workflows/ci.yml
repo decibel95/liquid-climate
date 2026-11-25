@@ -18,6 +18,7 @@ jobs:
           node-version: 'lts/*'
           cache: npm
       - run: npm ci --ignore-scripts
+      - run: npm ls lit lit-html lit-element @lit/reactive-element
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
@@ -29,3 +30,18 @@ jobs:
             dist/liquid-climate.js
             dist/liquid-inter.woff2
             dist/liquid-inter-OFL.txt
+  two-bundles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 'lts/*'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e

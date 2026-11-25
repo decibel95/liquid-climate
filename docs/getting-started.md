@@ -5,7 +5,7 @@
 - Home Assistant 2025.1 or newer.
 - At least one `climate`, `water_heater` or `humidifier` entity.
 
-## Install with HACS {#install-hacs}
+## Install {#install-hacs}
 
 Liquid Climate is in the HACS default catalog. The resource `/local/community/liquid-climate/liquid-climate.js` is added automatically.
 
@@ -25,7 +25,7 @@ Liquid Climate is in the HACS default catalog. The resource `/local/community/li
 
 If Liquid Climate does not show up in the search, add it as a custom repository.
 
-- Marketplace: open the menu, choose **Add from link**, and enter `https://github.com/decibel95/liquid-climate` with category **Dashboard**. Custom repositories need a connected GitHub account.
+- Marketplace: choose the **Add from link** button in the toolbar, and enter `https://github.com/decibel95/liquid-climate` with category **Dashboard**. Custom repositories need a connected GitHub account.
 - HACS: open the menu (three dots), choose **Custom repositories**, enter the same URL with category **Dashboard**, then download Liquid Climate.
 
 ## Install manually {#install-manual}
@@ -80,3 +80,7 @@ badges:
 | [Cluster](/cards/cluster) | `custom:liquid-climate-cluster` | Every unit in one card, grouped by floor or area |
 
 Controls the entity does not support are hidden, whatever the config says.
+
+## Development {#development}
+
+For a local checkout: `npm install`, then `npm run dev` (dev page), `npm test`, `npm run typecheck` and `npm run build`. Translations are welcome, see [CONTRIBUTING-translations.md](https://github.com/decibel95/liquid-climate/blob/main/CONTRIBUTING-translations.md). For bugs, see [Report a bug](/troubleshooting#report-a-bug).

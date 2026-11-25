@@ -3,7 +3,7 @@ import { defineConfig, type Plugin } from 'vite';
 import pkg from './package.json';
 
 /**
- * The Inter font and its licence (fonts/, copied from liquid-core) go next to dist/liquid-climate.js, byte for byte.
+ * The Inter font and its licence (from the @decibel95/liquid-core package, fonts/) go next to dist/liquid-climate.js, byte for byte.
  * src/index.ts loads the font from there at runtime; the release attaches all three files (OFL condition 2: the
  * licence travels with the font). On the dev server src/index.ts resolves the font to /src/liquid-inter.woff2.
  *
@@ -11,11 +11,12 @@ import pkg from './package.json';
  * ('./liquid-inter.woff2' next to src/index.ts), which must be a key of FONT_ASSETS. test/font-load.test.ts checks it.
  */
 export const FONT_ASSETS = {
-  'liquid-inter.woff2': 'fonts/liquid-inter.woff2',
-  'liquid-inter-OFL.txt': 'fonts/OFL.txt',
+  'liquid-inter.woff2': '@decibel95/liquid-core/fonts/liquid-inter.woff2',
+  'liquid-inter-OFL.txt': '@decibel95/liquid-core/fonts/OFL.txt',
 } as const;
 
-const fromRoot = (file: string) => readFileSync(new URL(`./${file}`, import.meta.url));
+// FONT_ASSETS sources are package paths; the package sits in node_modules (npm ci).
+const fromRoot = (file: string) => readFileSync(new URL(`./node_modules/${file}`, import.meta.url));
 
 function fontAssets(): Plugin {
   return {
@@ -38,6 +39,8 @@ function fontAssets(): Plugin {
 export default defineConfig({
   define: { __LC_VERSION__: JSON.stringify(pkg.version) },
   plugins: [fontAssets()],
+  // One copy of Lit in the bundle, whichever package asks for it (liquid-core has lit as a peer).
+  resolve: { dedupe: ['lit', 'lit-html', 'lit-element', '@lit/reactive-element'] },
   build: {
     target: 'es2022',
     outDir: 'dist',

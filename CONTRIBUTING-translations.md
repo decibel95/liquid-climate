@@ -15,12 +15,13 @@ and the same placeholders per key.
    (for example `pl.json`). Home Assistant's own language codes are used; a regional variant such as `nl-BE`
    falls back to `nl` by itself.
 2. Translate the values. Do not change the keys.
-3. Add one import line and one entry in `src/i18n/index.ts`:
+3. Add one import line and one entry in `LC_LAYER` in `src/i18n/index.ts` (the shared liquid-core strings come
+   with `@decibel95/liquid-core`, nothing to add for them):
 
    ```ts
    import pl from './locales/pl.json';
    // ...
-   export const LOCALES = { en: flatten(en), /* ... */ pl: flatten(pl) };
+   export const LC_LAYER = { en: flatten(en), /* ... */ pl: flatten(pl) };
    ```
 4. Run `npm run typecheck`, `npm test` and `npm run build`.
 5. Look at it: `npm run dev`, then pick the language in the switcher (or open `/dev/?lang=pl`).

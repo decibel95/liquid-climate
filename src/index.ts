@@ -1,4 +1,4 @@
-import { ensureLiquidFont } from './ui/font';
+import { ensureLiquidFont } from '@decibel95/liquid-core';
 import './cards/dial/liquid-climate-card';
 import './cards/tile/liquid-climate-tile';
 import './cards/badge/liquid-climate-badge';

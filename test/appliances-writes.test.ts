@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { WriteQueue, buildCalls, type ServiceCall } from '../src/cards/dial/write-queue';
+import { WriteQueue, debounceWrites } from '@decibel95/liquid-core';
+import { buildCalls, type ServiceCall } from '../src/cards/dial/write-queue';
+import type { Optimistic } from '../src/cards/dial/capabilities';
 import { createDemo } from '../src/demo/service';
 import { APPLIANCE_IDS as ID, appliances } from './fixtures';
 import type { HassEntity } from '../src/types';
@@ -68,7 +70,12 @@ describe('write queue batching for the new services', () => {
     vi.useFakeTimers();
     const sent: ServiceCall[][] = [];
     const flushed: unknown[] = [];
-    const q = new WriteQueue({ send: (c) => void sent.push(c), getDelayMs: () => 1500, getEntity: () => state, entityId: () => id });
+    const q = new WriteQueue<Optimistic, ServiceCall>({
+      send: (c) => void sent.push(c),
+      build: (change, stateObj, inflight) => buildCalls(id, change, stateObj, inflight),
+      schedule: debounceWrites(1500),
+      getEntity: () => state,
+    });
     q.onFlushed = (c) => flushed.push(c);
     for (const p of patches) {
       q.set(p);

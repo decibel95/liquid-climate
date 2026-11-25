@@ -3,9 +3,15 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.12.0
+## 0.12.1
 
 The current version.
+
+### Changed
+- Under the hood, Liquid Climate now shares its building blocks with the Liquid Home cards, so both stay alike on one dashboard. Your cards look and work exactly as before.
+- The README is shorter and points to the documentation for the details.
+
+## 0.12.0
 
 ### Added
 - **History button** on the dial, next to the power button. It opens the Home Assistant history page for that entity. From a tile, badge or cluster, it closes the dial first.

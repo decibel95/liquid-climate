@@ -101,6 +101,8 @@ describe('detection when states arrive late', () => {
 });
 
 describe('status rows', () => {
+  const NOW = new Date('2026-01-01T12:00:00.000Z');
+  beforeEach(() => vi.setSystemTime(NOW));
   const entities: Record<string, { state: string; attributes?: Record<string, unknown> }> = {
     'binary_sensor.door': { state: 'on', attributes: { friendly_name: 'Door' } },
     'input_boolean.pause': { state: 'off', attributes: { friendly_name: 'Pause' } },
@@ -109,7 +111,7 @@ describe('status rows', () => {
     'select.sched': { state: 'night', attributes: { friendly_name: 'Schedule' } },
     'sensor.power': { state: '2.5', attributes: { friendly_name: 'Power', unit_of_measurement: 'kW' } },
     'sensor.plain': { state: 'ok', attributes: { friendly_name: 'Plain' } },
-    'timer.nap': { state: 'active', attributes: { friendly_name: 'Nap', finishes_at: new Date(Date.now() + 125_000).toISOString() } },
+    'timer.nap': { state: 'active', attributes: { friendly_name: 'Nap', finishes_at: '' } },
     'timer.idle': { state: 'idle', attributes: { friendly_name: 'Idle timer' } },
     'sensor.dead': { state: 'unavailable', attributes: { friendly_name: 'Dead' } },
     'sensor.unk': { state: 'unknown', attributes: { friendly_name: 'Unk' } },
@@ -118,6 +120,7 @@ describe('status rows', () => {
   const mount = async (ids: (string | { entity: string; name?: string; icon?: string })[], format = true) => {
     const f = mergeFixtures(allFixtures);
     for (const [id, e] of Object.entries(entities)) f.states[id] = { entity_id: id, state: e.state, attributes: e.attributes ?? {} };
+    f.states['timer.nap'].attributes.finishes_at = new Date(Date.now() + 125_000).toISOString();
     const { card, hass } = setup(K, { status_entities: ids.map((i) => (typeof i === 'string' ? { entity: i } : i)) }, f);
     if (format) {
       (hass as any).formatEntityState = (s: any) => ({ on: 'On', off: 'Off', heat: 'Heating' }[s.state as string] ?? s.state);

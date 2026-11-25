@@ -22,4 +22,4 @@ Liquid Climate includes the Inter font (liquid-inter.woff2, a subset of Inter 4.
 
 Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter)
 
-The full licence text ships next to the font as liquid-inter-OFL.txt (in every release, and in dist/ after a build). In this repository it is fonts/OFL.txt.
+The full licence text ships next to the font as liquid-inter-OFL.txt (in every release, and in dist/ after a build). In this repository both files come from the @decibel95/liquid-core package (fonts/OFL.txt).

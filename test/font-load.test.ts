@@ -5,8 +5,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const ensureLiquidFont = vi.hoisted(() => vi.fn());
-vi.mock('../src/ui/font', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../src/ui/font')>()),
+vi.mock('@decibel95/liquid-core', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@decibel95/liquid-core')>()),
   ensureLiquidFont,
 }));
 vi.mock('../src/cards/dial/liquid-climate-card', () => ({}));
@@ -68,6 +68,9 @@ describe('font loading at module load (liquid-core README, "Font")', () => {
   it('resolves to a file name the build ships and the dev server routes (contract with vite.config.ts)', () => {
     const name = new URL('./liquid-inter.woff2', 'http://x/src/index.ts').pathname.split('/').pop();
     expect(Object.keys(FONT_ASSETS)).toContain(name);
-    expect(FONT_ASSETS).toEqual({ 'liquid-inter.woff2': 'fonts/liquid-inter.woff2', 'liquid-inter-OFL.txt': 'fonts/OFL.txt' });
+    expect(FONT_ASSETS).toEqual({
+      'liquid-inter.woff2': '@decibel95/liquid-core/fonts/liquid-inter.woff2',
+      'liquid-inter-OFL.txt': '@decibel95/liquid-core/fonts/OFL.txt',
+    });
   });
 });

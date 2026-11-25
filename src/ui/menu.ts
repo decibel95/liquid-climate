@@ -48,15 +48,8 @@ export function navigate(path: string): void {
   window.dispatchEvent(new Event('location-changed', { bubbles: true, composed: true }));
 }
 
-/**
- * Home Assistant's history page for one entity, without a reload, the way HA's own navigate() does it:
- * the state `{ from }` lets the history page's back arrow go back here. The event goes to window,
- * so it still arrives when `el` has just been removed (a sheet that closed first).
- */
-export function openHistory(_el: EventTarget | null | undefined, entityId: string): void {
-  window.history.pushState({ from: window.location.pathname }, '', `/history?entity_id=${encodeURIComponent(entityId)}`);
-  window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false }, bubbles: true, composed: true }));
-}
+/** Home Assistant's history page for one entity (liquid-core's helper, same pushState and location-changed as HA's own navigate). */
+export { openHistory } from '@decibel95/liquid-core';
 
 export interface MenuContext {
   hass: HomeAssistant;

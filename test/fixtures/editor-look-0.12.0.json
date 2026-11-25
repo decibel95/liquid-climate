@@ -1,0 +1,1819 @@
+{
+  "source": "liquid-climate fce593e0410cb34b3cd2f448395a97aebefa114a (claude/patch-b; src identical to tag v0.12.0, 4965f4c), unmodified code, captured by test/editor-look-snapshot.ts",
+  "editors": {
+    "dial": {
+      "en": {
+        "default": {
+          "look": [
+            "<a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/dial#dial-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "  ?",
+            "</a>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of this entity",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"History button\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/dial#dial-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "  ?",
+            "</a>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of this entity",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"History button\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      },
+      "nl": {
+        "default": {
+          "look": [
+            "<a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/dial#dial-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "  ?",
+            "</a>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van deze entiteit",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"Geschiedenisknop\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/dial#dial-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "  ?",
+            "</a>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van deze entiteit",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"Geschiedenisknop\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      }
+    },
+    "tile": {
+      "en": {
+        "default": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Look",
+            "  </span>",
+            "  <a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/tile#tile-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of this entity",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"History button\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Look",
+            "  </span>",
+            "  <a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/tile#tile-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of this entity",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"History button\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      },
+      "nl": {
+        "default": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Uiterlijk",
+            "  </span>",
+            "  <a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/tile#tile-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van deze entiteit",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"Geschiedenisknop\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Uiterlijk",
+            "  </span>",
+            "  <a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/tile#tile-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van deze entiteit",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"Geschiedenisknop\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      }
+    },
+    "badge": {
+      "en": {
+        "default": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Look",
+            "  </span>",
+            "  <a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/badge#badge-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of this entity",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"History button\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Look",
+            "  </span>",
+            "  <a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/badge#badge-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of this entity",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"History button\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      },
+      "nl": {
+        "default": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Uiterlijk",
+            "  </span>",
+            "  <a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/badge#badge-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van deze entiteit",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"Geschiedenisknop\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Uiterlijk",
+            "  </span>",
+            "  <a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/badge#badge-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van deze entiteit",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"Geschiedenisknop\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      }
+    },
+    "cluster": {
+      "en": {
+        "default": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Look",
+            "  </span>",
+            "  <a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/cluster#cluster-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of the entity of the room you open",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"History button\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Look",
+            "  </span>",
+            "  <a aria-label=\"Help: Look\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/cluster#cluster-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glass",
+            "  </span>",
+            "  <div aria-label=\"Glass\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Dark",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Light",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Mode tint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Blur",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Motion",
+            "  </span>",
+            "  <div aria-label=\"Motion\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Rich",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtle",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Reduced motion in the OS always wins.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    History button",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opens the history page of the entity of the room you open",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"History button\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      },
+      "nl": {
+        "default": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Uiterlijk",
+            "  </span>",
+            "  <a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/cluster#cluster-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      9%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"9\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      30 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"30\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van de entiteit van de kamer die je opent",
+            "  </span>",
+            "  <button aria-checked=\"true\" aria-label=\"Geschiedenisknop\" class=\"sw on\" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        },
+        "changed": {
+          "look": [
+            "<div class=\"lblrow\">",
+            "  <span class=\"lbl\">",
+            "    Uiterlijk",
+            "  </span>",
+            "  <a aria-label=\"Help: Uiterlijk\" class=\"help\" href=\"https://decibel95.github.io/liquid-climate/cards/cluster#cluster-look\" rel=\"noopener noreferrer\" target=\"_blank\">",
+            "    ?",
+            "  </a>",
+            "</div>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Glas",
+            "  </span>",
+            "  <div aria-label=\"Glas\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Auto",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Donker",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Licht",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Modustint",
+            "    </span>",
+            "    <span>",
+            "      12%",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"30\" min=\"0\" type=\"range\" .value=\"12\">",
+            "  </input>",
+            "</label>",
+            "<label class=\"field\">",
+            "  <span class=\"lbl range\">",
+            "    <span>",
+            "      Vervaging",
+            "    </span>",
+            "    <span>",
+            "      24 px",
+            "    </span>",
+            "  </span>",
+            "  <input max=\"60\" min=\"8\" type=\"range\" .value=\"24\">",
+            "  </input>",
+            "</label>",
+            "<div class=\"field\">",
+            "  <span class=\"lbl\">",
+            "    Beweging",
+            "  </span>",
+            "  <div aria-label=\"Beweging\" class=\"seg\" role=\"radiogroup\">",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Uitgebreid",
+            "    </button>",
+            "    <button aria-checked=\"true\" class=\"on\" role=\"radio\">",
+            "      Subtiel",
+            "    </button>",
+            "    <button aria-checked=\"false\" class=\"\" role=\"radio\">",
+            "      Minimaal",
+            "    </button>",
+            "  </div>",
+            "</div>",
+            "<span class=\"hint\">",
+            "  Verminderde beweging in het besturingssysteem gaat altijd voor.",
+            "</span>"
+          ],
+          "history": [
+            "<div class=\"row\">",
+            "  <span class=\"grow name\">",
+            "    Geschiedenisknop",
+            "  </span>",
+            "  <span class=\"hint\">",
+            "    Opent de geschiedenis van de entiteit van de kamer die je opent",
+            "  </span>",
+            "  <button aria-checked=\"false\" aria-label=\"Geschiedenisknop\" class=\"sw \" role=\"switch\">",
+            "    <span>",
+            "    </span>",
+            "  </button>",
+            "</div>"
+          ]
+        }
+      }
+    }
+  },
+  "handlers": {
+    "dial": [
+      {
+        "action": "Glass: Auto",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "Glass: Dark",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "glass": "dark"
+          },
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "Glass: Light",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "glass": "light"
+          },
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "Motion: Rich",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "Motion: Subtle",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "motion": "subtle"
+          },
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "Motion: Minimal",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "motion": "minimal"
+          },
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "Mode tint: 20",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "tint": 0.2
+          },
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "Blur: 45",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "blur": 45
+          },
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "History button: from on",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "show_history": false,
+          "type": "custom:liquid-climate-card"
+        }
+      },
+      {
+        "action": "History button: from off",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "blur": 24,
+            "glass": "light",
+            "motion": "subtle",
+            "tint": 0.12
+          },
+          "type": "custom:liquid-climate-card"
+        }
+      }
+    ],
+    "tile": [
+      {
+        "action": "Glass: Auto",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "Glass: Dark",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "glass": "dark"
+          },
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "Glass: Light",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "glass": "light"
+          },
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "Motion: Rich",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "Motion: Subtle",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "motion": "subtle"
+          },
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "Motion: Minimal",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "motion": "minimal"
+          },
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "Mode tint: 20",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "tint": 0.2
+          },
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "Blur: 45",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "blur": 45
+          },
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "History button: from on",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "show_history": false,
+          "type": "custom:liquid-climate-tile"
+        }
+      },
+      {
+        "action": "History button: from off",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "blur": 24,
+            "glass": "light",
+            "motion": "subtle",
+            "tint": 0.12
+          },
+          "type": "custom:liquid-climate-tile"
+        }
+      }
+    ],
+    "badge": [
+      {
+        "action": "Glass: Auto",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "Glass: Dark",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "glass": "dark"
+          },
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "Glass: Light",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "glass": "light"
+          },
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "Motion: Rich",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "Motion: Subtle",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "motion": "subtle"
+          },
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "Motion: Minimal",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "motion": "minimal"
+          },
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "Mode tint: 20",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "tint": 0.2
+          },
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "Blur: 45",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "blur": 45
+          },
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "History button: from on",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "show_history": false,
+          "type": "custom:liquid-climate-badge"
+        }
+      },
+      {
+        "action": "History button: from off",
+        "config": {
+          "config_version": 1,
+          "entity": "climate.keuken_airco",
+          "look": {
+            "blur": 24,
+            "glass": "light",
+            "motion": "subtle",
+            "tint": 0.12
+          },
+          "type": "custom:liquid-climate-badge"
+        }
+      }
+    ],
+    "cluster": [
+      {
+        "action": "Glass: Auto",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "Glass: Dark",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "look": {
+            "glass": "dark"
+          },
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "Glass: Light",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "look": {
+            "glass": "light"
+          },
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "Motion: Rich",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "Motion: Subtle",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "look": {
+            "motion": "subtle"
+          },
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "Motion: Minimal",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "look": {
+            "motion": "minimal"
+          },
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "Mode tint: 20",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "look": {
+            "tint": 0.2
+          },
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "Blur: 45",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "look": {
+            "blur": 45
+          },
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "History button: from on",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "show_history": false,
+          "type": "custom:liquid-climate-cluster"
+        }
+      },
+      {
+        "action": "History button: from off",
+        "config": {
+          "config_version": 1,
+          "entities": [
+            "climate.keuken_airco"
+          ],
+          "look": {
+            "blur": 24,
+            "glass": "light",
+            "motion": "subtle",
+            "tint": 0.12
+          },
+          "type": "custom:liquid-climate-cluster"
+        }
+      }
+    ]
+  }
+}

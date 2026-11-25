@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { LIQUID_FONT_FAMILY, LIQUID_FONT_STYLE_ID, LIQUID_FONT_UNICODE_RANGE, ensureLiquidFont } from '../src/ui/font';
+import { LIQUID_FONT_FAMILY, LIQUID_FONT_STYLE_ID, LIQUID_FONT_UNICODE_RANGE, ensureLiquidFont } from '@decibel95/liquid-core';
 
-// The committed font file, a byte-for-byte copy of liquid-core 0.2.0's fonts/liquid-inter.woff2.
+// The font file the build ships: liquid-core's own fonts/liquid-inter.woff2, read from the installed package.
 const FONT_SHA256 = 'ec9d62021ca5940db5f5b700613aebf24d379039553795447cd407cd35b253d7';
 const FONT_BYTES = 43008;
 
@@ -29,8 +29,8 @@ afterEach(() => {
   for (const s of styles()) s.remove();
 });
 
-describe('the committed font file', () => {
-  const bytes = fs.readFileSync('fonts/liquid-inter.woff2');
+describe('the font file from liquid-core', () => {
+  const bytes = fs.readFileSync('node_modules/@decibel95/liquid-core/fonts/liquid-inter.woff2');
 
   it("is liquid-core's build (size and sha256)", () => {
     expect(bytes.length).toBe(FONT_BYTES);
@@ -42,7 +42,7 @@ describe('the committed font file', () => {
   });
 
   it('has its licence next to it, and a NOTICE entry', () => {
-    expect(fs.readFileSync('fonts/OFL.txt', 'utf8')).toMatch(/^Copyright \(c\) 2016 The Inter Project Authors[\s\S]*SIL OPEN FONT LICENSE Version 1\.1/);
+    expect(fs.readFileSync('node_modules/@decibel95/liquid-core/fonts/OFL.txt', 'utf8')).toMatch(/^Copyright \(c\) 2016 The Inter Project Authors[\s\S]*SIL OPEN FONT LICENSE Version 1\.1/);
     expect(fs.readFileSync('NOTICE', 'utf8')).toContain('liquid-inter-OFL.txt');
   });
 });
@@ -114,8 +114,8 @@ describe('font stack', () => {
     const found = Object.entries(files).flatMap(([file, src]) =>
       [...src.matchAll(/font-family:\s*([^;`]+);/g)].map((m) => [file, m[1].trim()]),
     );
-    // The four card roots: dial, tile, badge, cluster. src/ui/font.ts writes the face, not a stack.
-    const stacks = found.filter(([file]) => !file.endsWith('/ui/font.ts'));
+    // The four card roots: dial, tile, badge, cluster. The face itself is written by liquid-core, not by src.
+    const stacks = found;
     expect(stacks.map(([file]) => file).sort()).toEqual([
       '../src/cards/badge/liquid-climate-badge.ts',
       '../src/cards/cluster/liquid-climate-cluster.ts',
