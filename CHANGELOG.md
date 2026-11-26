@@ -3,9 +3,14 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.12.2
+## 0.13.0
 
 The current version.
+
+### Added
+- Polish, contributed by @jkmikke, with a few small fixes on top.
+
+## 0.12.2
 
 ### Changed
 - The README install instructions are clearer about what to do if the HACS search does not find Liquid Climate.

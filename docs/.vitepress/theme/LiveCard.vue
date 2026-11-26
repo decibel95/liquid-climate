@@ -13,7 +13,7 @@ const props = withDefaults(
     type: CardType;
     /** Merged over the default config of the type. */
     config?: Config;
-    /** Initial language: en, nl, de, fr, es or it. */
+    /** Initial language: en, nl, de, fr, es, it or pl. */
     lang?: string;
     theme?: 'auto' | 'light' | 'dark';
     /** CSS width of the card box. */
@@ -65,6 +65,7 @@ const LANGUAGES: [string, string][] = [
   ['fr', 'Français'],
   ['es', 'Español'],
   ['it', 'Italiano'],
+  ['pl', 'Polski'],
 ];
 const MODES = ['auto', 'light', 'dark'] as const;
 
