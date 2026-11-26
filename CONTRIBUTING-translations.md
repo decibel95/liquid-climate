@@ -16,15 +16,19 @@ and the same placeholders per key.
    falls back to `nl` by itself.
 2. Translate the values. Do not change the keys.
 3. Add one import line and one entry in `LC_LAYER` in `src/i18n/index.ts` (the shared liquid-core strings come
-   with `@decibel95/liquid-core`, nothing to add for them):
+   with `@decibel95/liquid-core`, nothing to add for them, unless liquid-core does not ship your language yet,
+   see the next step):
 
    ```ts
    import pl from './locales/pl.json';
    // ...
    export const LC_LAYER = { en: flatten(en), /* ... */ pl: flatten(pl) };
    ```
-4. Run `npm run typecheck`, `npm test` and `npm run build`.
-5. Look at it: `npm run dev`, then pick the language in the switcher (or open `/dev/?lang=pl`).
+4. If liquid-core does not ship your language yet (it has en, nl, de, fr, es and it), its shared `core.*` strings
+   (close, history, off, unavailable, the editor glass and motion labels) need a translation too. Liquid Climate
+   carries them in its own layer: see the `pl` entry and `PL_CORE` in `src/i18n/index.ts`.
+5. Run `npm run typecheck`, `npm test` and `npm run build`.
+6. Look at it: `npm run dev`, then pick the language in the switcher (or open `/dev/?lang=pl`).
 
 ## Guidelines
 

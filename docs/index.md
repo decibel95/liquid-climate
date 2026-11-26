@@ -29,8 +29,8 @@ features:
     details: Changes are collected for 1.5 seconds and sent as the minimum number of calls. One drag is one call.
   - title: Status rows and menus
     details: Add rows for helpers, scripts and automations under the dial, with an inline menu to change values.
-  - title: Six languages
-    details: English, Dutch, German, French, Spanish and Italian, following your Home Assistant profile.
+  - title: Seven languages
+    details: English, Dutch, German, French, Spanish, Italian and Polish, following your Home Assistant profile.
 ---
 
 ## Try it {#try-it}
