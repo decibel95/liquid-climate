@@ -170,7 +170,7 @@ All options are in the [dial](https://decibel95.github.io/liquid-climate/cards/d
 
 ## Languages
 
-`en`, `nl`, `de`, `fr`, `es`, `it`. The cards follow your Home Assistant profile language. Dutch is reviewed, the others are machine translated and PRs are welcome. See [CONTRIBUTING-translations.md](CONTRIBUTING-translations.md).
+`en`, `nl`, `de`, `fr`, `es`, `it`,`pl`. The cards follow your Home Assistant profile language. Dutch is reviewed, the others are machine translated and PRs are welcome. See [CONTRIBUTING-translations.md](CONTRIBUTING-translations.md).
 
 <div align="center">
   <img src="docs/public/media/language.webp" alt="The dial switching between languages" width="300">
