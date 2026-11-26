@@ -11,7 +11,10 @@ import pl from './locales/pl.json';
 export { flatten, rawLanguage, num, numAuto, haLocalize, humanize } from '@decibel95/liquid-core';
 export type { Vars, I18nHass } from '@decibel95/liquid-core';
 
-/** liquid-core has no Polish yet, so Liquid Climate carries its `core.*` strings. */
+/**
+ * liquid-core has no Polish yet, so Liquid Climate carries its `core.*` strings. Delete PL_CORE and
+ * PL_CORE_LAYER once liquid-core ships Polish, otherwise ours override core's.
+ */
 const PL_CORE = {
   close: 'Zamknij',
   history: 'Historia',

@@ -12,7 +12,8 @@ The demo runs on fake data. Changes stay in your browser. Use the language contr
 |----------|--------|
 | English (`en`) | Base language and fallback |
 | Dutch (`nl`) | Reviewed by a native speaker, corrections welcome |
-| German (`de`), French (`fr`), Spanish (`es`), Italian (`it`), Polish (`pl`) | Machine translated, PRs welcome |
+| German (`de`), French (`fr`), Spanish (`es`), Italian (`it`) | Machine translated, PRs welcome |
+| Polish (`pl`) | Community contributed, corrections welcome |
 
 ## How the language is picked {#languages-pick}
 

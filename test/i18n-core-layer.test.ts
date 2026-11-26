@@ -8,9 +8,15 @@ describe('liquid-core layer under ours', () => {
     }
   });
 
-  it('the merged map carries core.* keys in every language', () => {
+  it('every language carries the same core.* keys and placeholders as en', () => {
+    const core = (lang: string) => Object.entries(LOCALES[lang]).filter(([k]) => k.startsWith('core.'));
+    const holders = (s: string) => (s.match(/\{\w+\}/g) ?? []).sort().join(',');
+    const en = Object.fromEntries(core('en'));
+    expect(Object.keys(en).length).toBeGreaterThan(0);
     for (const lang of Object.keys(LC_LAYER)) {
-      expect(Object.keys(LOCALES[lang]).some((k) => k.startsWith('core.'))).toBe(true);
+      const mine = Object.fromEntries(core(lang));
+      expect(Object.keys(mine).sort(), lang).toEqual(Object.keys(en).sort());
+      for (const k of Object.keys(en)) expect(holders(mine[k]), `${lang} ${k}`).toBe(holders(en[k]));
     }
   });
 
