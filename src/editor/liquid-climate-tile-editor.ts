@@ -35,6 +35,7 @@ export class LiquidClimateTileEditor extends LiquidClimateCardEditor {
           (v) => this._fire((c) => ({ ...c, tap_action: v }) as LiquidClimateConfig),
           this._help('tap-action', 'editor.tapOnName'),
         )}
+        ${this._historySwitch(cfg)}
         ${this._writeDelay(cfg)}
         ${this._head('look', 'editor.tabLook')}
         ${this._look(cfg)}

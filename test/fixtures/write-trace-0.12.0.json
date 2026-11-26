@@ -1,0 +1,2949 @@
+{
+  "source": "liquid-climate fce593e0410cb34b3cd2f448395a97aebefa114a (claude/patch-b; src identical to tag v0.12.0, 4965f4c), unmodified code, recorded by test/write-trace-scenarios.ts",
+  "tick": 100,
+  "scenarios": {
+    "drag_one_call": [
+      {
+        "t": 0,
+        "do": "mount tile"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "open sheet"
+      },
+      {
+        "t": 0,
+        "do": "pointerdown 20"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 300,
+        "do": "pointermove 21"
+      },
+      {
+        "t": 300,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 21
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 600,
+        "do": "pointermove 22"
+      },
+      {
+        "t": 600,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 22
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2600,
+        "do": "pointerup"
+      },
+      {
+        "t": 4100,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 22
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 4100,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 22
+          }
+        }
+      },
+      {
+        "t": 4100,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 22
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 4600,
+        "do": "report climate.keuken_airco {\"attributes\":{\"temperature\":22}}"
+      },
+      {
+        "t": 4600,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 4900,
+        "do": "close sheet"
+      },
+      {
+        "t": 5200,
+        "do": "remove every card"
+      },
+      {
+        "t": 5200,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "heat_cool_pair": [
+      {
+        "t": 0,
+        "do": "mount tile and dial"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.dual_setpoint",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Auto, 21.4° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "Shift+ArrowRight on the dial (upper knob)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.dual_setpoint",
+          "local": {
+            "target_temp_high": 24.5,
+            "target_temp_low": 19
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Auto, 21.4° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 500,
+        "do": "ArrowLeft on the lower knob"
+      },
+      {
+        "t": 500,
+        "state": {
+          "entity": "climate.dual_setpoint",
+          "local": {
+            "target_temp_high": 24.5,
+            "target_temp_low": 18.5
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Auto, 21.4° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.dual_setpoint",
+          "local": {
+            "target_temp_high": 24.5,
+            "target_temp_low": 18.5
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Auto, 21.4° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.dual_setpoint",
+            "target_temp_high": 24.5,
+            "target_temp_low": 18.5
+          }
+        }
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.dual_setpoint",
+          "local": {
+            "target_temp_high": 24.5,
+            "target_temp_low": 18.5
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Auto, 21.4° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2500,
+        "do": "report climate.dual_setpoint {\"attributes\":{\"target_temp_high\":24.5,\"target_temp_low\":18.5}}"
+      },
+      {
+        "t": 2500,
+        "state": {
+          "entity": "climate.dual_setpoint",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Auto, 21.4° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2800,
+        "do": "remove every card"
+      },
+      {
+        "t": 2800,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "fan_swing_preset": [
+      {
+        "t": 0,
+        "do": "mount tile and dial"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "PageUp on the dial (fan up)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "fan_mode": "3"
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 400,
+        "do": "vertical swing chip"
+      },
+      {
+        "t": 400,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "fan_mode": "3",
+            "swing_mode": "swing"
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 800,
+        "do": "preset chip"
+      },
+      {
+        "t": 800,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "fan_mode": "3",
+            "preset_mode": "away",
+            "swing_mode": "swing"
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "fan_mode": "3",
+            "preset_mode": "away",
+            "swing_mode": "swing"
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "call": {
+          "domain": "climate",
+          "service": "set_fan_mode",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "fan_mode": "3"
+          }
+        }
+      },
+      {
+        "t": 2300,
+        "call": {
+          "domain": "climate",
+          "service": "set_swing_mode",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "swing_mode": "swing"
+          }
+        }
+      },
+      {
+        "t": 2300,
+        "call": {
+          "domain": "climate",
+          "service": "set_preset_mode",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "preset_mode": "away"
+          }
+        }
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "fan_mode": "3",
+            "preset_mode": "away",
+            "swing_mode": "swing"
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2800,
+        "do": "report climate.keuken_airco {\"attributes\":{\"fan_mode\":\"3\",\"preset_mode\":\"away\",\"swing_mode\":\"swing\"}}"
+      },
+      {
+        "t": 2800,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3100,
+        "do": "remove every card"
+      },
+      {
+        "t": 3100,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "mode_change": [
+      {
+        "t": 0,
+        "do": "mount tile and dial"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "mode Cool"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_hvac_mode",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "hvac_mode": "cool"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3000,
+        "do": "report climate.keuken_airco {\"attributes\":{\"hvac_action\":\"cooling\"},\"state\":\"cool\"}"
+      },
+      {
+        "t": 3000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3300,
+        "do": "remove every card"
+      },
+      {
+        "t": 3300,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "power_remembered": [
+      {
+        "t": 0,
+        "do": "mount tile (entity in cool)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "power"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "off"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "off"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Off, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "off"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Off, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_hvac_mode",
+          "data": {
+            "entity_id": "climate.slaapkamer_airco",
+            "hvac_mode": "off"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "off"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Off, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "do": "report climate.slaapkamer_airco {\"state\":\"off\"}"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Off, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "do": "power"
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Off, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3800,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Cooling, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3800,
+        "call": {
+          "domain": "climate",
+          "service": "set_hvac_mode",
+          "data": {
+            "entity_id": "climate.slaapkamer_airco",
+            "hvac_mode": "cool"
+          }
+        }
+      },
+      {
+        "t": 3800,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 4300,
+        "do": "report climate.slaapkamer_airco {\"state\":\"cool\"}"
+      },
+      {
+        "t": 4300,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 4600,
+        "do": "remove every card"
+      },
+      {
+        "t": 4600,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "power_no_memory": [
+      {
+        "t": 0,
+        "do": "mount tile (entity off, nothing remembered)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.nagelsalon_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Off, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "power"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.nagelsalon_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Off, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.nagelsalon_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.nagelsalon_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_hvac_mode",
+          "data": {
+            "entity_id": "climate.nagelsalon_airco",
+            "hvac_mode": "heat"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.nagelsalon_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "do": "report climate.nagelsalon_airco {\"state\":\"heat\"}"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.nagelsalon_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "do": "remove every card"
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "water_heater": [
+      {
+        "t": 0,
+        "do": "mount tile and dial (water heater off)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Off",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "tile power"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Off",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "water_heater",
+          "service": "turn_on",
+          "data": {
+            "entity_id": "water_heater.demo_water_heater"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "water_heater",
+          "service": "set_operation_mode",
+          "data": {
+            "entity_id": "water_heater.demo_water_heater",
+            "operation_mode": "eco"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "do": "report water_heater.demo_water_heater {\"attributes\":{\"operation_mode\":\"electric\"},\"state\":\"electric\"}"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Electric",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "do": "mode Performance"
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "performance"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Electric",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "performance"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Performance",
+          "announce": null
+        }
+      },
+      {
+        "t": 3800,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "performance"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Performance",
+          "announce": null
+        }
+      },
+      {
+        "t": 3800,
+        "call": {
+          "domain": "water_heater",
+          "service": "set_operation_mode",
+          "data": {
+            "entity_id": "water_heater.demo_water_heater",
+            "operation_mode": "performance"
+          }
+        }
+      },
+      {
+        "t": 3800,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {
+            "hvac_mode": "performance"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Performance",
+          "announce": null
+        }
+      },
+      {
+        "t": 4300,
+        "do": "report water_heater.demo_water_heater {\"attributes\":{\"operation_mode\":\"performance\"},\"state\":\"performance\"}"
+      },
+      {
+        "t": 4300,
+        "state": {
+          "entity": "water_heater.demo_water_heater",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Performance",
+          "announce": null
+        }
+      },
+      {
+        "t": 4600,
+        "do": "remove every card"
+      },
+      {
+        "t": 4600,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "humidifier": [
+      {
+        "t": 0,
+        "do": "mount tile and dial (hygrostat off)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Off",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "mode Eco"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "hvac_mode": "on",
+            "mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Off",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "hvac_mode": "on",
+            "mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "hvac_mode": "on",
+            "mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "humidifier",
+          "service": "turn_on",
+          "data": {
+            "entity_id": "humidifier.hygrostat"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "humidifier",
+          "service": "set_mode",
+          "data": {
+            "entity_id": "humidifier.hygrostat",
+            "mode": "eco"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "hvac_mode": "on",
+            "mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "do": "report humidifier.hygrostat {\"attributes\":{\"mode\":\"eco\"},\"state\":\"on\"}"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 2300,
+        "do": "tile step up"
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "humidity": 51
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 3800,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "humidity": 51
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 3800,
+        "call": {
+          "domain": "humidifier",
+          "service": "set_humidity",
+          "data": {
+            "entity_id": "humidifier.hygrostat",
+            "humidity": 51
+          }
+        }
+      },
+      {
+        "t": 3800,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "humidity": 51
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 4300,
+        "do": "report humidifier.hygrostat {\"attributes\":{\"humidity\":51}}"
+      },
+      {
+        "t": 4300,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Eco",
+          "announce": null
+        }
+      },
+      {
+        "t": 4600,
+        "do": "remove every card"
+      },
+      {
+        "t": 4600,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "write_delay_zero": [
+      {
+        "t": 0,
+        "do": "mount tile (write_delay 0)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 500,
+        "do": "report climate.keuken_airco {\"attributes\":{\"temperature\":20}}"
+      },
+      {
+        "t": 500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 800,
+        "do": "remove every card"
+      },
+      {
+        "t": 800,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "hold_expiry": [
+      {
+        "t": 0,
+        "do": "mount tile (write_hold 3)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 4500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 5000,
+        "do": "remove every card"
+      },
+      {
+        "t": 5000,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "entity_switch": [
+      {
+        "t": 0,
+        "do": "mount tile"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 500,
+        "do": "setConfig entity climate.slaapkamer_airco"
+      },
+      {
+        "t": 500,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 500,
+        "state": {
+          "entity": "climate.slaapkamer_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 24.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2500,
+        "do": "remove every card"
+      },
+      {
+        "t": 2500,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "error_and_clear": [
+      {
+        "t": 0,
+        "do": "mount tile"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "log": "Liquid Climate: service call failed (Rate limit reached)"
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Rate limit reached",
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Rate limit reached",
+          "tile": "Rate limit reached",
+          "announce": null
+        }
+      },
+      {
+        "t": 7500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Rate limit reached",
+          "announce": null
+        }
+      },
+      {
+        "t": 7500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 8000,
+        "do": "remove every card"
+      },
+      {
+        "t": 8000,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "cluster_write_via": [
+      {
+        "t": 0,
+        "do": "mount cluster (write_delay 2.5, write_hold 4)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 0,
+        "do": "strip step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 2500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 2500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 2500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 6500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 7000,
+        "do": "remove every card"
+      },
+      {
+        "t": 7000,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "cluster_humidifier": [
+      {
+        "t": 0,
+        "do": "mount cluster (hygrostat off)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 0,
+        "do": "strip mode Eco"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "hvac_mode": "on",
+            "mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "hvac_mode": "on",
+            "mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "humidifier",
+          "service": "turn_on",
+          "data": {
+            "entity_id": "humidifier.hygrostat"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "humidifier",
+          "service": "set_mode",
+          "data": {
+            "entity_id": "humidifier.hygrostat",
+            "mode": "eco"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {
+            "hvac_mode": "on",
+            "mode": "eco"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 2000,
+        "do": "report humidifier.hygrostat {\"attributes\":{\"mode\":\"eco\"},\"state\":\"on\"}"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "humidifier.hygrostat",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 2300,
+        "do": "remove every card"
+      },
+      {
+        "t": 2300,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "cluster_lease_release": [
+      {
+        "t": 0,
+        "do": "mount cluster"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 0,
+        "do": "strip step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 500,
+        "do": "setConfig without climate.keuken_airco"
+      },
+      {
+        "t": 500,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 2500,
+        "do": "remove every card"
+      },
+      {
+        "t": 2500,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "cluster_announce_failing": [
+      {
+        "t": 0,
+        "do": "mount cluster"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 0,
+        "do": "strip step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 2500,
+        "log": "Liquid Climate: service call failed ({\"code\":\"unknown_error\"})"
+      },
+      {
+        "t": 2500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Command failed",
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 2500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Command failed",
+          "tile": null,
+          "announce": "Keuken: Command failed"
+        }
+      },
+      {
+        "t": 3000,
+        "do": "strip step up"
+      },
+      {
+        "t": 3000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": "Command failed",
+          "tile": null,
+          "announce": "Keuken: Command failed"
+        }
+      },
+      {
+        "t": 4500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": "Command failed",
+          "tile": null,
+          "announce": "Keuken: Command failed"
+        }
+      },
+      {
+        "t": 4500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 4500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": "Command failed",
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 5500,
+        "log": "Liquid Climate: service call failed (Rate limit reached)"
+      },
+      {
+        "t": 5500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Rate limit reached",
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 5500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Rate limit reached",
+          "tile": null,
+          "announce": "Keuken: Rate limit reached"
+        }
+      },
+      {
+        "t": 11500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": "Keuken: Rate limit reached"
+        }
+      },
+      {
+        "t": 11500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": ""
+        }
+      },
+      {
+        "t": 12000,
+        "do": "remove every card"
+      },
+      {
+        "t": 12000,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "d2_return_to_start": [
+      {
+        "t": 0,
+        "do": "mount tile (entity in heat)"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "open sheet"
+      },
+      {
+        "t": 0,
+        "do": "mode Cool"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_hvac_mode",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "hvac_mode": "cool"
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "cool"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "do": "mode Heat"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Cooling, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3500,
+        "call": {
+          "domain": "climate",
+          "service": "set_hvac_mode",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "hvac_mode": "heat"
+          }
+        }
+      },
+      {
+        "t": 3500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "hvac_mode": "heat"
+          },
+          "modeChanging": true,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 4000,
+        "do": "report climate.keuken_airco {\"attributes\":{\"current_temperature\":22}}"
+      },
+      {
+        "t": 4000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 22.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 14000,
+        "do": "remove every card"
+      },
+      {
+        "t": 14000,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "d2_failure_drops_all": [
+      {
+        "t": 0,
+        "do": "mount tile and dial"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "ArrowUp on the dial"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 2000,
+        "do": "PageUp on the dial (fan up)"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "fan_mode": "3",
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "fan_mode": "3",
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3500,
+        "call": {
+          "domain": "climate",
+          "service": "set_fan_mode",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "fan_mode": "3"
+          }
+        }
+      },
+      {
+        "t": 3500,
+        "log": "Liquid Climate: service call failed (Rate limit reached)"
+      },
+      {
+        "t": 3500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Rate limit reached",
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": "Rate limit reached",
+          "tile": "Rate limit reached",
+          "announce": null
+        }
+      },
+      {
+        "t": 9500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Rate limit reached",
+          "announce": null
+        }
+      },
+      {
+        "t": 9500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 10000,
+        "do": "remove every card"
+      },
+      {
+        "t": 10000,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "d2_overlapping_sends": [
+      {
+        "t": 0,
+        "do": "mount tile"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "step up"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 1500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20
+          }
+        }
+      },
+      {
+        "t": 2000,
+        "do": "step up"
+      },
+      {
+        "t": 2000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20.5
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 3500,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 20.5
+          }
+        }
+      },
+      {
+        "t": 4000,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 20.5
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 8000,
+        "do": "remove every card"
+      },
+      {
+        "t": 8000,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ],
+    "d2_standalone_dial_and_tile": [
+      {
+        "t": 0,
+        "do": "mount tile and dial"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {},
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 0,
+        "do": "pointerdown 21 on the dial"
+      },
+      {
+        "t": 0,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 21
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": "Heating, 21.0° inside",
+          "announce": null
+        }
+      },
+      {
+        "t": 300,
+        "do": "remove the tile"
+      },
+      {
+        "t": 300,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 21
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      },
+      {
+        "t": 300,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 21
+          }
+        }
+      },
+      {
+        "t": 300,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 21
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      },
+      {
+        "t": 600,
+        "do": "pointermove 22"
+      },
+      {
+        "t": 600,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 22
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      },
+      {
+        "t": 900,
+        "do": "pointermove 23"
+      },
+      {
+        "t": 900,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 23
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      },
+      {
+        "t": 2400,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 23
+          },
+          "modeChanging": false,
+          "sending": true,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      },
+      {
+        "t": 2400,
+        "call": {
+          "domain": "climate",
+          "service": "set_temperature",
+          "data": {
+            "entity_id": "climate.keuken_airco",
+            "temperature": 23
+          }
+        }
+      },
+      {
+        "t": 2400,
+        "state": {
+          "entity": "climate.keuken_airco",
+          "local": {
+            "temperature": 23
+          },
+          "modeChanging": false,
+          "sending": false,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      },
+      {
+        "t": 2900,
+        "do": "pointerup"
+      },
+      {
+        "t": 4900,
+        "do": "remove every card"
+      },
+      {
+        "t": 4900,
+        "state": {
+          "entity": null,
+          "local": null,
+          "modeChanging": null,
+          "sending": null,
+          "error": null,
+          "tile": null,
+          "announce": null
+        }
+      }
+    ]
+  }
+}

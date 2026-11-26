@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 import { describe, expect, it } from 'vitest';
-import { LOCALES, flatten, haLocalize, humanize, num, numAuto, optionName, rawLanguage, resolveLanguage, t } from '../src/i18n';
+import { LC_LAYER, LOCALES, flatten, haLocalize, humanize, num, numAuto, optionName, rawLanguage, resolveLanguage, t } from '../src/i18n';
 import { fanShortLabels, modeLabel, modeVerb } from '../src/ui/modes';
 import { statusValue } from '../src/ui/status';
 
-const EN = LOCALES.en;
+const EN = LC_LAYER.en;
 const EM_DASH = String.fromCharCode(0x2014);
 const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 const hassWith = (extra: Record<string, unknown>) => extra as never;
@@ -18,7 +18,7 @@ describe('locale files', () => {
 
   for (const lang of others) {
     describe(lang, () => {
-      const L = LOCALES[lang];
+      const L = LC_LAYER[lang];
       it('has exactly the keys of en.json', () => {
         const missing = Object.keys(EN).filter((k) => !(k in L));
         const extra = Object.keys(L).filter((k) => !(k in EN));

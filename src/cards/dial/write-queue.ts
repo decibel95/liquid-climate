@@ -1,16 +1,14 @@
+import type { WriteCall } from '@decibel95/liquid-core';
 import type { Optimistic } from './capabilities';
 import { modeInfo } from '../../ui/modes';
 import { WATER_HEATER_FEATURE, domainOf, operationList, supports } from '../../domain';
 import type { HassEntity } from '../../types';
 
-export interface ServiceCall {
-  /** The service domain; climate when absent. */
-  domain?: string;
-  service: string;
-  data: Record<string, unknown>;
-  /** What the call sets, in Optimistic terms, when that differs from its data (set_operation_mode sets hvac_mode). */
-  sets?: Optimistic;
-}
+/**
+ * One service call: `domain` (climate when absent; ClimateWriter fills it in), `service`, `data`, and `sets`, what the
+ * call sets in Optimistic terms when that differs from its data (set_operation_mode sets hvac_mode).
+ */
+export type ServiceCall = WriteCall<Optimistic>;
 
 /** What the unit will report once earlier writes land: in-flight values over the entity. */
 function expected(stateObj: HassEntity, inflight: Optimistic): { a: Record<string, any>; mode: string } {
@@ -123,117 +121,4 @@ export function buildCalls(
     if (v !== undefined && v !== a[attr]) calls.push({ service, data: { ...base, [key]: v } });
   }
   return calls;
-}
-
-export interface QueueOptions {
-  send: (calls: ServiceCall[]) => Promise<void> | void;
-  getDelayMs: () => number;
-  getEntity: () => HassEntity | undefined;
-  entityId: () => string;
-  /** Optimistic values already sent but not yet reflected by the entity. */
-  getBaseline?: () => Optimistic;
-  onChange?: () => void;
-  timers?: Timers;
-}
-
-type Timers = {
-  set: (fn: () => void, ms: number) => unknown;
-  clear: (h: unknown) => void;
-};
-
-/**
- * Debounced writer. Every interaction merges into one pending change and
- * restarts the timer; when it fires, `flush` sends the coalesced calls.
- */
-export class WriteQueue {
-  private change: Optimistic = {};
-  private handle: unknown = null;
-  /** Bumped on every interaction so the UI can restart its progress line. */
-  generation = 0;
-  private held = false;
-  /** Called with the coalesced change right before it is sent. */
-  onFlushed?: (change: Optimistic) => void;
-
-  private readonly o: QueueOptions;
-
-  constructor(o: QueueOptions) {
-    this.o = {
-      onChange: () => {},
-      getBaseline: () => ({}),
-      timers: {
-        set: (fn, ms) => setTimeout(fn, ms),
-        clear: (h) => clearTimeout(h as ReturnType<typeof setTimeout>),
-      },
-      ...o,
-    };
-  }
-
-  get pending(): Optimistic {
-    return this.change;
-  }
-
-  get isPending(): boolean {
-    return Object.keys(this.change).length > 0;
-  }
-
-  set(patch: Optimistic): void {
-    this.change = { ...this.change, ...patch };
-    this.generation++;
-    this.arm();
-    this.o.onChange!();
-  }
-
-  /** Pause the timer while a drag is in progress; nothing is sent until release. */
-  hold(): void {
-    this.held = true;
-    if (this.handle != null) this.o.timers!.clear(this.handle);
-    this.handle = null;
-  }
-
-  release(): void {
-    this.held = false;
-    if (this.isPending) this.arm();
-  }
-
-  private arm(): void {
-    if (this.handle != null) this.o.timers!.clear(this.handle);
-    this.handle = null;
-    if (this.held) return;
-    const delay = this.o.getDelayMs();
-    if (delay <= 0) void this.flush();
-    else this.handle = this.o.timers!.set(() => void this.flush(), delay);
-  }
-
-  async flush(): Promise<Optimistic> {
-    if (this.handle != null) this.o.timers!.clear(this.handle);
-    this.handle = null;
-    const change = this.change;
-    this.change = {};
-    const entity = this.o.getEntity();
-    try {
-      if (entity && Object.keys(change).length) {
-        // Built against the baseline as it is now, before this change joins it.
-        const calls = buildCalls(this.o.entityId(), change, entity, this.o.getBaseline!());
-        if (calls.length) {
-          const sent: Record<string, unknown> = {};
-          for (const c of calls) {
-            const { entity_id: _id, ...rest } = c.data;
-            Object.assign(sent, c.sets ?? rest);
-          }
-          this.onFlushed?.(sent as Optimistic);
-          await this.o.send(calls.map(({ sets: _sets, ...call }) => call));
-        }
-      }
-    } finally {
-      this.o.onChange!();
-    }
-    return change;
-  }
-
-  cancel(): void {
-    if (this.handle != null) this.o.timers!.clear(this.handle);
-    this.handle = null;
-    this.held = false;
-    this.change = {};
-  }
 }

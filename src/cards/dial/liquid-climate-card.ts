@@ -9,7 +9,7 @@ import { Memo } from '../../detect/cache';
 import { runtimeDetection, type RuntimeDetection } from '../../detect/runtime';
 import type { Detection } from '../../detect/roles';
 import { statusTitle, statusValue, type StatusValue } from '../../ui/status';
-import { handleMenuKey, menuVisible, panelId, renderMenuPanel } from '../../ui/menu';
+import { handleMenuKey, menuVisible, openHistory, panelId, renderMenuPanel } from '../../ui/menu';
 import { resolveGlass } from '../../ui/glass';
 import { num, numAuto, t } from '../../i18n';
 import { ENTITY_ERROR, domainOf, isSupportedEntity } from '../../domain';
@@ -258,6 +258,12 @@ export class LiquidClimateCard extends LitElement {
     this._writer.togglePower(ctx.view.mode);
   }
 
+  /** Inside a sheet the sheet closes first (removing this dial); the id is taken before and the page change goes to window. */
+  private _openHistory(entityId: string) {
+    this.dispatchEvent(new Event('liquid-climate-close', { bubbles: true, composed: true }));
+    openHistory(this, entityId);
+  }
+
   private _setTemp(ctx: Ctx, v: number, knob: Knob = this._knob) {
     const { caps, view } = ctx;
     if (view.dual) {
@@ -463,8 +469,18 @@ export class LiquidClimateCard extends LitElement {
     const ctx = this._context();
     if (!ctx) {
       const missing = !this._entity();
+      // The history page shows the last known history; it needs only the configured id, not the state.
+      const history = cfg.show_history && cfg.entity ? this._historyButton(cfg.entity) : null;
+      // In a sheet, Close is slotted in: the header must exist so Close does too. A dashboard dial with
+      // neither keeps the bare title.
+      const slotted = !!this.querySelector('[slot=header-action]');
       return html`<section class="lc ${glass}" style=${styleMap(vars)} aria-label=${name}>
-        <h2>${name}</h2>
+        ${history || slotted
+          ? html`<header>
+              <div class="titles"><h2>${name}</h2></div>
+              <div class="actions">${history ?? nothing}<slot name="header-action"></slot></div>
+            </header>`
+          : html`<h2>${name}</h2>`}
         <div class="unavailable">${missing ? t(this.hass, 'common.entityNotFound', { entity: cfg.entity }) : t(this.hass, 'common.unavailable')}</div>
       </section>`;
     }
@@ -526,6 +542,7 @@ export class LiquidClimateCard extends LitElement {
             <span class="sub">${headerSub}</span>
           </div>
           <div class="actions">
+            ${cfg.show_history ? this._historyButton(cfg.entity) : nothing}
             <button
               class="press power"
               aria-label=${t(hass, on ? 'dial.turnOff' : 'dial.turnOn')}
@@ -569,6 +586,12 @@ export class LiquidClimateCard extends LitElement {
         ${this._writer.error ? html`<div class="alert" role="alert">${this._writer.error}</div>` : nothing}
       </section>
     `;
+  }
+
+  private _historyButton(entity: string) {
+    return html`<button class="press history" aria-label=${t(this.hass, 'dial.history')} @click=${() => this._openHistory(entity)}>
+      ${this._icon(ICONS.history, 18, 2)}
+    </button>`;
   }
 
   private _icon(path: string, size: number, sw = 1.8, cls = '') {

@@ -25,6 +25,7 @@ import { getCapabilities } from '../cards/dial/capabilities';
 import { MODES, modeLabel } from '../ui/modes';
 import { formatState } from '../ui/status';
 import { buildDiagnostics, copyText, diagnosticsText } from '../diagnostics';
+import { editorStyles, helpLink, lookFields } from '@decibel95/liquid-core';
 import { DOCS_URL } from '../const';
 import { currentSensor, domainOf, isSupportedEntity, roleApplies } from '../domain';
 import { num, t, type Vars } from '../i18n';
@@ -37,6 +38,22 @@ const TABS: [Tab, string][] = [
   ['controls', 'editor.tabControls'],
   ['look', 'editor.tabLook'],
 ];
+
+/** Core's editor helper keys and the Liquid Climate key with the same text (spelled out so the key check in test/i18n.test.ts sees them). */
+const CORE_EDITOR_KEYS: Record<string, string> = {
+  'core.editor.help': 'editor.help',
+  'core.editor.glass': 'editor.glass',
+  'core.editor.glassAuto': 'editor.glassAuto',
+  'core.editor.glassDark': 'editor.glassDark',
+  'core.editor.glassLight': 'editor.glassLight',
+  'core.editor.tint': 'editor.tint',
+  'core.editor.blur': 'editor.blur',
+  'core.editor.motion': 'editor.motion',
+  'core.editor.motionRich': 'editor.motionRich',
+  'core.editor.motionSubtle': 'editor.motionSubtle',
+  'core.editor.motionMinimal': 'editor.motionMinimal',
+  'core.editor.reducedMotion': 'editor.reducedMotion',
+};
 
 /** Entity domains each role can point at. */
 const SENSOR_DOMAINS: Record<keyof LiquidClimateConfig['sensors'], string[]> = {
@@ -80,6 +97,9 @@ export class LiquidClimateCardEditor extends LitElement {
   protected _t(key: string, vars?: Vars): string {
     return t(this.hass, key, vars);
   }
+
+  /** The translate function the core editor helpers take: core's `core.editor.X` keys are this editor's `editor.X`. */
+  private _tCore = (key: string, vars?: Vars): string => this._t(CORE_EDITOR_KEYS[key] ?? key, vars);
 
   setConfig(raw: Record<string, unknown>): void {
     this._config = normalizeConfig(migrateConfig(raw ?? {}));
@@ -160,8 +180,7 @@ export class LiquidClimateCardEditor extends LitElement {
 
   /** A small (?) link to the docs section `<card>-<slug>`; the label is the section's name. */
   protected _help(slug: string, labelKey: string) {
-    const url = `${DOCS_URL}/cards/${this._card}#${this._card}-${slug}`;
-    return html`<a class="help" href=${url} target="_blank" rel="noopener noreferrer" aria-label=${this._t('editor.help', { section: this._t(labelKey) })}>?</a>`;
+    return helpLink(DOCS_URL, this._card, slug, this._t(labelKey), this._tCore);
   }
 
   /** Section heading with its help link, for the editors without tabs. */
@@ -431,7 +450,9 @@ export class LiquidClimateCardEditor extends LitElement {
       ['presets', this._t('editor.presets'), caps?.presetModes.join(', ') ?? ''],
     ];
     // display: contents (.group) keeps the body's spacing while the climate part sits inside one element.
-    return html`
+    // The History switch applies to every domain, so it sits after the climate-only part.
+    // The wrapper keeps the template from starting with a child part (happy-dom shifts the bindings of such a template).
+    return html`<div class="group">
       ${climate
         ? html`<div class="group"><div class="field">
         <span class="lbl">${this._t('editor.modesOnCard')}</span>
@@ -475,6 +496,7 @@ export class LiquidClimateCardEditor extends LitElement {
         </div>`;
       })}</div>`
         : nothing}
+      ${this._historySwitch(cfg)}
       ${this._writeDelay(cfg)}
       <div class="field">
         <div class="lblrow"><span class="lbl">${this._t('editor.statusRows')}</span>${this._help('status-rows', 'editor.statusRows')}</div>
@@ -521,7 +543,7 @@ export class LiquidClimateCardEditor extends LitElement {
         <datalist id="lc-status-ids">${Object.keys(this.hass.states).map((id) => html`<option value=${id}></option>`)}</datalist>
         <button class="ghost dashed" @click=${() => this._fire((c) => ({ ...c, status_entities: [...c.status_entities, { entity: '' }] }))}>${this._t('editor.addEntity')}</button>
       </div>
-    `;
+    </div>`;
   }
 
   /** Segmented single choice, as a radio group. */
@@ -538,6 +560,23 @@ export class LiquidClimateCardEditor extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  /** The History button switch, the same in every editor: on is the default and is not saved. */
+  protected _historySwitch(cfg: LiquidClimateConfig, hint = 'editor.historyHint') {
+    return html`<div class="row">
+      <span class="grow name">${this._t('editor.historyButton')}</span>
+      <span class="hint">${this._t(hint)}</span>
+      <button
+        class="sw ${cfg.show_history ? 'on' : ''}"
+        role="switch"
+        aria-checked=${cfg.show_history ? 'true' : 'false'}
+        aria-label=${this._t('editor.historyButton')}
+        @click=${() => this._fire((c) => ({ ...c, show_history: !c.show_history }))}
+      >
+        <span></span>
+      </button>
+    </div>`;
   }
 
   /** The write delay and the hold after sending, in one wrapper that adds no layout. */
@@ -689,370 +728,177 @@ export class LiquidClimateCardEditor extends LitElement {
   // ---- Look ------------------------------------------------------------
 
   protected _look(cfg: LiquidClimateConfig) {
-    const seg = <K extends 'glass' | 'motion'>(key: K, label: string, opts: [LiquidClimateConfig['look'][K], string][]) => html`
-      <div class="field">
-        <span class="lbl">${label}</span>
-        <div class="seg" role="radiogroup" aria-label=${label}>
-          ${opts.map(
-            ([v, l]) => html`<button
-              role="radio"
-              aria-checked=${cfg.look[key] === v ? 'true' : 'false'}
-              class=${cfg.look[key] === v ? 'on' : ''}
-              @click=${() => this._fire((c) => ({ ...c, look: { ...c.look, [key]: v } }))}
-            >
-              ${l}
-            </button>`,
-          )}
-        </div>
-      </div>
-    `;
-    return html`
-      ${seg('glass', this._t('editor.glass'), [['theme', this._t('editor.glassAuto')], ['dark', this._t('editor.glassDark')], ['light', this._t('editor.glassLight')]])}
-      <label class="field">
-        <span class="lbl range"><span>${this._t('editor.tint')}</span><span>${Math.round(cfg.look.tint * 100)}%</span></span>
-        <input type="range" min="0" max="30" .value=${String(Math.round(cfg.look.tint * 100))}
-          @input=${(e: Event) => this._fire((c) => ({ ...c, look: { ...c.look, tint: Number((e.target as HTMLInputElement).value) / 100 } }))} />
-      </label>
-      <label class="field">
-        <span class="lbl range"><span>${this._t('editor.blur')}</span><span>${cfg.look.blur} px</span></span>
-        <input type="range" min="8" max="60" .value=${String(cfg.look.blur)}
-          @input=${(e: Event) => this._fire((c) => ({ ...c, look: { ...c.look, blur: Number((e.target as HTMLInputElement).value) } }))} />
-      </label>
-      ${seg('motion', this._t('editor.motion'), [['rich', this._t('editor.motionRich')], ['subtle', this._t('editor.motionSubtle')], ['minimal', this._t('editor.motionMinimal')]])}
-      <span class="hint">${this._t('editor.reducedMotion')}</span>
-    `;
+    return lookFields(cfg.look, this._tCore, (patch) => this._fire((c) => ({ ...c, look: { ...c.look, ...patch } })), { tint: true });
   }
 
-  static override styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      color: var(--primary-text-color);
-    }
-    .tabrow {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid var(--divider-color);
-    }
-    .tabs {
-      display: flex;
-      flex: 1 1 auto;
-      min-width: 0;
-      gap: 4px;
-    }
-    .tabs button {
-      flex: 0 1 auto;
-      min-width: 0;
-      min-height: 44px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      padding: 0 14px;
-      border: none;
-      background: none;
-      color: var(--secondary-text-color);
-      font: inherit;
-      font-weight: 500;
-      cursor: pointer;
-      box-shadow: inset 0 -2px 0 transparent;
-    }
-    .tabs button.on {
-      color: var(--primary-text-color);
-      box-shadow: inset 0 -2px 0 var(--primary-color);
-    }
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-    }
-    .body {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 18px 2px;
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .lbl {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--secondary-text-color);
-    }
-    .lbl.range {
-      display: flex;
-      justify-content: space-between;
-    }
-    .hint {
-      font-size: 12px;
-      color: var(--secondary-text-color);
-    }
-    .hint.pad {
-      padding-top: 8px;
-    }
-    input[type='text'],
-    select {
-      min-height: 40px;
-      box-sizing: border-box;
-      border-radius: 10px;
-      border: 1px solid var(--divider-color);
-      background: var(--card-background-color);
-      color: var(--primary-text-color);
-      font: inherit;
-      padding: 0 12px;
-    }
-    .note {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-    .note.warn {
-      background: rgba(255, 176, 103, 0.12);
-      border: 1px solid rgba(255, 176, 103, 0.4);
-    }
-    .note.info {
-      background: rgba(90, 176, 255, 0.1);
-      border: 1px solid rgba(90, 176, 255, 0.35);
-    }
-    .note span {
-      flex: 1;
-    }
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--divider-color);
-    }
-    .grow {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .name {
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .val {
-      font-size: 13px;
-      color: var(--secondary-text-color);
-      white-space: nowrap;
-    }
-    .change {
-      padding: 6px 0;
-    }
-    .group {
-      display: contents;
-    }
-    .change {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 6px;
-    }
-    .change input {
-      width: 100%;
-    }
-    button.ghost,
-    button.solid,
-    button.pill {
-      font: inherit;
-      font-size: 13px;
-      cursor: pointer;
-      color: var(--primary-text-color);
-      border-radius: 18px;
-      border: 1px solid var(--divider-color);
-      background: transparent;
-      padding: 0 14px;
-      min-height: 34px;
-    }
-    button.small {
-      min-height: 30px;
-      padding: 0 10px;
-      font-size: 12px;
-    }
-    button.dashed {
-      align-self: flex-start;
-      border-style: dashed;
-    }
-    button.solid {
-      background: #ffb067;
-      border-color: #ffb067;
-      color: #1b1206;
-      font-weight: 600;
-    }
-    button.pill.on {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
-      color: var(--text-primary-color, #fff);
-    }
-    .chiprow {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .seg {
-      display: flex;
-      gap: 4px;
-      padding: 3px;
-      border-radius: 12px;
-      border: 1px solid var(--divider-color);
-    }
-    .seg button {
-      flex: 1;
-      min-width: 0;
-      padding: 0 6px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-height: 34px;
-      border-radius: 9px;
-      border: none;
-      background: transparent;
-      color: var(--secondary-text-color);
-      font: inherit;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .seg button.on {
-      background: var(--primary-color);
-      color: var(--text-primary-color, #fff);
-    }
-    .sw {
-      width: 42px;
-      height: 26px;
-      flex: none;
-      border-radius: 13px;
-      border: none;
-      padding: 0;
-      position: relative;
-      cursor: pointer;
-      background: var(--divider-color);
-      transition: background-color 0.25s;
-    }
-    .sw.on {
-      background: var(--primary-color);
-    }
-    .sw:disabled {
-      opacity: 0.4;
-      cursor: default;
-    }
-    .sw span {
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #fff;
-      transition: left 0.25s;
-    }
-    .sw.on span {
-      left: 19px;
-    }
-    .statusrow {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr auto;
-      gap: 6px;
-    }
-    .vh {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-    .actionsbox {
-      grid-column: 1 / -1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 0 0 8px;
-    }
-    .actionrow {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 6px;
-      align-items: center;
-    }
-    .hint.warn {
-      grid-column: 1 / -1;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: var(--primary-text-color);
-    }
-    .hint.warn ha-icon {
-      --mdc-icon-size: 16px;
-      color: var(--warning-color, #b45309);
-    }
-    .actionid {
-      font-size: 13px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .hint-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 13px;
-    }
-    .lblrow {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 44px;
-    }
-    .sr {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-    .help {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      flex: none;
-      width: 44px;
-      min-height: 44px;
-      margin-left: auto;
-      color: var(--secondary-text-color);
-      font-size: 13px;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .help:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: -4px;
-      border-radius: 10px;
-    }
-    .foot button {
-      min-height: 44px;
-    }
-    .foot {
-      display: flex;
-      padding-top: 10px;
-      border-top: 1px solid var(--divider-color);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .sw,
-      .sw span {
-        transition: none;
+  /** What editorStyles (core) does not have: notes, rows, buttons, status rows and the footer. */
+  static override styles: CSSResultGroup = [
+    editorStyles,
+    css`
+      .hint.pad {
+        padding-top: 8px;
       }
-    }
-  `;
+      .note {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+      .note.warn {
+        background: rgba(255, 176, 103, 0.12);
+        border: 1px solid rgba(255, 176, 103, 0.4);
+      }
+      .note.info {
+        background: rgba(90, 176, 255, 0.1);
+        border: 1px solid rgba(90, 176, 255, 0.35);
+      }
+      .note span {
+        flex: 1;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .grow {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .name {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .val {
+        font-size: 13px;
+        color: var(--secondary-text-color);
+        white-space: nowrap;
+      }
+      .change {
+        padding: 6px 0;
+      }
+      .group {
+        display: contents;
+      }
+      .change {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 6px;
+      }
+      .change input {
+        width: 100%;
+      }
+      button.ghost,
+      button.solid,
+      button.pill {
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        color: var(--primary-text-color);
+        border-radius: 18px;
+        border: 1px solid var(--divider-color);
+        background: transparent;
+        padding: 0 14px;
+        min-height: 34px;
+      }
+      button.small {
+        min-height: 30px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+      button.dashed {
+        align-self: flex-start;
+        border-style: dashed;
+      }
+      button.solid {
+        background: #ffb067;
+        border-color: #ffb067;
+        color: #1b1206;
+        font-weight: 600;
+      }
+      button.pill.on {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: var(--text-primary-color, #fff);
+      }
+      .chiprow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .statusrow {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr auto;
+        gap: 6px;
+      }
+      .vh {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .actionsbox {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 0 0 8px;
+      }
+      .actionrow {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 6px;
+        align-items: center;
+      }
+      .hint.warn {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--primary-text-color);
+      }
+      .hint.warn ha-icon {
+        --mdc-icon-size: 16px;
+        color: var(--warning-color, #b45309);
+      }
+      .actionid {
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .hint-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .foot button {
+        min-height: 44px;
+      }
+      .foot {
+        display: flex;
+        padding-top: 10px;
+        border-top: 1px solid var(--divider-color);
+      }
+    `,
+  ];
 }
 
 declare global {

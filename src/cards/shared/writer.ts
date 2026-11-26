@@ -1,10 +1,9 @@
+import { EntityWriter, WriterLease as CoreWriterLease, WriterRegistry, debounceWrites } from '@decibel95/liquid-core';
 import type { Optimistic } from '../dial/capabilities';
-import { WriteQueue, type ServiceCall } from '../dial/write-queue';
+import { buildCalls, type ServiceCall } from '../dial/write-queue';
 import { t } from '../../i18n';
 import { WATER_HEATER_FEATURE, domainOf, operationList, supports } from '../../domain';
 import type { HassEntity, HomeAssistant } from '../../types';
-
-const ERROR_MS = 6000;
 
 /** Order the power button tries when it has no remembered mode to return to. */
 export const POWER_ON_ORDER = ['heat', 'cool', 'heat_cool', 'auto', 'fan_only', 'dry'];
@@ -59,71 +58,58 @@ export function powerOnModeOf(stateObj: HassEntity | undefined, last?: string | 
  * sent but not yet reported back, and the last error. There is one writer per entity id,
  * shared by every card showing that entity (see acquireWriter), so a tile and the dial in
  * its sheet coalesce into one queue and agree on what is pending.
+ *
+ * Built on liquid-core's EntityWriter, with overrides that keep Liquid Climate's own
+ * behaviour: a reported value equal to the held one drops it (also an older echo), a failed
+ * call drops every held value, `sending` is false once any send settles, a call without a
+ * domain goes to climate, and a card leaving sends what is pending and ends every drag hold.
  */
-export class ClimateWriter {
-  readonly queue: WriteQueue;
-  /** Latest hass, set by the cards using this writer. */
-  hass?: HomeAssistant;
-  /** Seconds to wait after the last interaction; the card that interacts sets it. */
-  delay = 1.5;
-  /** Seconds a sent value is held as shown while the device has not reported it back; the card that interacts sets it. */
-  hold = 10;
-  /** Values sent but not yet reflected by the entity. */
-  inflight: Optimistic = {};
-  sending = false;
-  error: string | null = null;
-  /** The entity's state when the last change was sent, so a water heater's mode can tell an answer from no change. */
-  private sentFrom?: string;
-  private inflightTimer?: ReturnType<typeof setTimeout>;
-  private errorTimer?: ReturnType<typeof setTimeout>;
-  private listeners = new Set<() => void>();
+export class ClimateWriter extends EntityWriter<Optimistic, ServiceCall> {
+  private _sending = false;
 
-  constructor(readonly entityId: string) {
-    this.queue = new WriteQueue({
-      send: (calls) => this.send(calls),
-      getDelayMs: () => this.delay * 1000,
-      getEntity: () => this.entity(),
-      entityId: () => this.entityId,
-      getBaseline: () => this.inflight,
-      onChange: () => this.changed(),
+  constructor(entityId: string) {
+    super(entityId, {
+      build: (change, entity, baseline) =>
+        buildCalls(entityId, change, entity, baseline).map((c) => (c.domain ? c : { ...c, domain: 'climate' })),
+      schedule: debounceWrites(1500),
+      hold: 10,
+      stateOf: (s, key) => (key === 'hvac_mode' ? s.state : s.attributes[key]),
+      // A water heater answers turn_on and turn_off with its current operation, which need not be the
+      // mode shown while sending ("on", or "off" when it reports standby): any new state is the answer.
+      answered: (s, key, from) => domainOf(entityId) === 'water_heater' && key === 'hvac_mode' && s.state !== from,
+      t,
+      errorKey: 'common.commandFailed',
+      logLabel: 'Liquid Climate',
     });
-    this.queue.onFlushed = (change) => {
-      if (change.hvac_mode !== undefined) this.sentFrom = this.entity()?.state;
-      this.inflight = { ...this.inflight, ...change };
-      clearTimeout(this.inflightTimer);
-      this.inflightTimer = setTimeout(() => {
-        this.inflight = {};
-        this.changed();
-      }, this.hold * 1000);
-    };
   }
 
-  /** Register a card's re-render callback; returns the unsubscribe function. */
-  subscribe(fn: () => void): () => void {
-    this.listeners.add(fn);
-    return () => this.listeners.delete(fn);
+  /** Seconds to wait after the last interaction; the card that interacts sets it. */
+  get delay(): number {
+    return this.schedule.ms / 1000;
   }
 
-  private changed(): void {
-    for (const fn of [...this.listeners]) fn();
+  set delay(seconds: number) {
+    this.schedule = debounceWrites(seconds * 1000);
   }
 
-  entity(): HassEntity | undefined {
-    return this.hass?.states[this.entityId];
+  /** A send is in progress; false as soon as any send settles. */
+  override get sending(): boolean {
+    return this._sending;
   }
 
-  /** Optimistic values to show: in-flight writes, then pending ones on top. */
-  get local(): Optimistic {
-    return { ...this.inflight, ...this.queue.pending };
+  protected override sendStarted(): void {
+    super.sendStarted();
+    this._sending = true;
+  }
+
+  protected override sendSettled(): void {
+    super.sendSettled();
+    this._sending = false;
   }
 
   /** A mode change is pending or in flight, so the entity's own action is stale. */
   get modeChanging(): boolean {
     return this.local.hvac_mode !== undefined;
-  }
-
-  set(patch: Optimistic): void {
-    this.queue.set(patch);
   }
 
   setMode(mode: string): void {
@@ -142,72 +128,47 @@ export class ClimateWriter {
   }
 
   /** Call when hass changes: remembers the entity's mode and drops values it has caught up with. */
-  observe(hass: HomeAssistant): void {
-    this.hass = hass;
-    const s = this.entity();
-    if (!s) return;
-    rememberMode(this.entityId, s.state);
-    if (!Object.keys(this.inflight).length) return;
+  override observe(hass: HomeAssistant): void {
+    const s = hass.states[this.entityId];
+    if (s) rememberMode(this.entityId, s.state);
+    super.observe(hass);
+  }
+
+  /** Drops each held value the entity reports exactly, or a water heater's mode it answered in its own way. */
+  protected override reconcile(s: HassEntity): void {
     const next = { ...this.inflight } as Record<string, unknown>;
     for (const key of Object.keys(next)) {
-      const actual = key === 'hvac_mode' ? s.state : s.attributes[key];
-      if (actual === next[key]) delete next[key];
+      const from = this.sent.get(key)?.from;
+      if (this.stateOf(s, key) === next[key] || (from !== undefined && !!this.opts.answered?.(s, key, from))) {
+        delete next[key];
+        this.sent.delete(key);
+      }
     }
-    // A water heater answers turn_on and turn_off with its current operation, which need not be the
-    // mode shown while sending ("on", or "off" when it reports standby): any new state is the answer.
-    if (domainOf(this.entityId) === 'water_heater' && 'hvac_mode' in next && this.sentFrom !== undefined && s.state !== this.sentFrom) delete next.hvac_mode;
-    this.inflight = next as Optimistic;
+    // Assigned directly: the inflight setter would also forget the records of the keys still held.
+    this._inflight = next as Optimistic;
+  }
+
+  /** A call failed: drop every held value. The hold timer keeps running and clears nothing more when it fires. */
+  protected override rollback(): void {
+    this.inflight = {};
+  }
+
+  /** Another card still uses this writer: send what is pending now, ending every drag hold. */
+  override sendPending(): void {
+    this.flushNow();
   }
 
   /** Send what is pending now, ending any drag hold. */
-  flushNow(): void {
-    this.queue.release();
-    if (this.queue.isPending) void this.queue.flush();
-  }
-
-  /** Last user gone: send what is pending, drop optimistic state and stop every timer. */
-  dispose(): void {
-    this.flushNow();
-    clearTimeout(this.inflightTimer);
-    clearTimeout(this.errorTimer);
-    this.inflight = {};
-    this.listeners.clear();
-  }
-
-  private async send(calls: ServiceCall[]): Promise<void> {
-    const hass = this.hass;
-    if (!hass) return;
-    this.sending = true;
-    this.changed();
-    try {
-      for (const c of calls) await hass.callService(c.domain ?? 'climate', c.service, c.data);
-    } catch (err) {
-      console.error('Liquid Climate: service call failed', err);
-      this.inflight = {};
-      this.error = err instanceof Error && err.message ? err.message : t(hass, 'common.commandFailed');
-      clearTimeout(this.errorTimer);
-      this.errorTimer = setTimeout(() => {
-        this.error = null;
-        this.changed();
-      }, ERROR_MS);
-    } finally {
-      this.sending = false;
-      this.changed();
-    }
+  override flushNow(): void {
+    super.flushNow();
   }
 }
 
-const writers = new Map<string, { writer: ClimateWriter; refs: number }>();
+const writers = new WriterRegistry((entityId) => new ClimateWriter(entityId));
 
 /** The shared writer for an entity. Every acquire needs a matching releaseWriter. */
 export function acquireWriter(entityId: string): ClimateWriter {
-  let e = writers.get(entityId);
-  if (!e) {
-    e = { writer: new ClimateWriter(entityId), refs: 0 };
-    writers.set(entityId, e);
-  }
-  e.refs++;
-  return e.writer;
+  return writers.acquire(entityId);
 }
 
 /**
@@ -215,54 +176,20 @@ export function acquireWriter(entityId: string): ClimateWriter {
  * when its card goes away; the last release disposes the writer.
  */
 export function releaseWriter(writer: ClimateWriter): void {
-  const e = writers.get(writer.entityId);
-  if (!e || e.writer !== writer) {
-    writer.dispose();
-    return;
-  }
-  e.refs--;
-  if (e.refs > 0) {
-    writer.flushNow();
-    return;
-  }
-  writers.delete(writer.entityId);
-  writer.dispose();
+  writers.release(writer);
 }
 
 /** Number of cards holding the writer of an entity, for tests. */
 export function writerRefs(entityId: string): number {
-  return writers.get(entityId)?.refs ?? 0;
+  return writers.refs(entityId);
 }
 
 /**
  * Holds one card's reference to the shared writer of its entity. Acquires lazily, releases
  * on disconnect, and switches cleanly when the card's entity changes.
  */
-export class WriterLease {
-  private writer?: ClimateWriter;
-  private off?: () => void;
-
-  constructor(private readonly onChange: () => void) {}
-
-  /** The writer for `entityId`, acquiring it (and releasing a previous one) when needed. */
-  get(entityId: string): ClimateWriter {
-    if (this.writer?.entityId !== entityId) {
-      this.release();
-      this.writer = acquireWriter(entityId);
-      this.off = this.writer.subscribe(this.onChange);
-    }
-    return this.writer;
-  }
-
-  get current(): ClimateWriter | undefined {
-    return this.writer;
-  }
-
-  release(): void {
-    if (!this.writer) return;
-    this.off?.();
-    const w = this.writer;
-    this.writer = undefined;
-    releaseWriter(w);
+export class WriterLease extends CoreWriterLease<ClimateWriter> {
+  constructor(onChange: () => void) {
+    super(writers, onChange);
   }
 }

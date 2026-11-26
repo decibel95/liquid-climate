@@ -48,6 +48,9 @@ export function navigate(path: string): void {
   window.dispatchEvent(new Event('location-changed', { bubbles: true, composed: true }));
 }
 
+/** Home Assistant's history page for one entity (liquid-core's helper, same pushState and location-changed as HA's own navigate). */
+export { openHistory } from '@decibel95/liquid-core';
+
 export interface MenuContext {
   hass: HomeAssistant;
   item: StatusItem;

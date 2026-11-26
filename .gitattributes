@@ -1,1 +1,4 @@
 * text=auto eol=lf
+
+# Pixel baseline screenshots are compared byte for byte by decoding: never touch their line endings
+test/pixel/baseline/*.png binary

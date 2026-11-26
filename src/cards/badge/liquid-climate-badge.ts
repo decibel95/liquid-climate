@@ -188,7 +188,7 @@ export class LiquidClimateBadge extends LitElement {
       .badge {
         --_size: var(--ha-badge-size, 36px);
         font: inherit;
-        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Liquid Inter', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
         font-feature-settings: 'tnum' 1;
         position: relative;

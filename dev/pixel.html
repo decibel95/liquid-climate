@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Liquid Climate pixel stage</title>
+    <style>
+      /* Home Assistant's default theme variables. The four grounds below pick a page colour and one of the two sets. */
+      html.theme-light {
+        --primary-text-color: #212121;
+        --secondary-text-color: #727272;
+        --text-primary-color: #ffffff;
+        --divider-color: rgba(0, 0, 0, 0.12);
+        --card-background-color: #ffffff;
+        --primary-color: #03a9f4;
+        --warning-color: #ffa600;
+        color-scheme: light;
+      }
+      html.theme-dark {
+        --primary-text-color: #e1e1e1;
+        --secondary-text-color: #9b9b9b;
+        --text-primary-color: #ffffff;
+        --divider-color: rgba(225, 225, 225, 0.12);
+        --card-background-color: #1c1c1c;
+        --primary-color: #03a9f4;
+        --warning-color: #ffa600;
+        color-scheme: dark;
+      }
+      html.ground-ha-light { --page-bg: #fafafa; }
+      html.ground-ha-dark { --page-bg: #111111; }
+      html.ground-white { --page-bg: #ffffff; }
+      html.ground-black { --page-bg: #000000; }
+      html, body { margin: 0; background: var(--page-bg, #fafafa); color: var(--primary-text-color); }
+      body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+      /* The screenshot target: the card plus room for its shadow, on the ground. */
+      #stage { display: block; width: max-content; padding: 28px; box-sizing: border-box; background: var(--page-bg); }
+      .col { display: flex; flex-direction: column; gap: 14px; }
+      .w-dial { width: 444px; }
+      .w-tile { width: 420px; }
+      .w-cluster { width: 640px; }
+      .w-editor { width: 520px; }
+      .editor-box { background: var(--card-background-color); border-radius: 16px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <script type="module" src="./pixel.ts"></script>
+  </body>
+</html>

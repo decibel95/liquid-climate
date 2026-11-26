@@ -12,7 +12,7 @@ export const dialStyles = css`
   }
 
   .lc {
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Liquid Inter', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: 'tnum' 1;
     position: relative;
@@ -66,6 +66,7 @@ export const dialStyles = css`
     font-size: 20px;
     font-weight: 600;
     letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
   }
 
   button {
@@ -121,7 +122,8 @@ export const dialStyles = css`
     gap: 8px;
     flex: none;
   }
-  .power {
+  .power,
+  .history {
     width: 44px;
     height: 44px;
     flex: none;

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { WriteQueue, buildCalls, type ServiceCall } from '../src/cards/dial/write-queue';
+import { WriteQueue, debounceWrites } from '@decibel95/liquid-core';
+import { buildCalls, type ServiceCall } from '../src/cards/dial/write-queue';
 import type { Optimistic } from '../src/cards/dial/capabilities';
 import type { HassEntity } from '../src/types';
 import { keuken } from './fixtures';
@@ -9,13 +10,13 @@ const entity = () => keuken.states[ID];
 
 function makeQueue(delay = 1.5, baseline: () => Optimistic = () => ({}), entityFn: () => HassEntity = entity) {
   const sent: ServiceCall[][] = [];
-  const q = new WriteQueue({
+  const q = new WriteQueue<Optimistic, ServiceCall>({
     send: (calls) => {
       sent.push(calls);
     },
-    getDelayMs: () => delay * 1000,
+    build: (change, stateObj, inflight) => buildCalls(ID, change, stateObj, inflight),
+    schedule: debounceWrites(delay * 1000),
     getEntity: entityFn,
-    entityId: () => ID,
     getBaseline: baseline,
   });
   return { q, sent };

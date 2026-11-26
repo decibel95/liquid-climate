@@ -39,6 +39,7 @@ entity: climate.living_room
 | `tap_action` | `sheet` | Tap on the name: `sheet` (dial), `more-info` or `none` |
 | `write_delay` | `1.5` | Seconds to collect presses before sending, `0` sends immediately. Use `0` or `1` for local devices |
 | `write_hold` | `10` | Seconds a sent value stays on screen while the device has not reported it back |
+| `show_history` | `true` | History button in the dial sheet. `false` hides it |
 | `sensors.battery` | `auto` | `auto`, `false` or an entity id. A low battery shows on the status line |
 | `sensors.health` | `auto` | As on the dial: `auto`, `false` or entity ids. Decides the error state of the power button and status line |
 | `look` | | `glass`, `blur` and `motion` as for the dial. `motion: minimal` stops the flame. `look.tint` has no effect on the tile, it is passed to the dial sheet |
@@ -77,6 +78,12 @@ Choices: Open dial (`sheet`), More info (`more-info`), Nothing (`none`). Option:
 Tapping the name with `sheet` opens the dial in a sheet, a modal dialog above the dashboard. Escape, the close button or a click outside closes it. The tile, the dial in its sheet and any other Liquid Climate card on the same entity share one write queue, so their changes go out together.
 
 <img src="/media/sheet-open.webp" alt="Tapping the tile name opens the dial as a sheet" loading="lazy">
+
+### History button {#tile-history}
+
+A button next to the power button of the dial in the sheet opens Home Assistant's history page for the entity. The sheet closes first. On by default. Option: `show_history`.
+
+The switch only has effect when Tap on the name is Open dial (`tap_action: sheet`, the default).
 
 ### Write delay {#tile-write-delay}
 

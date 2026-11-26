@@ -460,7 +460,7 @@ export class LiquidClimateCluster extends LitElement {
         --lc-room-on-edge: ${unsafeCSS(ROOM_FILL.light.onEdge)};
       }
       .cluster {
-        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Liquid Inter', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
         font-feature-settings: 'tnum' 1;
         position: relative;

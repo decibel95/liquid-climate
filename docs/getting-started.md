@@ -5,7 +5,7 @@
 - Home Assistant 2025.1 or newer.
 - At least one `climate`, `water_heater` or `humidifier` entity.
 
-## Install with HACS {#install-hacs}
+## Install {#install-hacs}
 
 Liquid Climate is in the HACS default catalog. The resource `/local/community/liquid-climate/liquid-climate.js` is added automatically.
 
@@ -25,17 +25,17 @@ Liquid Climate is in the HACS default catalog. The resource `/local/community/li
 
 If Liquid Climate does not show up in the search, add it as a custom repository.
 
-- Marketplace: open the menu, choose **Add from link**, and enter `https://github.com/decibel95/liquid-climate` with category **Dashboard**. Custom repositories need a connected GitHub account.
+- Marketplace: choose the **Add from link** button in the toolbar, and enter `https://github.com/decibel95/liquid-climate` with category **Dashboard**. Custom repositories need a connected GitHub account.
 - HACS: open the menu (three dots), choose **Custom repositories**, enter the same URL with category **Dashboard**, then download Liquid Climate.
 
 ## Install manually {#install-manual}
 
-1. Get `liquid-climate.js` from a release, or build it yourself with `npm run build` (the file ends up in `dist/`). Copy it to `/config/www/liquid-climate.js`.
+1. Get `liquid-climate.js`, `liquid-inter.woff2` and `liquid-inter-OFL.txt` from a release, or build them yourself with `npm run build` (the files end up in `dist/`). Copy all three to `/config/www/`, next to each other. The cards load the Inter font from `liquid-inter.woff2`; the third file is its licence. Without the font file the cards still work, in your system font.
 2. Go to Settings, Dashboards, three dots, **Resources**.
 3. Add `/local/liquid-climate.js` as a **JavaScript module**.
 4. Hard refresh the browser.
 
-Home Assistant caches files under `/local/` for a long time. After you replace the file, add a version to the URL, for example `/local/liquid-climate.js?v=0.11.0`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
+Home Assistant caches files under `/local/` for a long time. After you replace the files, add a version to the URL, for example `/local/liquid-climate.js?v=0.11.0`, and hard refresh. See [Troubleshooting](/troubleshooting#card-not-found).
 
 ## Add a card in the visual editor {#add-visual}
 
@@ -80,3 +80,7 @@ badges:
 | [Cluster](/cards/cluster) | `custom:liquid-climate-cluster` | Every unit in one card, grouped by floor or area |
 
 Controls the entity does not support are hidden, whatever the config says.
+
+## Development {#development}
+
+For a local checkout: `npm install`, then `npm run dev` (dev page), `npm test`, `npm run typecheck` and `npm run build`. Translations are welcome, see [CONTRIBUTING-translations.md](https://github.com/decibel95/liquid-climate/blob/main/CONTRIBUTING-translations.md). For bugs, see [Report a bug](/troubleshooting#report-a-bug).

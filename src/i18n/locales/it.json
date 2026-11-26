@@ -117,6 +117,7 @@
   "dial": {
     "turnOff": "Spegni",
     "turnOn": "Accendi",
+    "history": "Storico",
     "sending": "Invio",
     "inside": "Interno",
     "insideValue": "Interno {temp}",
@@ -261,6 +262,9 @@
     "swingHorizontal": "Oscillazione orizzontale",
     "presets": "Preset",
     "notSupported": "Non supportato da questa entità",
+    "historyButton": "Pulsante Storico",
+    "historyHint": "Apre lo storico di questa entità",
+    "historyHintCluster": "Apre lo storico dell'entità della stanza che apri",
     "statusRows": "Righe di stato sotto il selettore",
     "statusEntity": "Entità di stato",
     "statusName": "Nome dello stato",

@@ -9,3 +9,6 @@ docs/.vitepress/dist
 CLAUDE.local.md
 .local/
 .omc/
+
+# Pixel baseline: fresh captures and diff images (the baseline itself is committed)
+test/pixel/out/

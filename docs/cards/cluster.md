@@ -43,6 +43,7 @@ With no options it shows every climate entity, grouped under the floors set in H
 | `controls` | `modes`: all seven; `fan`, `swing`, `swing_horizontal`, `presets`: `true` | As on the dial: `modes` limits the strip, the rest applies to the dial a room opens |
 | `write_delay` | `1.5` | Seconds to collect presses before sending, `0` sends immediately. Use `0` or `1` for local devices |
 | `write_hold` | `10` | Seconds a sent value stays on screen while the device has not reported it back |
+| `show_history` | `true` | History button in the dial sheet of a room. `false` hides it |
 | `look` | `glass: theme`, `tint: 0.09`, `blur: 30`, `motion: rich` | `glass`, `blur` and `motion` as for the dial. `tint` has no effect on the cluster, it is passed to the dial sheet of a room |
 | `config_version` | `1` | Written by the editor |
 
@@ -144,6 +145,10 @@ The visual editor reads the entity registry when it opens, like the dial editor,
 The energy total in the header is left out when not every configured energy sensor resolves, so a partial sum is never shown as the total.
 
 The editor does not have fields for sensors and controls of the cluster. It says they are set in YAML and apply to every room.
+
+### History button {#cluster-history}
+
+When you open a room, its dial has a button next to the power button that opens Home Assistant's history page for that room's entity. The sheet closes first. On by default, for every room. Option: `show_history`.
 
 ### Write delay {#cluster-write-delay}
 
