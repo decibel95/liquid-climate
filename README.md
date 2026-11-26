@@ -19,7 +19,7 @@ Requires Home Assistant 2025.1 or newer.
 
 **Home Assistant Marketplace (2026.11 and newer).** Open Settings, Marketplace, search for **Liquid Climate** and install it. The dashboard resource is added for you.
 
-**HACS (older versions).** Search for **Liquid Climate** in HACS, download it and reload the browser. Not listed? Add `https://github.com/decibel95/liquid-climate` as a custom repository, category Dashboard.
+**HACS (older versions).** Search for **Liquid Climate** in HACS, download it and reload the browser. If the search does not find it, add `https://github.com/decibel95/liquid-climate` as a custom repository (category Dashboard).
 
 **Manual.** Download `liquid-climate.js`, `liquid-inter.woff2` and `liquid-inter-OFL.txt` from the [latest release](https://github.com/decibel95/liquid-climate/releases/latest) and copy them to `/config/www/`. Then add `/local/liquid-climate.js` as a **JavaScript module** under Settings, Dashboards, Resources, and hard refresh. If the card does not update, see [Troubleshooting](https://decibel95.github.io/liquid-climate/troubleshooting).
 <!-- ha-marketplace:exclude-end -->
