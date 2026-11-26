@@ -33,22 +33,6 @@ type: custom:liquid-climate-card
 entity: climate.living_room
 ```
 
-```yaml
-# Water heaters and humidifiers join a cluster only when asked
-type: custom:liquid-climate-cluster
-domains: [climate, water_heater, humidifier]
-```
-
-All options are in the [dial](https://decibel95.github.io/liquid-climate/cards/dial#dial-options), [tile](https://decibel95.github.io/liquid-climate/cards/tile), [badge](https://decibel95.github.io/liquid-climate/cards/badge) and [cluster](https://decibel95.github.io/liquid-climate/cards/cluster) docs.
-
-## Languages
-
-`en`, `nl`, `de`, `fr`, `es`, `it`, `pl`. The cards follow your Home Assistant profile language. Dutch is reviewed, the others are machine translated and PRs are welcome. See [CONTRIBUTING-translations.md](CONTRIBUTING-translations.md).
-
-<div align="center">
-  <img src="docs/public/media/language.webp" alt="The dial switching between languages" width="300">
-</div>
-
 ## Documentation
 
 All options, device detection, theming, languages and troubleshooting: [decibel95.github.io/liquid-climate](https://decibel95.github.io/liquid-climate/).
