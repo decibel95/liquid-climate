@@ -1,39 +1,3 @@
-
-
-
-    
-  
-    "rangeAria": "Zakres zadany {range} {unit}, otwórz sterowanie",
-    "valve": "zawór {value}%",
-    "batteryLow": "Niska bateria: {n}",
-    "ariaCurrent": "teraz {value} {unit}"
-  },
-  "menu": {
-    "details": "Szczegóły",
-    "editLabel": "Edytuj {name}",
-    "scripts": "Skrypty",
-    "automations": "Automatyzacje",
-    "running": "Uruchomiono",
-    "runningAnnounce": "Uruchomiono",
-    "run": "Uruchom",
-    "unavailable": "Niedostępne",
-    "error": "Nie udało się zaktualizować. Spróbuj ponownie.",
-    "updating": "Aktualizowanie",
-    "panelLabel": "Opcje: {name}"
-  },
-  "editor": {
-    "sections": "Sekcje edytora",
-    "tabSetup": "Konfiguracja",
-    "tabSensors": "Czujniki",
-    "tabControls": "Sterowanie",
-    "tabLook": "Wygląd",
-    "copyDiagnostics": "Kopiuj diagnostykę",
-    "copied": "Skopiowano",
-    "diagnosticsFailed": "Nie udało się skopiować",
-    "help": "Pomoc: {section}",
-    "entity": "Encja",
-    "name": "Nazwa",
-    "nameHint": "Puste pole: nazwa encji.",
     "roomSensor": "Czujnik temperatury pokoju",
     "waterSensor": "Czujnik temperatury wody",
     "humiditySensor": "Czujnik wilgotności",
@@ -74,6 +38,9 @@
     "swingHorizontal": "Oscylacja pozioma",
     "presets": "Ustawienia wstępne",
     "notSupported": "Nieobsługiwane przez tę encję",
+    "historyButton": "Przycisk historii",
+    "historyHint": "Otwiera historię tej encji",
+    "historyHintCluster": "Otwiera historię encji wybranego pomieszczenia",
     "statusRows": "Wiersze stanu pod pokrętłem",
     "statusEntity": "Encja stanu",
     "statusName": "Nazwa stanu",
