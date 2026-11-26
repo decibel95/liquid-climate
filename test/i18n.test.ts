@@ -12,8 +12,8 @@ const hassWith = (extra: Record<string, unknown>) => extra as never;
 describe('locale files', () => {
   const others = Object.keys(LOCALES).filter((l) => l !== 'en');
 
-  it('ships en, nl, de, fr, es and it', () => {
-    expect(Object.keys(LOCALES).sort()).toEqual(['de', 'en', 'es', 'fr', 'it', 'nl']);
+  it('ships en, nl, de, fr, es, it and pl', () => {
+    expect(Object.keys(LOCALES).sort()).toEqual(['de', 'en', 'es', 'fr', 'it', 'nl', 'pl']);
   });
 
   for (const lang of others) {
