@@ -3,9 +3,14 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.12.1
+## 0.12.2
 
 The current version.
+
+### Changed
+- The README install instructions are clearer about what to do if the HACS search does not find Liquid Climate.
+
+## 0.12.1
 
 ### Changed
 - Under the hood, Liquid Climate now shares its building blocks with the Liquid Home cards, so both stay alike on one dashboard. Your cards look and work exactly as before.
