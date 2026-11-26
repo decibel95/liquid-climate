@@ -11,6 +11,29 @@ import pl from './locales/pl.json';
 export { flatten, rawLanguage, num, numAuto, haLocalize, humanize } from '@decibel95/liquid-core';
 export type { Vars, I18nHass } from '@decibel95/liquid-core';
 
+/** liquid-core has no Polish yet, so Liquid Climate carries its `core.*` strings. */
+const PL_CORE = {
+  close: 'Zamknij',
+  history: 'Historia',
+  off: 'Wył.',
+  unavailable: 'Niedostępny',
+  percent: '{value}%',
+  editor: {
+    help: 'Pomoc: {section}',
+    glass: 'Szkło',
+    glassAuto: 'Auto',
+    glassDark: 'Ciemne',
+    glassLight: 'Jasne',
+    tint: 'Kolor trybu',
+    blur: 'Rozmycie',
+    motion: 'Animacja',
+    motionRich: 'Rozbudowana',
+    motionSubtle: 'Subtelna',
+    motionMinimal: 'Minimalna',
+    reducedMotion: 'Systemowe ograniczenie animacji ma pierwszeństwo.'
+  }
+};
+
 /** One line per language: add a new one here (see CONTRIBUTING-translations.md). */
 export const LC_LAYER: Record<string, Record<string, string>> = {
   en: flatten(en),
@@ -19,10 +42,13 @@ export const LC_LAYER: Record<string, Record<string, string>> = {
   fr: flatten(fr),
   es: flatten(es),
   it: flatten(it),
-  pl: flatten(pl)
+  pl: flatten(pl),
 };
 
-const i18n = createI18n([LC_LAYER]);
+/** Under LC_LAYER, which stays free of `core.*` keys (a test checks that). */
+const PL_CORE_LAYER = { pl: flatten({ core: PL_CORE }) };
+
+const i18n = createI18n([PL_CORE_LAYER, LC_LAYER]);
 
 /** Our strings merged over liquid-core's `core.*` strings (mutable: a test may add a key). */
 export const LOCALES = i18n.locales;
