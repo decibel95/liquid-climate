@@ -423,8 +423,8 @@ describe('option names fall back to ours when Home Assistant has none', () => {
     'stop', 'fixed', 'swing', 'vertical', 'horizontal', 'both', 'auto', 'none', 'eco', 'boost', 'away', 'comfort', 'home',
     'sleep', 'activity', 'quiet', 'silence', 'low', 'medium', 'high', 'middle', 'diffuse', 'focus', 'top', 'on', 'off',
   ];
-  const STOP: Record<string, string> = { en: 'Fixed', nl: 'Vast', de: 'Fest', fr: 'Fixe', es: 'Fijo', it: 'Fisso' };
-  const NONE: Record<string, string> = { en: 'None', nl: 'Geen', de: 'Keine', fr: 'Aucun', es: 'Ninguno', it: 'Nessuno' };
+  const STOP: Record<string, string> = { en: 'Fixed', nl: 'Vast', de: 'Fest', fr: 'Fixe', es: 'Fijo', it: 'Fisso', pl: 'Stały' };
+  const NONE: Record<string, string> = { en: 'None', nl: 'Geen', de: 'Keine', fr: 'Aucun', es: 'Ninguno', it: 'Nessuno', pl: 'Brak' };
   const entity = { entity_id: K, state: 'cool', attributes: {} };
 
   describe.each(Object.keys(LOCALES))('%s', (lang) => {
