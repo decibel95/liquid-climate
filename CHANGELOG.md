@@ -3,9 +3,14 @@
 All notable changes to Liquid Climate. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 <!-- #region entries -->
-## 0.13.0
+## 0.13.1
 
 The current version.
+
+### Changed
+- The README now links to the other Liquid projects (Liquid Home and the liquid-core design library), shows what is on the roadmap, and invites feature requests. Nothing in the cards changes.
+
+## 0.13.0
 
 ### Added
 - Polish, contributed by @jkmikke, with a few small fixes on top.

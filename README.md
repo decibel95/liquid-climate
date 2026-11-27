@@ -37,6 +37,26 @@ entity: climate.living_room
 
 All options, device detection, theming, languages and troubleshooting: [decibel95.github.io/liquid-climate](https://decibel95.github.io/liquid-climate/).
 
+## On the roadmap
+
+What we are working on. Plans can change.
+
+- Device icons for climate devices.
+- History on the card faces.
+- Moving fully onto the shared liquid-core design library, so all Liquid cards look and feel the same (planned).
+
+Missing something? Feature requests and ideas are welcome: [open an issue](https://github.com/decibel95/liquid-climate/issues/new/choose).
+
+## Liquid family
+
+<!-- When a new Liquid repo is created, add its row to this table in every Liquid README. -->
+
+| Project | What it is |
+| --- | --- |
+| **Liquid Climate** (this repo) | Glass cards for climate, water heater and humidifier entities (Home Assistant, HACS) |
+| [Liquid Home](https://github.com/decibel95/liquid-home) | Glass cards for lights, covers and fans; media player next (Home Assistant, HACS) |
+| [liquid-core](https://github.com/decibel95/liquid-core) | Shared design library behind the Liquid cards (npm) |
+
 ## License
 
 [MIT](LICENSE). The Liquid Inter font is under the SIL Open Font License 1.1 and the Lucide icons under ISC, see [NOTICE](NOTICE).
